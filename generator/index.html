@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Poster generator</title>
-  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="style.css?v=202610041934">
 </head>
 <body>
   <div id="stage" class="app">
@@ -63,34 +63,6 @@
         <button type="button" class="btn" id="rollColors">Randomize colors</button>
       </div>
 
-      <div class="field" id="size-field" hidden>
-        <span class="lbl" id="sizeLbl">Circle</span>
-        <div class="grid3">
-          <label for="csize">Size</label>
-          <input type="range" id="csize" min="0.5" max="1.5" step="0.01" value="1">
-          <span id="csizeVal" class="mono val">Auto</span>
-          <label for="cx">X</label>
-          <input type="range" id="cx" min="0" max="1" step="0.005" value="0.5">
-          <span id="cxVal" class="mono val">Auto</span>
-          <label for="cy">Y</label>
-          <input type="range" id="cy" min="0" max="1" step="0.005" value="0.5">
-          <span id="cyVal" class="mono val">Auto</span>
-        </div>
-        <div class="row between">
-          <span class="hint">Or drag the circle on the preview.</span>
-          <button type="button" class="btn" id="csizeAuto">Auto</button>
-        </div>
-      </div>
-
-      <div class="field" id="rotate-field" hidden>
-        <span class="lbl">Rotate</span>
-        <div class="slider-row">
-          <input type="range" id="rot" min="0" max="360" step="1" value="0">
-          <span id="rotVal" class="mono val">Auto</span>
-          <button type="button" class="btn" id="rotAuto">Auto</button>
-        </div>
-      </div>
-
       <div class="field" id="wave-field" hidden>
         <span class="lbl">Waves</span>
         <div class="grid3 wide">
@@ -107,6 +79,34 @@
         <div class="row between">
           <span class="hint">Drag the preview to move the waves.</span>
           <button type="button" class="btn" id="waveAuto">Auto</button>
+        </div>
+      </div>
+
+      <div class="field" id="rotate-field" hidden>
+        <span class="lbl">Rotate</span>
+        <div class="slider-row">
+          <input type="range" id="rot" min="0" max="360" step="1" value="0">
+          <span id="rotVal" class="mono val">Auto</span>
+          <button type="button" class="btn" id="rotAuto">Auto</button>
+        </div>
+      </div>
+
+      <div class="field" id="size-field" hidden>
+        <span class="lbl" id="sizeLbl">Circle</span>
+        <div class="grid3">
+          <label for="csize">Size</label>
+          <input type="range" id="csize" min="0.5" max="1.5" step="0.01" value="1">
+          <span id="csizeVal" class="mono val">Auto</span>
+          <label for="cx">X</label>
+          <input type="range" id="cx" min="0" max="1" step="0.005" value="0.5">
+          <span id="cxVal" class="mono val">Auto</span>
+          <label for="cy">Y</label>
+          <input type="range" id="cy" min="0" max="1" step="0.005" value="0.5">
+          <span id="cyVal" class="mono val">Auto</span>
+        </div>
+        <div class="row between">
+          <span class="hint">Or drag the circle on the preview.</span>
+          <button type="button" class="btn" id="csizeAuto">Auto</button>
         </div>
       </div>
 
@@ -148,7 +148,7 @@
     </aside>
   </div>
 
-  <script src="../poster-bg/scripts/gen.js"></script>
-  <script src="ui.js"></script>
+  <script src="../poster-bg/scripts/gen.js?v=202610041934"></script>
+  <script src="ui.js?v=202610041934"></script>
 </body>
 </html>
