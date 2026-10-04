@@ -101,8 +101,12 @@
     .intro p { margin: 0 0 16px; color: rgba(255,255,255,.82); }
     .pull { font: 800 clamp(1.5rem, 3vw, 2.3rem)/1.1 var(--display); letter-spacing: -.03em; margin: 0; text-wrap: balance; }
     .pull em { font-style: normal; color: transparent; -webkit-text-stroke: 1px var(--fg); }
-    .theory { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 260px), 1fr)); gap: 0; border-top: 1px solid var(--line); margin-top: clamp(36px, 5vw, 64px); }
+    .theory { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 0; border-top: 1px solid var(--line); margin-top: clamp(36px, 5vw, 64px); }
     .theory div { padding: 26px 26px 26px 0; border-bottom: 1px solid var(--line); }
+    .theory div:nth-child(-n+3) { grid-column: span 2; }
+    .theory div:nth-child(n+4) { grid-column: span 3; }
+    @media (max-width: 860px) { .theory { grid-template-columns: repeat(2, minmax(0, 1fr)); } .theory div:nth-child(n) { grid-column: auto; } }
+    @media (max-width: 560px) { .theory { grid-template-columns: minmax(0, 1fr); } }
     .theory h3 { margin: 0 0 8px; font: 800 1.2rem/1.1 var(--display); letter-spacing: -.02em; }
     .theory p { margin: 0; color: var(--muted); font-size: 15px; }
     .theory .tie { display: block; margin-top: 10px; font: 400 12px/1.5 var(--mono); color: #cfcfcf; }
@@ -319,7 +323,7 @@ node poster-bg/scripts/gen.js --ring --colors random \
     </div>
   </footer>
 
-  <script src="poster-bg/scripts/gen.js?v=202610042004"></script>
+  <script src="poster-bg/scripts/gen.js?v=202610042007"></script>
   <script>
     const uri = s => "data:image/svg+xml;charset=utf-8," + encodeURIComponent(s);
 
