@@ -48,6 +48,7 @@ const PALETTES={
  konstruktywizm:{paper:'#efe8d8',dark:'#111111',light:'#efe8d8',accent:'#d62a1f',inks:['#d62a1f','#111111','#efe8d8']},
  lenica:{paper:'#e8dfcb',dark:'#1a1a1a',light:'#f4ede0',accent:'#d62a1f',inks:['#1a1a1a','#d62a1f','#f0c419','#2a6fb0','#f4ede0']},
  jazz:{paper:'#f0b21a',dark:'#111111',light:'#f4efe4',accent:'#d62a1f',inks:['#111111','#f4efe4','#1a2347','#d62a1f']},
+ mlodozeniec:{paper:'#fbf8ef',dark:'#111111',light:'#fbf8ef',accent:'#ff4f9a',inks:['#ff4f9a','#ffd21a','#3fbf6b','#ff8a1e','#2a8fd0']},
  fangor:{paper:'#e9e1d6',dark:'#10121a',light:'#f3ede4',accent:'#e23a2e',inks:['#e23a2e','#1b3f9e','#f3ede4','#10121a','#e98aa2']},
  fangor_blue:{paper:'#dde3ea',dark:'#0b1230',light:'#eef1f6',accent:'#ff5a36',inks:['#0b1230','#2a5bd7','#9db8f0','#eef1f6','#ff5a36']},
  fangor_green:{paper:'#e6e8d8',dark:'#0f3d2e',light:'#f2efe4',accent:'#e8503a',inks:['#0f3d2e','#2f9a62','#d9e8c4','#f2efe4','#e8503a']}};
@@ -432,6 +433,34 @@ MOTIF_OPTS.sunburst = [
   { key: 'y', label: 'Centre y', min: 0, max: 1, step: .005, def: .5 },
 ];
 
+// Mlodozeniec's outlined stains: bright flat blobs held by a thick black line, the color a little off-register
+function outline(r, p, w, h, o = {}) {
+  const m = Math.min(w, h), n = Math.round(o.count ?? 3 + Math.floor(r() * 4)), thick = m * .019 * (o.thick ?? 1), off = m * .016 * (o.offset ?? 1), wob = o.wobble ?? .6;
+  const inks = p.inks; let body = '', prev = '';
+  for (let b = 0; b < n; b++) {
+    const k = 8 + Math.floor(r() * 5), R = m * (.14 + r() * .2), cx = w * (.12 + r() * .76), cy = h * (.12 + r() * .76), rot = r() * 6.28, pts = [];
+    for (let i = 0; i < k; i++) { const a = rot + i / k * 6.28, rr = R * (1 + (r() - .5) * .9 * wob); pts.push([cx + Math.cos(a) * rr * 1.1, cy + Math.sin(a) * rr]); }
+    let d = '';
+    for (let i = 0; i < k; i++) {
+      const p0 = pts[(i - 1 + k) % k], p1 = pts[i], p2 = pts[(i + 1) % k], p3 = pts[(i + 2) % k];
+      if (i === 0) d += `M${f(p1[0])} ${f(p1[1])}`;
+      d += `C${f(p1[0] + (p2[0] - p0[0]) / 6)} ${f(p1[1] + (p2[1] - p0[1]) / 6)} ${f(p2[0] - (p3[0] - p1[0]) / 6)} ${f(p2[1] - (p3[1] - p1[1]) / 6)} ${f(p2[0])} ${f(p2[1])}`;
+    }
+    d += 'Z';
+    let c; do { c = inks[Math.floor(r() * inks.length)]; } while (c === prev && inks.length > 1);
+    prev = c;
+    const ang = r() * 6.28;
+    body += `<path d="${d}" fill="${c}" transform="translate(${f(Math.cos(ang) * off)} ${f(Math.sin(ang) * off)})"/><path d="${d}" fill="none" stroke="${p.dark}" stroke-width="${f(thick)}" stroke-linejoin="round"/>`;
+  }
+  return { defs: '', body, bg: p.paper };
+}
+MOTIF_OPTS.outline = [
+  { key: 'count', label: 'Stains', min: 1, max: 10, step: 1, def: 4 },
+  { key: 'thick', label: 'Outline', min: .3, max: 3, step: .01, def: 1 },
+  { key: 'offset', label: 'Off-register', min: 0, max: 3, step: .01, def: 1 },
+  { key: 'wobble', label: 'Wobble', min: 0, max: 1.5, step: .01, def: .6 },
+];
+
 // random harmonious palettes. kind: 'poster', 'random' (Fangor discs), 'ring' (inks run hole, bands..., halo) or 'dream'
 function hsl(h, s, l) {
   h = ((h % 360) + 360) % 360; s /= 100; l /= 100;
@@ -459,7 +488,7 @@ function randomPalette(kind, rnd = Math.random) {
 }
 
 MOTIF_OPTS.squares=[{key:'round',label:'Corners',min:0,max:.5,step:.01,def:.1},{key:'hole',label:'Centre',min:.04,max:.45,step:.01,def:.15},{key:'soft',label:'Softness',min:.2,max:2.5,step:.01,def:1}];
-const MOTIFS={stripes,rings,mosaic,blob,diagonals,steps,fangor,ring,squares,dream,stripewave,scope,stripedisc,construct,cutout,bars,rotor,sunburst};
+const MOTIFS={stripes,rings,mosaic,blob,diagonals,steps,fangor,ring,squares,dream,stripewave,scope,stripedisc,construct,cutout,bars,rotor,sunburst,outline};
 function generate(motif,palette,seed,w,h,o={}){const r=rng(seed),p=typeof palette==='string'?PALETTES[palette]:palette,m=MOTIFS[motif](r,p,w,h,o);
  return `<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="${w}" height="${h}" viewBox="0 0 ${w} ${h}"><defs>${m.defs||''}</defs><rect width="${w}" height="${h}" fill="${m.bg||p.paper}"/>${m.body}</svg>`;}
 

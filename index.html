@@ -276,7 +276,7 @@ node poster-bg/scripts/gen.js --ring --colors random \
     </div>
   </footer>
 
-  <script src="poster-bg/scripts/gen.js?v=202610041954"></script>
+  <script src="poster-bg/scripts/gen.js?v=202610041955"></script>
   <script>
     const uri = s => "data:image/svg+xml;charset=utf-8," + encodeURIComponent(s);
 
@@ -309,9 +309,9 @@ node poster-bg/scripts/gen.js --ring --colors random \
     const GALLERY = [
       ["stripes", "baron", 7], ["rings", "brasilia", 3], ["mosaic", "roger", 5],
       ["blob", "marek", 2], ["diagonals", "anima", 4], ["steps", "wesoft", 6],
-      ["fangor", "fangor_blue", 4], ["ring", "soft_orchid", 7], ["squares", "soft_orchid", 7], ["stripewave", "stanczak", 2], ["scope", "zamecznik", 7], ["stripedisc", "zamecznik", 2], ["construct", "konstruktywizm", 5], ["cutout", "lenica", 4], ["bars", "jazz", 6], ["rotor", "zamecznik", 2], ["sunburst", "cyrk", 3], ["dream", "dream_navy", 2],
+      ["fangor", "fangor_blue", 4], ["ring", "soft_orchid", 7], ["squares", "soft_orchid", 7], ["stripewave", "stanczak", 2], ["scope", "zamecznik", 7], ["stripedisc", "zamecznik", 2], ["construct", "konstruktywizm", 5], ["cutout", "lenica", 4], ["bars", "jazz", 6], ["rotor", "zamecznik", 2], ["sunburst", "cyrk", 3], ["outline", "mlodozeniec", 4], ["dream", "dream_navy", 2],
     ].filter(([m]) => MOTIFS[m]);
-    const NAMES = { rings: "split rings", ring: "soft ring", fangor: "fangor discs", stripewave: "wavy stripes", scope: "oscillogram", stripedisc: "stripes and disc", construct: "constructivist", cutout: "cut-out", bars: "rhythm bars", rotor: "multiply and rotate", sunburst: "sunburst and rings" };
+    const NAMES = { rings: "split rings", ring: "soft ring", fangor: "fangor discs", stripewave: "wavy stripes", scope: "oscillogram", stripedisc: "stripes and disc", construct: "constructivist", cutout: "cut-out", bars: "rhythm bars", rotor: "multiply and rotate", sunburst: "sunburst and rings", outline: "outlined stains" };
     document.getElementById("gallery").innerHTML = GALLERY.map(([m, p, s]) =>
       `<a class="card reveal" href="generator/?motif=${m}&palette=${p}&seed=${s}"><div class="frame"><img loading="lazy" alt="${m}, ${p}" src="${uri(generate(m, p, s, 600, 800))}"></div>` +
       `<div class="cap"><b>${NAMES[m] || m}</b><span>${p} · ${s}</span></div></a>`).join("");
