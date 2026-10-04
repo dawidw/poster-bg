@@ -47,6 +47,7 @@ const PALETTES={
  zamecznik:{paper:'#f2f2f2',dark:'#0d0d0d',light:'#f2f2f2',accent:'#2a6fb0',inks:['#0d0d0d','#f2f2f2','#0d0d0d','#f2f2f2','#2a6fb0']},
  stanczak:{paper:'#f1ece0',dark:'#1a2347',light:'#f1ece0',accent:'#e0382e',inks:['#1a2347','#e0382e','#f1ece0','#2a8fd0']},
  konstruktywizm:{paper:'#efe8d8',dark:'#111111',light:'#efe8d8',accent:'#d62a1f',inks:['#d62a1f','#111111','#efe8d8']},
+ lenica:{paper:'#e8dfcb',dark:'#1a1a1a',light:'#f4ede0',accent:'#d62a1f',inks:['#1a1a1a','#d62a1f','#f0c419','#2a6fb0','#f4ede0']},
  fangor:{paper:'#e9e1d6',dark:'#10121a',light:'#f3ede4',accent:'#e23a2e',inks:['#e23a2e','#1b3f9e','#f3ede4','#10121a','#e98aa2']},
  fangor_blue:{paper:'#dde3ea',dark:'#0b1230',light:'#eef1f6',accent:'#ff5a36',inks:['#0b1230','#2a5bd7','#9db8f0','#eef1f6','#ff5a36']},
  fangor_green:{paper:'#e6e8d8',dark:'#0f3d2e',light:'#f2efe4',accent:'#e8503a',inks:['#0f3d2e','#2f9a62','#d9e8c4','#f2efe4','#e8503a']}};
@@ -317,6 +318,41 @@ MOTIF_OPTS.construct = [
   { key: 'count', label: 'Elements', min: 2, max: 20, step: 1, def: 8 },
 ];
 
+// Lenica's paper cut-outs: a few big flat shapes with straight, slightly torn edges, layered with a soft paper shadow
+function cutout(r, p, w, h, o = {}) {
+  const m = Math.min(w, h), n = Math.round(o.count ?? 4 + Math.floor(r() * 5)), jag = o.jag ?? .5, sz = o.scale ?? 1;
+  const inks = p.inks;
+  let body = '', cx = w * (.45 + r() * .1), cy = h * (.5 + r() * .1), R = m * .56 * sz, prev = '';
+  for (let k = 0; k < n; k++) {
+    const sides = 5 + Math.floor(r() * 5), rot = r() * 6.28, pts = [];
+    for (let i = 0; i < sides; i++) {
+      const a = rot + i / sides * 6.28 + (r() - .5) * .5, rr = R * (.62 + r() * .38);
+      pts.push([cx + Math.cos(a) * rr * (1 + (k ? 0 : .15)), cy + Math.sin(a) * rr * 1.1]);
+    }
+    const out = [];
+    pts.forEach((a, i) => {
+      const b = pts[(i + 1) % pts.length], len = Math.hypot(b[0] - a[0], b[1] - a[1]);
+      out.push(a);
+      for (let j = 1; j <= 2; j++) {
+        const t = j / 3, off = (r() - .5) * len * .09 * jag, nx = -(b[1] - a[1]) / len, ny = (b[0] - a[0]) / len;
+        if (jag > .02) out.push([a[0] + (b[0] - a[0]) * t + nx * off, a[1] + (b[1] - a[1]) * t + ny * off]);
+      }
+    });
+    let c; do { c = inks[Math.floor(r() * inks.length)]; } while (c === prev && inks.length > 1);
+    prev = c;
+    const d = out.map(q => `${f(q[0])},${f(q[1])}`).join(' ');
+    body += `<polygon points="${out.map(q => `${f(q[0] + m * .008)},${f(q[1] + m * .012)}`).join(' ')}" fill="#000" fill-opacity=".22"/><polygon points="${d}" fill="${c}"/>`;
+    cx += (r() - .5) * R * 1.7; cy += (r() - .5) * R * 1.7; R *= .8 + r() * .12;
+    cx = Math.min(w * .85, Math.max(w * .15, cx)); cy = Math.min(h * .85, Math.max(h * .15, cy));
+  }
+  return { defs: '', body, bg: p.paper };
+}
+MOTIF_OPTS.cutout = [
+  { key: 'count', label: 'Shapes', min: 2, max: 14, step: 1, def: 6 },
+  { key: 'jag', label: 'Ragged edge', min: 0, max: 1.5, step: .01, def: .5 },
+  { key: 'scale', label: 'Size', min: .5, max: 1.6, step: .01, def: 1 },
+];
+
 // random harmonious palettes. kind: 'poster', 'random' (Fangor discs), 'ring' (inks run hole, bands..., halo) or 'dream'
 function hsl(h, s, l) {
   h = ((h % 360) + 360) % 360; s /= 100; l /= 100;
@@ -344,7 +380,7 @@ function randomPalette(kind, rnd = Math.random) {
 }
 
 MOTIF_OPTS.squares=[{key:'round',label:'Corners',min:0,max:.5,step:.01,def:.1},{key:'hole',label:'Centre',min:.04,max:.45,step:.01,def:.15},{key:'soft',label:'Softness',min:.2,max:2.5,step:.01,def:1}];
-const MOTIFS={stripes,rings,mosaic,blob,diagonals,steps,fangor,ring,squares,dream,stripewave,scope,stripedisc,construct};
+const MOTIFS={stripes,rings,mosaic,blob,diagonals,steps,fangor,ring,squares,dream,stripewave,scope,stripedisc,construct,cutout};
 function generate(motif,palette,seed,w,h,o={}){const r=rng(seed),p=typeof palette==='string'?PALETTES[palette]:palette,m=MOTIFS[motif](r,p,w,h,o);
  return `<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="${w}" height="${h}" viewBox="0 0 ${w} ${h}"><defs>${m.defs||''}</defs><rect width="${w}" height="${h}" fill="${m.bg||p.paper}"/>${m.body}</svg>`;}
 
@@ -366,7 +402,7 @@ if (typeof module !== 'undefined' && typeof require !== 'undefined' && require.m
   const num = k => (get(k) ? +get(k) : undefined);
   const pal = rc ? randomPalette(kindOf(motif), rng(seed * 2 + 1)) : palette;
   const extra = {};
-  for (const o of (MOTIF_OPTS[motif] || [])) if (get(o.key) !== null) extra[o.key] = +get(o.key);
+  for (const o of (MOTIF_OPTS[motif] || [])) if (get(o.key) !== null) extra[o.key] = +get(o.key);   // option keys must not clash with --size, --seed, --out, --motif or --palette
   const svg = generate(motif, pal, seed, w, h, { size: num('circle'), x: num('x'), y: num('y'), grain: num('grain'), angle: num('angle'), amp: num('amp'), wave: num('wavelength'), softness: num('softness'), ...extra });
   console.error(`motif=${motif} palette=${rc ? 'random(seeded)' : palette} seed=${seed} size=${w}x${h}`);
   if (get('out')) require('fs').writeFileSync(get('out'), svg); else process.stdout.write(svg);

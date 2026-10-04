@@ -2,9 +2,9 @@
 const stage = document.getElementById("stage");
 
 const $ = id => document.getElementById(id);
-const MOTIF_LABEL = { stripes: "Stripes", rings: "Rings and towers", mosaic: "Mosaic", blob: "Halo blob", diagonals: "Triangles", steps: "Steps", stripewave: "Wavy stripes", scope: "Oscillogram", stripedisc: "Stripes and disc", construct: "Constructivist" };
+const MOTIF_LABEL = { stripes: "Stripes", rings: "Rings and towers", mosaic: "Mosaic", blob: "Halo blob", diagonals: "Triangles", steps: "Steps", stripewave: "Wavy stripes", scope: "Oscillogram", stripedisc: "Stripes and disc", construct: "Constructivist", cutout: "Cut-out" };
 const PALETTE_LABEL = {
-  baron: "Baron", zamecznik: "Zamecznik", konstruktywizm: "Constructivist", stanczak: "Stanczak", zloto: "Gold", roger: "King Roger", marek: "Father Marek", brasilia: "Brasília", anima: "Anima", wesoft: "Wesoft",
+  baron: "Baron", zamecznik: "Zamecznik", lenica: "Lenica", konstruktywizm: "Constructivist", stanczak: "Stanczak", zloto: "Gold", roger: "King Roger", marek: "Father Marek", brasilia: "Brasília", anima: "Anima", wesoft: "Wesoft",
   mazur: "Mazur", jesien: "Autumn", moda: "Moda", cyrk: "Circus",
   fangor: "Red and blue", fangor_blue: "Blue", fangor_green: "Green", fangor_sunset: "Sunset", fangor_mint: "Mint", fangor_mono: "Mono",
   soft_flame: "Flame", soft_tricolor: "Tricolor", soft_violet: "Violet", soft_orchard: "Orchard", soft_candy: "Candy", soft_navy: "Navy", soft_cobalt: "Cobalt",
