@@ -494,6 +494,37 @@ MOTIF_OPTS.halftone = [
   { key: 'duo', label: 'Second ink', min: 0, max: 1, step: 1, def: 0 },
 ];
 
+// Moire: two fine gratings (lines or rings) laid over each other at a small offset, the interference does the drawing
+function moire(r, p, w, h, o = {}) {
+  const c1 = r(), c2 = r(), c3 = r(), c4 = r(), m = Math.min(w, h), cx = w / 2, cy = h / 2;
+  const sp = m * (o.spacing ?? (.008 + c1 * .006)), diff = o.diff ?? (2 + c2 * 8), mode = Math.round(o.mode ?? Math.floor(c3 * 3));
+  const ang = o.angle ?? c4 * 180, sw = f(sp * .36 * (o.weight ?? 1)), duo = (o.duo ?? 0) >= .5, D = Math.hypot(w, h) / 2 + sp * 2;
+  const lines = (a, col) => {
+    let d = '';
+    for (let y = -D; y <= D; y += sp) d += `M${f(-D)} ${f(y)}H${f(D)}`;
+    return `<path d="${d}" stroke="${col}" stroke-width="${sw}" fill="none" transform="translate(${f(cx)} ${f(cy)}) rotate(${f(a)})"/>`;
+  };
+  const rings = (x, y, col) => {
+    let d = '';
+    for (let rad = sp; rad <= D * 1.2; rad += sp) d += `M${f(x + rad)} ${f(y)}a${f(rad)} ${f(rad)} 0 1 0 ${f(-2 * rad)} 0a${f(rad)} ${f(rad)} 0 1 0 ${f(2 * rad)} 0`;
+    return `<path d="${d}" stroke="${col}" stroke-width="${sw}" fill="none"/>`;
+  };
+  const second = duo ? p.accent : p.dark;
+  let body = '';
+  if (mode === 0) body = lines(ang, p.dark) + lines(ang + diff, second);
+  else if (mode === 1) body = rings(cx, cy, p.dark) + rings(cx + sp * (3 + diff), cy + sp * diff, second);
+  else body = lines(ang, p.dark) + rings(cx, cy, second);
+  return { defs: `<clipPath id="mo"><rect width="${w}" height="${h}"/></clipPath>`, body: `<g clip-path="url(#mo)">${body}</g>`, bg: p.paper };
+}
+MOTIF_OPTS.moire = [
+  { key: 'spacing', label: 'Line spacing', min: .004, max: .03, step: .0005, def: .011 },
+  { key: 'diff', label: 'Offset', min: .3, max: 20, step: .1, def: 5 },
+  { key: 'mode', label: 'Mode (lines, rings, mixed)', min: 0, max: 2, step: 1, def: 0 },
+  { key: 'angle', label: 'Angle', min: 0, max: 180, step: 1, def: 0 },
+  { key: 'weight', label: 'Line weight', min: .4, max: 2, step: .01, def: 1 },
+  { key: 'duo', label: 'Second ink', min: 0, max: 1, step: 1, def: 0 },
+];
+
 // random harmonious palettes. kind: 'poster', 'random' (Fangor discs), 'ring' (inks run hole, bands..., halo) or 'dream'
 function hsl(h, s, l) {
   h = ((h % 360) + 360) % 360; s /= 100; l /= 100;
@@ -521,7 +552,7 @@ function randomPalette(kind, rnd = Math.random) {
 }
 
 MOTIF_OPTS.squares=[{key:'round',label:'Corners',min:0,max:.5,step:.01,def:.1},{key:'hole',label:'Centre',min:.04,max:.45,step:.01,def:.15},{key:'soft',label:'Softness',min:.2,max:2.5,step:.01,def:1}];
-const MOTIFS={stripes,rings,mosaic,blob,diagonals,steps,fangor,ring,squares,dream,stripewave,scope,stripedisc,construct,cutout,bars,rotor,sunburst,outline,halftone};
+const MOTIFS={stripes,rings,mosaic,blob,diagonals,steps,fangor,ring,squares,dream,stripewave,scope,stripedisc,construct,cutout,bars,rotor,sunburst,outline,halftone,moire};
 function generate(motif,palette,seed,w,h,o={}){const r=rng(seed),p=typeof palette==='string'?PALETTES[palette]:palette,m=MOTIFS[motif](r,p,w,h,o);
  return `<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="${w}" height="${h}" viewBox="0 0 ${w} ${h}"><defs>${m.defs||''}</defs><rect width="${w}" height="${h}" fill="${m.bg||p.paper}"/>${m.body}</svg>`;}
 
