@@ -6,12 +6,23 @@ Seeded SVG backgrounds in the spirit of the Polish School of Posters, 60s/70s ge
 
 The same motif, palette and seed always give the same image, so any result can be reproduced or varied by changing only the seed.
 
+### Polish School motifs (`--poster`)
+
 | | | |
 |---|---|---|
-| ![Dream, navy](examples/dream-navy.svg) | ![Dream, sun](examples/dream-sun.svg) | ![Ring, orchid](examples/ring-orchid.svg) |
-| `dream` · `dream_navy` | `dream` · `dream_sun` | `ring` · `soft_orchid` |
-| ![Ring, flame](examples/ring-flame.svg) | ![Fangor, blue](examples/fangor-blue.svg) | ![Mosaic, roger](examples/mosaic-roger.svg) |
-| `ring` · `soft_flame` | `fangor` · `fangor_blue` | `mosaic` · `roger` |
+| ![Stripes, baron](examples/poster-stripes-baron.svg) | ![Rings, brasilia](examples/poster-rings-brasilia.svg) | ![Mosaic, roger](examples/poster-mosaic-roger.svg) |
+| `stripes` · `baron` | `rings` · `brasilia` | `mosaic` · `roger` |
+| ![Blob, marek](examples/poster-blob-marek.svg) | ![Diagonals, anima](examples/poster-diagonals-anima.svg) | ![Steps, wesoft](examples/poster-steps-wesoft.svg) |
+| `blob` · `marek` | `diagonals` · `anima` | `steps` · `wesoft` |
+
+### Fangor styles (`--fangor`, `--ring`, `--dream`)
+
+| | | |
+|---|---|---|
+| ![Dream, navy](examples/dream-navy.svg) | ![Dream, sun](examples/dream-sun.svg) | ![Fangor, blue](examples/fangor-blue.svg) |
+| `dream` · `dream_navy` | `dream` · `dream_sun` | `fangor` · `fangor_blue` |
+| ![Ring, orchid](examples/ring-orchid.svg) | ![Ring, flame](examples/ring-flame.svg) | |
+| `ring` · `soft_orchid` | `ring` · `soft_flame` | |
 
 ## Use it from the command line
 
