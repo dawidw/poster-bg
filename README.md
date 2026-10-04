@@ -47,7 +47,7 @@ The same motif, palette and seed always give the same image, so any result can b
 
 ### Color presets
 
-77 palettes in four groups. A few of the Dream ones:
+83 palettes in four groups. A few of the Dream ones:
 
 | | | |
 |---|---|---|
@@ -109,11 +109,16 @@ Every motif has its own settings, the same ones the generator page shows as slid
 | `moire` | `--spacing` 0.004 to 0.03, `--diff` 0.3 to 20, `--mode` 0 to 2, `--angle` 0 to 180, `--weight` 0.4 to 2, `--duo` 0 to 1 |
 | `letters` | `--word` 0 to 7, `--layout` 0 to 2, `--scale` 0.4 to 1.4, `--gap` 0 to 0.4, `--bars` 0 to 6, `--angle` 0 to 360, `--x` 0 to 1, `--y` 0 to 1 |
 | `unism` | `--lines` 16 to 140, `--field` 0 to 3, `--contrast` 0.4 to 1.6, `--angle` 0 to 180, `--duo` 0 to 1 |
+| `jarema` | `--count` 3 to 16, `--flow` 0 to 1.6, `--wobble` 0 to 2, `--scale` 0.5 to 1.6 |
+| `blok` | `--angle` -45 to 45, `--bars` 0 to 8, `--disc` 0.5 to 2, `--tiles` 0 to 1 |
+| `planes` | `--count` 2 to 14, `--spread` 0.3 to 1.8, `--scale` 0.5 to 1.6 |
+| `relief` | `--grid` 4 to 16, `--amp` 0.3 to 1.8, `--rhythm` 0.3 to 2.2 |
+| `weave` | `--strips` 3 to 24, `--sway` 0 to 2, `--texture` 0.4 to 2.5 |
 | `squares` | `--round` 0 to 0.5, `--hole` 0.04 to 0.45, `--soft` 0.2 to 2.5 |
 | every poster motif | `--misreg` 0 to 6 (off-register print) |
 | every motif | `--speckle` 0 to 3 (paper grain) |
 
-There are 77 palettes in four groups (poster, `fangor_*`, `soft_*` for ring and squares, `dream_*`). Run the script with an unknown palette name to list all motifs and palettes.
+There are 83 palettes in four groups (poster, `fangor_*`, `soft_*` for ring and squares, `dream_*`). Run the script with an unknown palette name to list all motifs and palettes.
 
 ## Use it as a Claude Code skill
 

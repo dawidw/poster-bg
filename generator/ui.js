@@ -2,12 +2,12 @@
 const stage = document.getElementById("stage");
 
 const $ = id => document.getElementById(id);
-const MOTIF_LABEL = { stripes: "Stripes", rings: "Rings and towers", mosaic: "Mosaic", blob: "Halo blob", diagonals: "Triangles", steps: "Steps", stripewave: "Wavy stripes", scope: "Oscillogram", stripedisc: "Stripes and disc", construct: "Constructivist", cutout: "Cut-out", bars: "Rhythm bars", rotor: "Multiply and rotate", sunburst: "Sunburst and rings", outline: "Outlined stains", halftone: "Halftone", moire: "Moire", letters: "Block letters", unism: "Unism",
+const MOTIF_LABEL = { stripes: "Stripes", rings: "Rings and towers", mosaic: "Mosaic", blob: "Halo blob", diagonals: "Triangles", steps: "Steps", stripewave: "Wavy stripes", scope: "Oscillogram", stripedisc: "Stripes and disc", construct: "Constructivist", cutout: "Cut-out", bars: "Rhythm bars", rotor: "Multiply and rotate", sunburst: "Sunburst and rings", outline: "Outlined stains", halftone: "Halftone", moire: "Moire", letters: "Block letters", unism: "Unism", jarema: "Organic rhythm", blok: "Election constructivism", planes: "Spatial planes", relief: "Wooden relief", weave: "Woven strips",
   fangor: "Vibrating discs", ring: "Soft ring", squares: "Pulsating squares", dream: "Dream waves" };
 const PALETTE_LABEL = {
   bauhaus: "Bauhaus", kobalt: "Cobalt", pastel: "Pastel", neon: "Neon", ocean: "Ocean", forest: "Forest", sepia: "Sepia", mono: "Mono", pop: "Pop", lato: "Summer", fangor_fire: "Fire", fangor_ice: "Ice", fangor_mauve: "Mauve", fangor_acid: "Acid", fangor_earth: "Earth", soft_sunset: "Sunset", soft_ice: "Ice", soft_moss: "Moss", soft_cherry: "Cherry", soft_gold: "Gold", soft_ink: "Ink", soft_twilight: "Twilight", soft_peach: "Peach", dream_sunset: "Sunset", dream_ocean: "Ocean", dream_forest: "Forest", dream_pop: "Pop", dream_mono: "Mono", dream_peach: "Peach", dream_ember: "Ember", dream_ice: "Ice",
   baron: "Baron", zamecznik: "Zamecznik", lenica: "Lenica", mlodozeniec: "Mlodozeniec", jazz: "Jazz", konstruktywizm: "Constructivist", stanczak: "Stanczak", zloto: "Gold", roger: "King Roger", marek: "Father Marek", brasilia: "Brasília", anima: "Anima", wesoft: "Wesoft",
-  mazur: "Mazur", jesien: "Autumn", moda: "Moda", cyrk: "Circus",
+  mazur: "Mazur", jesien: "Autumn", moda: "Moda", cyrk: "Circus", jarema: "Jarema", blok: "Blok", kobro: "Kobro", golkowska: "Gołkowska", abakan: "Abakan", stryjenska: "Stryjeńska",
   fangor: "Red and blue", fangor_blue: "Blue", fangor_green: "Green", fangor_sunset: "Sunset", fangor_mint: "Mint", fangor_mono: "Mono",
   soft_flame: "Flame", soft_tricolor: "Tricolor", soft_violet: "Violet", soft_orchard: "Orchard", soft_candy: "Candy", soft_navy: "Navy", soft_cobalt: "Cobalt",
   soft_ochre: "Ochre", soft_orchid: "Orchid", soft_redcore: "Red core", soft_lagoon: "Lagoon", soft_ember: "Ember", soft_mono: "Mono", soft_blush: "Blush", soft_lilac: "Lilac",
@@ -22,6 +22,11 @@ const ARTISTS = [
   ["Wojciech Zamecznik", ["scope", "stripedisc", "rotor"]],
   ["Julian Stańczak", ["stripewave"]],
   ["Polish constructivists", ["construct", "letters", "unism"]],
+  ["Maria Jarema", ["jarema"]],
+  ["Teresa Żarnower", ["blok"]],
+  ["Katarzyna Kobro", ["planes"]],
+  ["Wanda Gołkowska", ["relief"]],
+  ["Magdalena Abakanowicz", ["weave"]],
   ["Jan Lenica", ["cutout"]],
   ["Jan Młodożeniec", ["outline"]],
   ["Waldemar Świerzy", ["bars"]],

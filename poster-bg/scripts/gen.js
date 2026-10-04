@@ -48,6 +48,12 @@ const PALETTES={
  konstruktywizm:{paper:'#efe8d8',dark:'#111111',light:'#efe8d8',accent:'#d62a1f',inks:['#d62a1f','#111111','#efe8d8']},
  lenica:{paper:'#e8dfcb',dark:'#1a1a1a',light:'#f4ede0',accent:'#d62a1f',inks:['#1a1a1a','#d62a1f','#f0c419','#2a6fb0','#f4ede0']},
  jazz:{paper:'#f0b21a',dark:'#111111',light:'#f4efe4',accent:'#d62a1f',inks:['#111111','#f4efe4','#1a2347','#d62a1f']},
+ jarema:{paper:'#f1e8d8',dark:'#1b1a1c',light:'#f6efe2',accent:'#d9472b',inks:['#2c5d9f','#d9472b','#e8b53a','#7aa38f','#1b1a1c']},
+ blok:{paper:'#ece5d5',dark:'#111111',light:'#ece5d5',accent:'#d8261c',inks:['#d8261c','#111111','#ece5d5','#e1b12c']},
+ kobro:{paper:'#f2f2ef',dark:'#1c1c1c',light:'#ffffff',accent:'#c4262b',inks:['#c4262b','#1f4e9c','#f1c232','#ffffff','#1c1c1c']},
+ golkowska:{paper:'#d9d2c3',dark:'#2a2118',light:'#efe7d6',accent:'#b4562b',inks:['#e8d9b8','#c9a46b','#a8793f','#6b4a2a','#3b2a1a']},
+ abakan:{paper:'#e7e0d3',dark:'#241a14',light:'#efe6d6',accent:'#a3401f',inks:['#6a2f1f','#a3401f','#2b1d16','#8b7a5a','#c9a227']},
+ stryjenska:{paper:'#f3e6c8',dark:'#2a1a16',light:'#f6ead0',accent:'#c8321f',inks:['#c8321f','#1f5c4a','#e0a526','#2a4d8f','#f6ead0']},
  mlodozeniec:{paper:'#fbf8ef',dark:'#111111',light:'#fbf8ef',accent:'#ff4f9a',inks:['#ff4f9a','#ffd21a','#3fbf6b','#ff8a1e','#2a8fd0']},
  bauhaus:{paper:'#f3ecdc',dark:'#161616',light:'#f3ecdc',accent:'#e63b2e',inks:['#e63b2e','#1d4e9e','#f2b705','#161616','#f3ecdc']},
  kobalt:{paper:'#eae4d3',dark:'#0e1b3d',light:'#eae4d3',accent:'#ff6b35',inks:['#0e1b3d','#2e5cd6','#ff6b35','#eae4d3']},
@@ -683,7 +689,138 @@ function randomPalette(kind, rnd = Math.random) {
 }
 
 MOTIF_OPTS.squares=[{key:'round',label:'Corners',min:0,max:.5,step:.01,def:.1},{key:'hole',label:'Centre',min:.04,max:.45,step:.01,def:.15},{key:'soft',label:'Softness',min:.2,max:2.5,step:.01,def:1}];
-const MOTIFS={stripes,rings,mosaic,blob,diagonals,steps,fangor,ring,squares,dream,stripewave,scope,stripedisc,construct,cutout,bars,rotor,sunburst,outline,halftone,moire,letters,unism};
+// Closed smooth curve through points on a ring of radii (Catmull-Rom turned into Beziers), used for organic forms
+function smoothRing(cx, cy, rad, rot = 0) {
+  const n = rad.length, q = rad.map((v, i) => [cx + v * Math.cos(rot + i / n * 6.2832), cy + v * Math.sin(rot + i / n * 6.2832)]);
+  let d = `M${f(q[0][0])} ${f(q[0][1])}`;
+  for (let i = 0; i < n; i++) {
+    const a = q[(i - 1 + n) % n], b = q[i], c = q[(i + 1) % n], e = q[(i + 2) % n];
+    d += `C${f(b[0] + (c[0] - a[0]) / 6)} ${f(b[1] + (c[1] - a[1]) / 6)} ${f(c[0] - (e[0] - b[0]) / 6)} ${f(c[1] - (e[1] - b[1]) / 6)} ${f(c[0])} ${f(c[1])}`;
+  }
+  return d + 'Z';
+}
+
+// Maria Jarema: flat organic forms strung along a wave, a rhythm taken from music and dance
+function jarema(r, p, w, h, o = {}) {
+  const MAXN = 16, n = Math.round(o.count ?? 9), flow = o.flow ?? 1, wob = o.wobble ?? 1, sc = o.scale ?? 1;
+  const ph = r() * 6.28, fr = .6 + r() * .9, m = Math.min(w, h), tall = h > w;
+  const items = Array.from({ length: MAXN }, () => ({ rot: r() * 6.28, jit: r() - .5, c: r(), pts: Array.from({ length: 9 }, () => r()) }));
+  const at = t => { const along = (tall ? h : w) * (.1 + .8 * t), cross = (tall ? w : h) * (.5 + .22 * flow * Math.sin(t * 6.2832 * fr + ph)); return tall ? [cross, along] : [along, cross]; };
+  let line = '';
+  for (let i = 0; i <= 60; i++) { const [x, y] = at(i / 60); line += (i ? 'L' : 'M') + f(x) + ' ' + f(y); }
+  let body = `<path d="${line}" fill="none" stroke="${p.dark}" stroke-width="${f(m * .007)}" stroke-linecap="round"/>`;
+  for (let i = 0; i < n; i++) {
+    const it = items[i], [cx, cy] = at((i + .5) / n), pulse = .55 + .45 * Math.abs(Math.sin(i * 1.15 + ph)), R = m * .17 * sc * pulse * Math.sqrt(9 / n) * .95;
+    const rad = it.pts.map(v => R * (1 + wob * (v - .5) * 1.1));
+    const c = i % 4 === 3 ? p.dark : p.inks[i % p.inks.length];
+    body += `<path d="${smoothRing(cx + it.jit * R * .6, cy, rad, it.rot)}" fill="${c}" fill-opacity="${i % 3 === 2 ? .88 : 1}"/>`;
+    if (i % 3 === 1) body += `<circle cx="${f(cx)}" cy="${f(cy)}" r="${f(R * .16)}" fill="${p.light}"/>`;
+  }
+  return { defs: `<clipPath id="jc"><rect width="${w}" height="${h}"/></clipPath>`, body: `<g clip-path="url(#jc)">${body}</g>`, bg: p.paper };
+}
+MOTIF_OPTS.jarema = [
+  { key: 'count', label: 'Forms', min: 3, max: 16, step: 1, def: 9 },
+  { key: 'flow', label: 'Wave', min: 0, max: 1.6, step: .01, def: 1 },
+  { key: 'wobble', label: 'Organic', min: 0, max: 2, step: .01, def: 1 },
+  { key: 'scale', label: 'Size', min: .5, max: 1.6, step: .01, def: 1 },
+];
+
+// Teresa Zarnower: election-poster constructivism: a hard diagonal, heavy bars, a disc and a patch of montage tiles
+function blok(r, p, w, h, o = {}) {
+  const a0 = r(), a1 = r(), a2 = r(), a3 = r(), bw = Array.from({ length: 8 }, () => r()), tl = Array.from({ length: 12 }, () => [r(), r()]);
+  const ang = (o.angle ?? (-35 + a0 * 70)) * Math.PI / 180, cx = w * (.4 + a1 * .2), cy = h * (.42 + a2 * .16), big = Math.max(w, h) * 2, m = Math.min(w, h);
+  const dx = Math.cos(ang), dy = Math.sin(ang), nx = -dy, ny = dx;
+  const quad = (o0, o1, fill) => { const pt = (off, s) => `${f(cx + nx * off + dx * big * s)},${f(cy + ny * off + dy * big * s)}`; return `<polygon points="${pt(o0, -1)} ${pt(o0, 1)} ${pt(o1, 1)} ${pt(o1, -1)}" fill="${fill}"/>`; };
+  let body = quad(0, big, p.accent) + quad(-m * .05, m * .035, p.dark) + quad(m * .05, m * .075, p.light);
+  const nb = Math.round(o.bars ?? 4);
+  for (let i = 0; i < nb; i++) body += `<rect x="0" y="${f(h * .06 + i * h * .075)}" width="${f(w * (.25 + bw[i] * .5))}" height="${f(h * .045)}" fill="${i % 2 ? p.accent : p.dark}"/>`;
+  const dR = m * .15 * (o.disc ?? 1), dcx = cx + nx * m * .2 * (a3 < .5 ? -1 : 1), dcy = cy + ny * m * .2 * (a3 < .5 ? -1 : 1);
+  body += `<circle cx="${f(dcx)}" cy="${f(dcy)}" r="${f(dR)}" fill="${p.dark}"/><circle cx="${f(dcx)}" cy="${f(dcy)}" r="${f(dR * .45)}" fill="${p.light}"/>`;
+  const cell = w / 13, tx = w - cell * 4.4, ty = h - cell * 3.6;
+  tl.forEach(([on, c], k) => { if (on < (o.tiles ?? .6)) body += `<rect x="${f(tx + (k % 4) * cell)}" y="${f(ty + Math.floor(k / 4) * cell)}" width="${f(cell * .88)}" height="${f(cell * .88)}" fill="${c < .5 ? p.dark : c < .8 ? p.accent : p.light}"/>`; });
+  return { defs: `<clipPath id="bk"><rect width="${w}" height="${h}"/></clipPath>`, body: `<g clip-path="url(#bk)">${body}</g>`, bg: p.paper };
+}
+MOTIF_OPTS.blok = [
+  { key: 'angle', label: 'Diagonal', min: -45, max: 45, step: 1, def: 12 },
+  { key: 'bars', label: 'Heavy bars', min: 0, max: 8, step: 1, def: 4 },
+  { key: 'disc', label: 'Disc size', min: .5, max: 2, step: .01, def: 1 },
+  { key: 'tiles', label: 'Montage tiles', min: 0, max: 1, step: .01, def: .6 },
+];
+
+// Katarzyna Kobro: spatial compositions of flat planes that cross each other, drawn in isometric projection
+function planes(r, p, w, h, o = {}) {
+  const MAXN = 14, n = Math.round(o.count ?? 8), spread = o.spread ?? 1, U = Math.min(w, h) * .15 * (o.scale ?? 1), C = Math.cos(Math.PI / 6), S = .5;
+  const cx0 = w / 2, cy0 = h * .52, P = (x, y, z) => [f(cx0 + (x - y) * C * U), f(cy0 + ((x + y) * S - z) * U)];
+  const items = Array.from({ length: MAXN }, () => ({ or: Math.floor(r() * 3), x: (r() - .5) * 2.6 * spread, y: (r() - .5) * 2.6 * spread, z: (r() - .5) * 2.6 * spread, a: .7 + r() * 1.8, b: .5 + r() * 1.5, c: Math.floor(r() * 99) })).slice(0, n);
+  items.sort((u, v) => (u.x + u.y + u.z * .5) - (v.x + v.y + v.z * .5));
+  let body = '';
+  for (const q of items) {
+    const { x, y, z, a, b } = q;
+    const c = q.or === 0 ? [[x, y, z], [x + a, y, z], [x + a, y + b, z], [x, y + b, z]] : q.or === 1 ? [[x, y, z], [x + a, y, z], [x + a, y, z + b], [x, y, z + b]] : [[x, y, z], [x, y + a, z], [x, y + a, z + b], [x, y, z + b]];
+    const pts = c.map(v => P(...v).join(',')).join(' ');
+    body += `<polygon points="${pts}" fill="${p.inks[q.c % p.inks.length]}" stroke="${p.dark}" stroke-width="${f(U * .03)}" stroke-linejoin="round"/>`;
+    if (q.or) body += `<polygon points="${pts}" fill="#000" fill-opacity="${q.or === 1 ? .14 : .28}"/>`;
+  }
+  return { defs: `<clipPath id="pl"><rect width="${w}" height="${h}"/></clipPath>`, body: `<g clip-path="url(#pl)">${body}</g>`, bg: p.paper };
+}
+MOTIF_OPTS.planes = [
+  { key: 'count', label: 'Planes', min: 2, max: 14, step: 1, def: 8 },
+  { key: 'spread', label: 'Spread', min: .3, max: 1.8, step: .01, def: 1 },
+  { key: 'scale', label: 'Size', min: .5, max: 1.6, step: .01, def: 1 },
+];
+
+// Wanda Golkowska: a field of wooden blocks whose heights run in a rhythm, seen in isometric view
+function relief(r, p, w, h, o = {}) {
+  const n = Math.round(o.grid ?? 8), amp = o.amp ?? 1, rh = o.rhythm ?? 1, ph = r() * 6.28, rx = (.5 + r() * .8) * rh, ry = (.4 + r() * .9) * rh;
+  const jit = Array.from({ length: 256 }, () => r()), C = Math.cos(Math.PI / 6), S = .5;
+  const s = w * 1.3 / (2 * n * C), cx = w / 2, cy = h * .5 - n * S * s * .5;
+  const P = (x, y, z) => [f(cx + (x - y) * C * s), f(cy + ((x + y) * S - z) * s)];
+  const ht = (i, j) => (.25 + amp * .8 * (.5 + .35 * Math.sin(i * rx + ph) + .15 * Math.sin(j * ry * 1.7 + ph * 1.3) + .2 * Math.sin((i + j) * ry * .8 + ph)) + (jit[(i * 16 + j) % 256] - .5) * .08);
+  let body = '';
+  for (let i = 0; i < n; i++) for (let j = 0; j < n; j++) {
+    const z = Math.max(.12, ht(i, j)), k = Math.min(p.inks.length - 1, Math.floor(Math.max(0, Math.min(.999, (z - .1) / (amp * .8 + .3))) * p.inks.length));
+    const col = p.inks[k], poly = (pts, extra = '') => `<polygon points="${pts.map(v => P(...v).join(',')).join(' ')}" ${extra}/>`;
+    const e = .94;
+    body += poly([[i, j + e, 0], [i + e, j + e, 0], [i + e, j + e, z], [i, j + e, z]], `fill="${col}"`) + poly([[i, j + e, 0], [i + e, j + e, 0], [i + e, j + e, z], [i, j + e, z]], `fill="#000" fill-opacity=".22"`);
+    body += poly([[i + e, j, 0], [i + e, j + e, 0], [i + e, j + e, z], [i + e, j, z]], `fill="${col}"`) + poly([[i + e, j, 0], [i + e, j + e, 0], [i + e, j + e, z], [i + e, j, z]], `fill="#000" fill-opacity=".4"`);
+    body += poly([[i, j, z], [i + e, j, z], [i + e, j + e, z], [i, j + e, z]], `fill="${col}"`) + poly([[i, j, z], [i + e, j, z], [i + e, j + e, z], [i, j + e, z]], `fill="#fff" fill-opacity=".14"`);
+  }
+  return { defs: `<clipPath id="rl"><rect width="${w}" height="${h}"/></clipPath>`, body: `<g clip-path="url(#rl)">${body}</g>`, bg: p.paper };
+}
+MOTIF_OPTS.relief = [
+  { key: 'grid', label: 'Blocks', min: 4, max: 16, step: 1, def: 8 },
+  { key: 'amp', label: 'Relief height', min: .3, max: 1.8, step: .01, def: 1 },
+  { key: 'rhythm', label: 'Rhythm', min: .3, max: 2.2, step: .01, def: 1 },
+];
+
+// Magdalena Abakanowicz: Abakans, woven strips hanging from a rod, swaying, with a loose fringe at the bottom
+function weave(r, p, w, h, o = {}) {
+  const MAXN = 24, n = Math.round(o.strips ?? 9), sway = o.sway ?? 1, tex = o.texture ?? 1, m = Math.min(w, h);
+  const st = Array.from({ length: MAXN }, () => ({ x: r(), wd: .7 + r() * .7, len: .5 + r() * .45, ph: r() * 6.28, fq: .5 + r() * 1, c: Math.floor(r() * 99), fr: Array.from({ length: 7 }, () => r()) })).slice(0, n);
+  const bw = w / (n * .75 + .25) * .9;
+  let body = '';
+  st.sort((a, b) => b.len - a.len);
+  st.forEach((q, i) => {
+    const xc = w * (.06 + .88 * (i + .5 * q.x) / n), W = bw * q.wd, L = h * q.len, amp = m * .035 * sway, col = p.inks[q.c % p.inks.length];
+    const edge = (y, s) => xc + s * W / 2 + amp * Math.sin(y / h * 6.2832 * q.fq + q.ph);
+    const ys = Array.from({ length: 25 }, (_, k) => L * k / 24);
+    const left = ys.map(y => `${f(edge(y, -1))},${f(y)}`), right = ys.slice().reverse().map(y => `${f(edge(y, 1))},${f(y)}`);
+    body += `<polygon points="${left.join(' ')} ${right.join(' ')}" fill="${col}"/>`;
+    let weft = '';
+    for (let y = m * .008; y < L; y += m * .011 / tex) weft += `M${f(edge(y, -1))} ${f(y)}H${f(edge(y, 1))}`;
+    body += `<path d="${weft}" stroke="${p.dark}" stroke-opacity=".22" stroke-width="${f(m * .0035)}" fill="none"/>`;
+    q.fr.forEach((t, k) => { const fx = edge(L, -1) + W * (k + .5) / 7, fl = m * (.03 + t * .1); body += `<path d="M${f(fx)} ${f(L)}q${f((t - .5) * m * .02)} ${f(fl / 2)} ${f((t - .5) * m * .04)} ${f(fl)}" stroke="${col}" stroke-width="${f(m * .004)}" fill="none" stroke-linecap="round"/>`; });
+  });
+  body += `<rect x="0" y="0" width="${w}" height="${f(m * .016)}" fill="${p.dark}"/>`;
+  return { defs: `<clipPath id="wv"><rect width="${w}" height="${h}"/></clipPath>`, body: `<g clip-path="url(#wv)">${body}</g>`, bg: p.paper };
+}
+MOTIF_OPTS.weave = [
+  { key: 'strips', label: 'Strips', min: 3, max: 24, step: 1, def: 9 },
+  { key: 'sway', label: 'Sway', min: 0, max: 2, step: .01, def: 1 },
+  { key: 'texture', label: 'Weave density', min: .4, max: 2.5, step: .01, def: 1 },
+];
+
+const MOTIFS={stripes,rings,mosaic,blob,diagonals,steps,fangor,ring,squares,dream,stripewave,scope,stripedisc,construct,cutout,bars,rotor,sunburst,outline,halftone,moire,letters,unism,jarema,blok,planes,relief,weave};
 // settings every poster motif accepts
 const GLOBAL_OPTS=[{key:'misreg',label:'Off-register print',min:0,max:6,step:.1,def:0,poster:true},{key:'speckle',label:'Paper grain',min:0,max:3,step:.05,def:0}];
 function generate(motif,palette,seed,w,h,o={}){const r=rng(seed),p=typeof palette==='string'?PALETTES[palette]:palette,m=MOTIFS[motif](r,p,w,h,o);

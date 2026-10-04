@@ -31,6 +31,11 @@ Research notes behind the motifs in poster-bg, with the status of every idea. A 
 | 11 | Halftone | op art | `halftone` | Built |
 | 12 | Moire | op art | `moire` | Built |
 | 13 | Off-register print | screen printing | `--misreg` (every poster motif) | Built |
+| 14 | Organic rhythm | Maria Jarema | `jarema` | Built |
+| 15 | Election constructivism | Teresa Żarnower | `blok` | Built |
+| 16 | Spatial planes | Katarzyna Kobro | `planes` | Built |
+| 17 | Wooden relief | Wanda Gołkowska | `relief` | Built |
+| 18 | Woven strips | Magdalena Abakanowicz | `weave` | Built |
 
 Earlier motifs: `stripes`, `rings`, `mosaic`, `blob`, `diagonals`, `steps` (poster family), `fangor`, `ring`, `dream` (Fangor family).
 
@@ -66,3 +71,8 @@ These are style ideas and techniques. The motifs stay generic (stripes, rings, w
 - [Józef Mroszczak (Wikipedia)](https://en.wikipedia.org/wiki/J%C3%B3zef_Mroszczak)
 - [Władysław Strzemiński (Wikipedia)](https://en.wikipedia.org/wiki/W%C5%82adys%C5%82aw_Strzemi%C5%84ski), [Constructivism in Poland 1923 to 1936 (MoMA)](https://www.moma.org/docs/press_archives/5347/releases/MOMA_1976_0006_6.pdf)
 - [Jazz and the Polish posters, Limited Runs](https://www.limitedruns.com/blog/rock-gig/jazz-and-the-polish-posters/)
+
+## Women artists
+
+Added after a second round of research, on Polish women only. Sourced: Jarema (abstract forms from music and dance, Kraków Group), Żarnower (Blok, the first Polish constructivist group, election posters and photomontage), Kobro (spatial sculptures, Blok, Praesens, Abstraction-Création), Gołkowska (reliefs of wooden blocks, Open Systems 1968), Abakanowicz (the Abakans of the 1960s), Stryjeńska (Slavic art deco). The motifs are my reading of those descriptions, not copies of any work, and the palettes `jarema`, `blok`, `kobro`, `golkowska`, `abakan` and `stryjenska` are my own choices of color. Poster artists Maria Ihnatowicz, Anna Huskowska, Wanda Telakowska and Olga Binder-Siemaszko are named in the literature but I found no description of their style, so they are not a motif yet.
+Sources: [AWARE: Jarema](https://awarewomenartists.com/en/artiste/maria-jarema/), [AWARE: Kobro](https://awarewomenartists.com/en/artiste/katarzyna-kobro/), [Żarnower, JWA](https://jwa.org/encyclopedia/article/zarnower-teresa), [Gołkowska, Wikipedia](https://en.wikipedia.org/wiki/Wanda_Go%C5%82kowska), [Abakanowicz, NMWA](https://nmwa.org/art/artists/magdalena-abakanowicz/), [Stryjeńska, culture.pl](https://culture.pl/en/artist/zofia-stryjenska), [Plakacistki PRL-u](https://czasopisma.uni.lodz.pl/sociologica/article/view/13205).
