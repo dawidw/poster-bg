@@ -610,6 +610,37 @@ MOTIF_OPTS.letters = [
   { key: 'y', label: 'Centre y', min: 0, max: 1, step: .005, def: .5 },
 ];
 
+// Unism (Strzeminski): dense fine parallel bands whose thickness follows one smooth modulation, so a single rhythm carries the whole picture
+function unism(r, p, w, h, o = {}) {
+  const c1 = r(), c2 = r(), c3 = r(), c4 = r(), c5 = r(), m = Math.min(w, h), D = Math.hypot(w, h);
+  const lines = Math.round(o.lines ?? 40 + c1 * 40), field = Math.round(o.field ?? Math.floor(c2 * 4)), gain = o.contrast ?? 1, duo = (o.duo ?? 0) >= .5;
+  const ang = o.angle ?? [0, 90, 45, 135][Math.floor(c3 * 4)], a = ang * Math.PI / 180, ca = Math.cos(a), sa = Math.sin(a);
+  const cx = w * (.3 + c4 * .4), cy = h * (.3 + c5 * .4), pitch = m / lines, K = Math.ceil(D / pitch / 2) + 1, S = 30, q = v => Math.round(v * 10) / 10;
+  const t = (X, Y) => field === 0 ? 1 - Math.min(1, Math.hypot(X - cx, Y - cy) / (m * .7))
+    : field === 1 ? Y / h : field === 2 ? .5 + .5 * Math.sin(X / (m * .17) + Math.sin(Y / (m * .2)) * 2) : .5 + .5 * Math.cos(Math.hypot(X - cx, Y - cy) / (m * .1));
+  const band = (k, inv) => {
+    const top = [], bot = [], y0 = k * pitch;
+    for (let i = 0; i <= S; i++) {
+      const x = -D / 2 + D * i / S, X = w / 2 + x * ca - y0 * sa, Y = h / 2 + x * sa + y0 * ca;
+      let v = Math.min(1, Math.max(0, t(X, Y))); if (inv) v = 1 - v;
+      const th = pitch * Math.min(.98, .05 + .93 * v * gain);
+      top.push(`${q(x)} ${q(y0 - th / 2)}`); bot.push(`${q(x)} ${q(y0 + th / 2)}`);
+    }
+    return `M${top.join('L')}L${bot.reverse().join('L')}Z`;
+  };
+  let d1 = '', d2 = '';
+  for (let k = -K; k <= K; k++) { if (duo && k % 2) d2 += band(k, true); else d1 += band(k, false); }
+  const g = (d, col) => d ? `<path d="${d}" fill="${col}" transform="translate(${f(w / 2)} ${f(h / 2)}) rotate(${f(ang)})"/>` : '';
+  return { defs: `<clipPath id="un"><rect width="${w}" height="${h}"/></clipPath>`, body: `<g clip-path="url(#un)">${g(d1, p.dark)}${g(d2, p.accent)}</g>`, bg: p.paper };
+}
+MOTIF_OPTS.unism = [
+  { key: 'lines', label: 'Lines', min: 16, max: 140, step: 1, def: 60 },
+  { key: 'field', label: 'Field (radial, linear, wave, rings)', min: 0, max: 3, step: 1, def: 0 },
+  { key: 'contrast', label: 'Contrast', min: .4, max: 1.6, step: .01, def: 1 },
+  { key: 'angle', label: 'Angle', min: 0, max: 180, step: 1, def: 0 },
+  { key: 'duo', label: 'Second ink', min: 0, max: 1, step: 1, def: 0 },
+];
+
 // random harmonious palettes. kind: 'poster', 'random' (Fangor discs), 'ring' (inks run hole, bands..., halo) or 'dream'
 function hsl(h, s, l) {
   h = ((h % 360) + 360) % 360; s /= 100; l /= 100;
@@ -637,7 +668,7 @@ function randomPalette(kind, rnd = Math.random) {
 }
 
 MOTIF_OPTS.squares=[{key:'round',label:'Corners',min:0,max:.5,step:.01,def:.1},{key:'hole',label:'Centre',min:.04,max:.45,step:.01,def:.15},{key:'soft',label:'Softness',min:.2,max:2.5,step:.01,def:1}];
-const MOTIFS={stripes,rings,mosaic,blob,diagonals,steps,fangor,ring,squares,dream,stripewave,scope,stripedisc,construct,cutout,bars,rotor,sunburst,outline,halftone,moire,letters};
+const MOTIFS={stripes,rings,mosaic,blob,diagonals,steps,fangor,ring,squares,dream,stripewave,scope,stripedisc,construct,cutout,bars,rotor,sunburst,outline,halftone,moire,letters,unism};
 // settings every poster motif accepts
 const GLOBAL_OPTS=[{key:'misreg',label:'Off-register print',min:0,max:6,step:.1,def:0}];
 function generate(motif,palette,seed,w,h,o={}){const r=rng(seed),p=typeof palette==='string'?PALETTES[palette]:palette,m=MOTIFS[motif](r,p,w,h,o);
