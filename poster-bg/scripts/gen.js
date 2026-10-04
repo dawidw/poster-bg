@@ -567,7 +567,7 @@ function generate(motif,palette,seed,w,h,o={}){const r=rng(seed),p=typeof palett
 if (typeof module !== 'undefined' && typeof require !== 'undefined' && require.main === module) {
   const a = process.argv.slice(2), get = k => { const i = a.indexOf('--' + k); return i < 0 ? null : a[i + 1]; };
   const pickR = arr => arr[Math.floor(Math.random() * arr.length)];
-  const kindOf = m => (m === 'fangor' ? 'random' : m === 'ring' ? 'ring' : m === 'dream' ? 'dream' : 'poster');
+  const kindOf = m => (m === 'fangor' ? 'random' : m === 'ring' || m === 'squares' ? 'ring' : m === 'dream' ? 'dream' : 'poster');
   const palsFor = kind => Object.keys(PALETTES).filter(k => (kind === 'poster' ? !/^(fangor|soft_|dream_)/.test(k) : k.startsWith({ random: 'fangor', ring: 'soft_', dream: 'dream_' }[kind])));
   const POSTER = Object.keys(MOTIFS).filter(m => kindOf(m) === 'poster');
   const group = a.includes('--fangor') ? 'fangor' : (a.includes('--ring') || a.includes('--soft')) ? 'ring' : a.includes('--dream') ? 'dream' : a.includes('--poster') ? 'poster' : null;

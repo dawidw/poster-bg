@@ -14,7 +14,7 @@ Arguments arrive as `$ARGUMENTS`. Read them as flags:
 
 | Flag | Meaning |
 |---|---|
-| `--poster` | random Polish-School poster motif (stripes, rings, mosaic, blob, diagonals, steps) with a matching palette |
+| `--poster` | random poster-family motif with a matching palette |
 | `--fangor` | Fangor's vibrating concentric discs (motif `fangor`, the "Random" style in the page) |
 | `--ring` (alias `--soft`) | one simple soft ring with 3 to 5 inks on a flat ground (motif `ring`) |
 | `--dream` | flowing wavy bands with soft edges, after Fangor's wave paintings (motif `dream`) |
@@ -42,11 +42,31 @@ node scripts/gen.js --poster --seed 12 --size 1440x900 --out bg.svg
 
 It prints `motif=… palette=… seed=… size=…` to stderr. Always report that line so the result can be reproduced. Save SVGs in the user's current directory as `poster-bg-<motif>-<palette>-<seed>.svg` unless told otherwise.
 
-Motifs: `stripes`, `rings` (split disc and towers), `mosaic` (mirrored tiles), `blob` (halo behind torn-paper shape), `diagonals`, `steps`, `fangor`, `ring`, `dream`.
+Motifs: `stripes`, `rings` (split disc and towers), `mosaic` (mirrored tiles), `blob` (halo behind torn-paper shape), `diagonals`, `steps`, `fangor`, `ring`, `squares` (nested soft squares, Fangor and Stanczak), `dream`, `stripewave` (Stanczak style wavy stripes), `scope` (oscillogram), `stripedisc` (stripes and a disc), `construct` (constructivist composition), `cutout` (Lenica paper cut-outs), `bars` (rhythm bars), `rotor` (multiply and rotate), `sunburst` (rays and rings), `outline` (outlined stains), `halftone`, `moire`.
 
-Palettes: poster motifs use `baron`, `zloto`, `roger`, `marek`, `brasilia`, `anima`, `wesoft`, `mazur`, `jesien`, `moda`, `cyrk`. `fangor` uses names starting `fangor`, `ring` uses `soft_*`, `dream` uses `dream_*`. Run the script with a bad palette name to list them all.
+Palettes: poster motifs use `baron`, `zloto`, `roger`, `marek`, `brasilia`, `anima`, `wesoft`, `mazur`, `jesien`, `moda`, `cyrk`, `zamecznik`, `stanczak`, `konstruktywizm`, `lenica`, `jazz`, `mlodozeniec`. `fangor` uses names starting `fangor`, `ring` and `squares` use `soft_*`, `dream` uses `dream_*`. Run the script with a bad palette name to list them all.
 
 Palette shape: `paper`, `dark`, `light`, `accent`, `inks`. For `soft_*` the inks run from the centre out (hole, bands, halo); an optional `core` (0 to 1) makes the hole a solid disc. For `dream_*` the inks are the bands across the waves, optional `glow` lights the darkest band's edge and `soft` widens the blur.
+
+Per-motif settings (the same sliders the generator page shows), passed as `--key value`:
+
+| Motif | Settings (flag, range) |
+|---|---|
+| `stripewave` | `--width` 0.5 to 2.5, `--amp` 0.2 to 3, `--wave` 0.5 to 2, `--drift` 0 to 0.8, `--angle` 0 to 360 |
+| `scope` | `--lines` 3 to 30, `--freq` 6 to 80, `--amp` 0.2 to 2.5, `--weight` 0.4 to 3, `--rings` 0 to 1 |
+| `stripedisc` | `--width` 0.5 to 2.5, `--disc` 0.4 to 1.8, `--bars` 0 to 12, `--x` 0 to 1, `--y` 0 to 1 |
+| `construct` | `--grid` 3 to 14, `--count` 2 to 20 |
+| `cutout` | `--count` 2 to 14, `--jag` 0 to 1.5, `--scale` 0.5 to 1.6 |
+| `bars` | `--count` 4 to 48, `--rhythm` 0.1 to 1.6, `--gap` 0 to 1.2, `--mirror` 0 to 1 |
+| `rotor` | `--copies` 4 to 64, `--tilt` -70 to 70, `--form` 0 to 2, `--length` 0.08 to 0.5, `--inner` 0.02 to 0.3, `--x` 0 to 1, `--y` 0 to 1 |
+| `sunburst` | `--rays` 6 to 72, `--rings` 1 to 10, `--twist` -2 to 2, `--x` 0 to 1, `--y` 0 to 1 |
+| `outline` | `--count` 1 to 10, `--thick` 0.3 to 3, `--offset` 0 to 3, `--wobble` 0 to 1.5 |
+| `halftone` | `--spacing` 0.012 to 0.08, `--angle` 0 to 90, `--field` 0 to 2, `--gain` 0.4 to 1.8, `--duo` 0 to 1 |
+| `moire` | `--spacing` 0.004 to 0.03, `--diff` 0.3 to 20, `--mode` 0 to 2, `--angle` 0 to 180, `--weight` 0.4 to 2, `--duo` 0 to 1 |
+| `squares` | `--round` 0 to 0.5, `--hole` 0.04 to 0.45, `--soft` 0.2 to 2.5 |
+| every poster motif | `--misreg` 0 to 6 (off-register print) |
+
+For `dream` the wave settings are `--amp`, `--wavelength` and `--softness` (see above). Option keys never clash with `--size`, `--seed`, `--out`, `--motif` or `--palette`.
 
 ## Choosing
 
