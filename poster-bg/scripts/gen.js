@@ -46,6 +46,7 @@ const PALETTES={
  dream_rose:{paper:'#f2d6d6',dark:'#2a1b3d',light:'#f2d6d6',accent:'#2a8fbd',glow:'#2a8fbd',inks:['#f2d6d6','#b0264f','#2a1b3d','#f2d6d6','#b0264f']},
  zamecznik:{paper:'#f2f2f2',dark:'#0d0d0d',light:'#f2f2f2',accent:'#2a6fb0',inks:['#0d0d0d','#f2f2f2','#0d0d0d','#f2f2f2','#2a6fb0']},
  stanczak:{paper:'#f1ece0',dark:'#1a2347',light:'#f1ece0',accent:'#e0382e',inks:['#1a2347','#e0382e','#f1ece0','#2a8fd0']},
+ konstruktywizm:{paper:'#efe8d8',dark:'#111111',light:'#efe8d8',accent:'#d62a1f',inks:['#d62a1f','#111111','#efe8d8']},
  fangor:{paper:'#e9e1d6',dark:'#10121a',light:'#f3ede4',accent:'#e23a2e',inks:['#e23a2e','#1b3f9e','#f3ede4','#10121a','#e98aa2']},
  fangor_blue:{paper:'#dde3ea',dark:'#0b1230',light:'#eef1f6',accent:'#ff5a36',inks:['#0b1230','#2a5bd7','#9db8f0','#eef1f6','#ff5a36']},
  fangor_green:{paper:'#e6e8d8',dark:'#0f3d2e',light:'#f2efe4',accent:'#e8503a',inks:['#0f3d2e','#2f9a62','#d9e8c4','#f2efe4','#e8503a']}};
@@ -269,6 +270,53 @@ MOTIF_OPTS.stripedisc = [
   { key: 'y', label: 'Disc y', min: 0, max: 1, step: .005, def: .5 },
 ];
 
+// Constructivist composition (Szczuka, Zarnower, Strzeminski): grid-snapped bars, discs, a diagonal and rules
+function construct(r, p, w, h, o = {}) {
+  const gx = Math.round(o.grid ?? 6 + Math.floor(r() * 4)), n = Math.round(o.count ?? 9 + Math.floor(r() * 8));
+  const cell = w / gx, gy = Math.round(h / cell), H = gy * cell;
+  const pick = () => { const t = r(); return t < .5 ? p.dark : t < .9 ? p.accent : p.light; };
+  const gxy = () => [Math.floor(r() * (gx + 1)) * cell, Math.floor(r() * (gy + 1)) * cell];
+  let body = '';
+  const dR = (1.2 + r() * 1.8) * cell, dx = (1 + Math.floor(r() * (gx - 1))) * cell, dy = (1 + Math.floor(r() * (gy - 1))) * cell;
+  body += `<circle cx="${f(dx)}" cy="${f(dy)}" r="${f(dR)}" fill="${p.accent}"/>`;
+  {
+    const ax = Math.floor(r() * gx) * cell, ay = Math.floor(r() * gy * .5) * cell, L = (3 + Math.floor(r() * 4)) * cell, tw = cell * .55, sl = r() < .5 ? 1 : -1;
+    const x2 = ax + L, y2 = ay + sl * L, k2 = Math.hypot(x2 - ax, y2 - ay), nx = (y2 - ay) / k2 * tw / 2, ny = -(x2 - ax) / k2 * tw / 2;
+    body += `<polygon points="${f(ax + nx)},${f(ay + ny)} ${f(x2 + nx)},${f(y2 + ny)} ${f(x2 - nx)},${f(y2 - ny)} ${f(ax - nx)},${f(ay - ny)}" fill="${p.dark}"/>`;
+  }
+  for (let k = 0; k < n; k++) {
+    const t = r(), c = pick();
+    if (t < .25) {                                   // horizontal bar
+      const [x, y] = gxy(), len = (3 + Math.floor(r() * (gx - 2))) * cell, th = cell * [.12, .45, .9, 1.4][Math.floor(r() * 4)];
+      body += `<rect x="${f(x)}" y="${f(y)}" width="${f(len)}" height="${f(th)}" fill="${c}"/>`;
+    } else if (t < .5) {                             // vertical bar
+      const [x, y] = gxy(), len = (3 + Math.floor(r() * (gy - 2))) * cell, th = cell * [.12, .45, .9, 1.4][Math.floor(r() * 4)];
+      body += `<rect x="${f(x)}" y="${f(y)}" width="${f(th)}" height="${f(len)}" fill="${c}"/>`;
+    } else if (t < .65) {                            // diagonal bar
+      const [x, y] = gxy(), L = (2 + Math.floor(r() * 4)) * cell, sl = r() < .5 ? 1 : -1, tw = cell * (.2 + r() * .4);
+      const x2 = x + L, y2 = y + sl * L * (r() < .5 ? 1 : .5), nx = (y2 - y) / Math.hypot(x2 - x, y2 - y) * tw / 2, ny = -(x2 - x) / Math.hypot(x2 - x, y2 - y) * tw / 2;
+      body += `<polygon points="${f(x + nx)},${f(y + ny)} ${f(x2 + nx)},${f(y2 + ny)} ${f(x2 - nx)},${f(y2 - ny)} ${f(x - nx)},${f(y - ny)}" fill="${c}"/>`;
+    } else if (t < .77) {                            // quarter disc
+      const [x, y] = gxy(), R = (1.5 + Math.floor(r() * 3)) * cell, rot = Math.floor(r() * 4) * 90;
+      body += `<path d="M${f(x)} ${f(y)}L${f(x + R)} ${f(y)}A${f(R)} ${f(R)} 0 0 1 ${f(x)} ${f(y + R)}Z" fill="${c}" transform="rotate(${rot} ${f(x)} ${f(y)})"/>`;
+    } else if (t < .88) {                            // square
+      const [x, y] = gxy(), sd = cell * (1 + Math.floor(r() * 2));
+      body += `<rect x="${f(x)}" y="${f(y)}" width="${f(sd)}" height="${f(sd)}" fill="${c}"/>`;
+    } else if (t < .95) {                            // thin rule across the page
+      const [x, y] = gxy(), horiz = r() < .5;
+      body += horiz ? `<rect x="0" y="${f(y)}" width="${w}" height="${f(Math.max(2, cell * .05))}" fill="${p.dark}"/>` : `<rect x="${f(x)}" y="0" width="${f(Math.max(2, cell * .05))}" height="${h}" fill="${p.dark}"/>`;
+    } else {                                         // triangle
+      const [x, y] = gxy(), a = (1 + Math.floor(r() * 3)) * cell;
+      body += `<polygon points="${f(x)},${f(y)} ${f(x + a)},${f(y)} ${f(x)},${f(y + a)}" fill="${c}"/>`;
+    }
+  }
+  return { defs: `<clipPath id="cc"><rect width="${w}" height="${h}"/></clipPath>`, body: `<g clip-path="url(#cc)">${body}</g>`, bg: p.paper };
+}
+MOTIF_OPTS.construct = [
+  { key: 'grid', label: 'Grid', min: 3, max: 14, step: 1, def: 7 },
+  { key: 'count', label: 'Elements', min: 2, max: 20, step: 1, def: 8 },
+];
+
 // random harmonious palettes. kind: 'poster', 'random' (Fangor discs), 'ring' (inks run hole, bands..., halo) or 'dream'
 function hsl(h, s, l) {
   h = ((h % 360) + 360) % 360; s /= 100; l /= 100;
@@ -296,7 +344,7 @@ function randomPalette(kind, rnd = Math.random) {
 }
 
 MOTIF_OPTS.squares=[{key:'round',label:'Corners',min:0,max:.5,step:.01,def:.1},{key:'hole',label:'Centre',min:.04,max:.45,step:.01,def:.15},{key:'soft',label:'Softness',min:.2,max:2.5,step:.01,def:1}];
-const MOTIFS={stripes,rings,mosaic,blob,diagonals,steps,fangor,ring,squares,dream,stripewave,scope,stripedisc};
+const MOTIFS={stripes,rings,mosaic,blob,diagonals,steps,fangor,ring,squares,dream,stripewave,scope,stripedisc,construct};
 function generate(motif,palette,seed,w,h,o={}){const r=rng(seed),p=typeof palette==='string'?PALETTES[palette]:palette,m=MOTIFS[motif](r,p,w,h,o);
  return `<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="${w}" height="${h}" viewBox="0 0 ${w} ${h}"><defs>${m.defs||''}</defs><rect width="${w}" height="${h}" fill="${m.bg||p.paper}"/>${m.body}</svg>`;}
 
