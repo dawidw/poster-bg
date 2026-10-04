@@ -42,7 +42,7 @@ node scripts/gen.js --poster --seed 12 --size 1440x900 --out bg.svg
 
 It prints `motif=… palette=… seed=… size=…` to stderr. Always report that line so the result can be reproduced. Save SVGs in the user's current directory as `poster-bg-<motif>-<palette>-<seed>.svg` unless told otherwise.
 
-Motifs: `stripes`, `rings` (split disc and towers), `mosaic` (mirrored tiles), `blob` (halo behind torn-paper shape), `diagonals`, `steps`, `fangor`, `ring`, `squares` (nested soft squares, Fangor and Stanczak), `dream`, `stripewave` (Stanczak style wavy stripes), `scope` (oscillogram), `stripedisc` (stripes and a disc), `construct` (constructivist composition), `cutout` (Lenica paper cut-outs), `bars` (rhythm bars), `rotor` (multiply and rotate), `sunburst` (rays and rings), `outline` (outlined stains), `halftone`, `moire`.
+Motifs: `stripes`, `rings` (split disc and towers), `mosaic` (mirrored tiles), `blob` (halo behind torn-paper shape), `diagonals`, `steps`, `fangor`, `ring`, `squares` (nested soft squares, Fangor and Stanczak), `dream`, `stripewave` (Stanczak style wavy stripes), `scope` (oscillogram), `stripedisc` (stripes and a disc), `construct` (constructivist composition), `cutout` (Lenica paper cut-outs), `bars` (rhythm bars), `rotor` (multiply and rotate), `sunburst` (rays and rings), `outline` (outlined stains), `halftone`, `moire`, `letters` (block letters), `unism` (fine bands with one modulation).
 
 Palettes (77): poster motifs (everything except the Fangor family) use `baron`, `zloto`, `roger`, `marek`, `brasilia`, `anima`, `wesoft`, `mazur`, `jesien`, `moda`, `cyrk`, `zamecznik`, `stanczak`, `konstruktywizm`, `lenica`, `jazz`, `mlodozeniec`, `bauhaus`, `kobalt`, `pastel`, `neon`, `ocean`, `forest`, `sepia`, `mono`, `pop`, `lato`. `fangor` uses `fangor_sunset`, `fangor_mint`, `fangor_mono`, `fangor_fire`, `fangor_ice`, `fangor_mauve`, `fangor_acid`, `fangor_earth`, `fangor`, `fangor_blue`, `fangor_green`; `ring` and `squares` use `soft_flame`, `soft_tricolor`, `soft_violet`, `soft_orchard`, `soft_candy`, `soft_navy`, `soft_cobalt`, `soft_ochre`, `soft_orchid`, `soft_redcore`, `soft_lagoon`, `soft_ember`, `soft_mono`, `soft_blush`, `soft_lilac`, `soft_sunset`, `soft_ice`, `soft_moss`, `soft_cherry`, `soft_gold`, `soft_ink`, `soft_twilight`, `soft_peach` (inks run from the centre out: hole, bands, halo); `dream` uses `dream_navy`, `dream_sun`, `dream_flag`, `dream_azure`, `dream_spectrum`, `dream_candy`, `dream_lagoon`, `dream_rose`, `dream_sunset`, `dream_ocean`, `dream_forest`, `dream_pop`, `dream_mono`, `dream_peach`, `dream_ember`, `dream_ice`.
 
@@ -63,8 +63,11 @@ Per-motif settings (the same sliders the generator page shows), passed as `--key
 | `outline` | `--count` 1 to 10, `--thick` 0.3 to 3, `--offset` 0 to 3, `--wobble` 0 to 1.5 |
 | `halftone` | `--spacing` 0.012 to 0.08, `--angle` 0 to 90, `--field` 0 to 2, `--gain` 0.4 to 1.8, `--duo` 0 to 1 |
 | `moire` | `--spacing` 0.004 to 0.03, `--diff` 0.3 to 20, `--mode` 0 to 2, `--angle` 0 to 180, `--weight` 0.4 to 2, `--duo` 0 to 1 |
+| `letters` | `--word` 0 to 7, `--layout` 0 to 2, `--scale` 0.4 to 1.4, `--gap` 0 to 0.4, `--bars` 0 to 6, `--angle` 0 to 360, `--x` 0 to 1, `--y` 0 to 1 |
+| `unism` | `--lines` 16 to 140, `--field` 0 to 3, `--contrast` 0.4 to 1.6, `--angle` 0 to 180, `--duo` 0 to 1 |
 | `squares` | `--round` 0 to 0.5, `--hole` 0.04 to 0.45, `--soft` 0.2 to 2.5 |
 | every poster motif | `--misreg` 0 to 6 (off-register print) |
+| every motif | `--speckle` 0 to 3 (paper grain) |
 
 For `dream` the wave settings are `--amp`, `--wavelength` and `--softness` (see above). Option keys never clash with `--size`, `--seed`, `--out`, `--motif` or `--palette`.
 

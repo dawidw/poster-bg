@@ -29,6 +29,8 @@ The same motif, palette and seed always give the same image, so any result can b
 | `bars` · `jazz` | `rotor` · `zamecznik` | `sunburst` · `cyrk` |
 | ![Outlined stains](examples/outline.svg) | ![Halftone](examples/halftone.svg) | ![Moire](examples/moire.svg) |
 | `outline` · `mlodozeniec` | `halftone` · `stanczak` | `moire` · `zamecznik` |
+| ![Block letters](examples/letters.svg) | ![Unism](examples/unism.svg) | |
+| `letters` · `jazz` | `unism` · `zamecznik` | |
 
 ### Fangor styles (`--fangor`, `--ring`, `--dream`)
 
@@ -40,6 +42,17 @@ The same motif, palette and seed always give the same image, so any result can b
 | `dream` · `dream_azure` · seed 3 | `dream` · `dream_sun` · seed 5 | `dream` · `dream_candy` · seed 11 |
 | ![Fangor, blue](examples/fangor-blue.svg) | ![Ring, orchid](examples/ring-orchid.svg) | ![Ring, flame](examples/ring-flame.svg) |
 | `fangor` · `fangor_blue` | `ring` · `soft_orchid` | `ring` · `soft_flame` |
+
+### Color presets
+
+77 palettes in four groups. A few of the Dream ones:
+
+| | | |
+|---|---|---|
+| ![Ocean](examples/palette-ocean.svg) | ![Pop](examples/palette-pop.svg) | ![Sunset](examples/palette-sunset.svg) |
+| `dream_ocean` | `dream_pop` | `dream_sunset` |
+| ![Ember](examples/palette-ember.svg) | ![Forest](examples/palette-forest.svg) | ![Ice](examples/palette-ice.svg) |
+| `dream_ember` | `dream_forest` | `dream_ice` |
 
 ## Use it from the command line
 
@@ -83,8 +96,11 @@ Every motif also has its own settings, the same ones the generator page shows as
 | `outline` | `--count` 1 to 10, `--thick` 0.3 to 3, `--offset` 0 to 3, `--wobble` 0 to 1.5 |
 | `halftone` | `--spacing` 0.012 to 0.08, `--angle` 0 to 90, `--field` 0 to 2, `--gain` 0.4 to 1.8, `--duo` 0 to 1 |
 | `moire` | `--spacing` 0.004 to 0.03, `--diff` 0.3 to 20, `--mode` 0 to 2, `--angle` 0 to 180, `--weight` 0.4 to 2, `--duo` 0 to 1 |
+| `letters` | `--word` 0 to 7, `--layout` 0 to 2, `--scale` 0.4 to 1.4, `--gap` 0 to 0.4, `--bars` 0 to 6, `--angle` 0 to 360, `--x` 0 to 1, `--y` 0 to 1 |
+| `unism` | `--lines` 16 to 140, `--field` 0 to 3, `--contrast` 0.4 to 1.6, `--angle` 0 to 180, `--duo` 0 to 1 |
 | `squares` | `--round` 0 to 0.5, `--hole` 0.04 to 0.45, `--soft` 0.2 to 2.5 |
 | every poster motif | `--misreg` 0 to 6 (off-register print) |
+| every motif | `--speckle` 0 to 3 (paper grain) |
 
 There are 77 palettes in four groups (poster, `fangor_*`, `soft_*` for ring and squares, `dream_*`). Run the script with an unknown palette name to list all motifs and palettes.
 
