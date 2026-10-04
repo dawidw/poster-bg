@@ -406,6 +406,33 @@ MOTIF_OPTS.rotor = [
   { key: 'y', label: 'Centre y', min: 0, max: 1, step: .005, def: .5 },
 ];
 
+// Sunburst and rings (Hilscher and the Cyrk circus posters): rays split into rings, each ring shifted so the pattern spins
+function sunburst(r, p, w, h, o = {}) {
+  const c1 = r(), c2 = r(), c3 = r(), n = p.inks.length;
+  const rays = Math.round(o.rays ?? 12 + Math.floor(c1 * 6) * 4), rings = Math.round(o.rings ?? 3 + Math.floor(c2 * 4)), twist = o.twist ?? (c3 - .5) * 1.4;
+  const cx = w * (o.x ?? .5), cy = h * (o.y ?? .5), Rmax = Math.hypot(Math.max(cx, w - cx), Math.max(cy, h - cy)) * 1.02, step = 2 * Math.PI / rays;
+  const pt = (rad, a) => `${f(cx + rad * Math.cos(a))} ${f(cy + rad * Math.sin(a))}`;
+  let body = '';
+  for (let k = 0; k < rings; k++) {
+    const r1 = k === 0 ? 0 : Rmax * Math.pow(k / rings, 1.15), r2 = Rmax * Math.pow((k + 1) / rings, 1.15);
+    for (let i = 0; i < rays; i++) {
+      const a0 = (i + k * twist) * step - Math.PI / 2, a1 = a0 + step, col = p.inks[(i + k) % n];
+      body += r1 === 0
+        ? `<path d="M${f(cx)} ${f(cy)}L${pt(r2, a0)}A${f(r2)} ${f(r2)} 0 0 1 ${pt(r2, a1)}Z" fill="${col}"/>`
+        : `<path d="M${pt(r1, a0)}L${pt(r2, a0)}A${f(r2)} ${f(r2)} 0 0 1 ${pt(r2, a1)}L${pt(r1, a1)}A${f(r1)} ${f(r1)} 0 0 0 ${pt(r1, a0)}Z" fill="${col}"/>`;
+    }
+  }
+  body += `<circle cx="${f(cx)}" cy="${f(cy)}" r="${f(Rmax / rings * .42)}" fill="${p.paper}"/><circle cx="${f(cx)}" cy="${f(cy)}" r="${f(Rmax / rings * .2)}" fill="${p.accent}"/>`;
+  return { defs: `<clipPath id="sb"><rect width="${w}" height="${h}"/></clipPath>`, body: `<g clip-path="url(#sb)">${body}</g>`, bg: p.paper };
+}
+MOTIF_OPTS.sunburst = [
+  { key: 'rays', label: 'Rays', min: 6, max: 72, step: 2, def: 24 },
+  { key: 'rings', label: 'Rings', min: 1, max: 10, step: 1, def: 4 },
+  { key: 'twist', label: 'Twist', min: -2, max: 2, step: .01, def: 0 },
+  { key: 'x', label: 'Centre x', min: 0, max: 1, step: .005, def: .5 },
+  { key: 'y', label: 'Centre y', min: 0, max: 1, step: .005, def: .5 },
+];
+
 // random harmonious palettes. kind: 'poster', 'random' (Fangor discs), 'ring' (inks run hole, bands..., halo) or 'dream'
 function hsl(h, s, l) {
   h = ((h % 360) + 360) % 360; s /= 100; l /= 100;
@@ -433,7 +460,7 @@ function randomPalette(kind, rnd = Math.random) {
 }
 
 MOTIF_OPTS.squares=[{key:'round',label:'Corners',min:0,max:.5,step:.01,def:.1},{key:'hole',label:'Centre',min:.04,max:.45,step:.01,def:.15},{key:'soft',label:'Softness',min:.2,max:2.5,step:.01,def:1}];
-const MOTIFS={stripes,rings,mosaic,blob,diagonals,steps,fangor,ring,squares,dream,stripewave,scope,stripedisc,construct,cutout,bars,rotor};
+const MOTIFS={stripes,rings,mosaic,blob,diagonals,steps,fangor,ring,squares,dream,stripewave,scope,stripedisc,construct,cutout,bars,rotor,sunburst};
 function generate(motif,palette,seed,w,h,o={}){const r=rng(seed),p=typeof palette==='string'?PALETTES[palette]:palette,m=MOTIFS[motif](r,p,w,h,o);
  return `<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="${w}" height="${h}" viewBox="0 0 ${w} ${h}"><defs>${m.defs||''}</defs><rect width="${w}" height="${h}" fill="${m.bg||p.paper}"/>${m.body}</svg>`;}
 
