@@ -48,6 +48,7 @@ const PALETTES={
  stanczak:{paper:'#f1ece0',dark:'#1a2347',light:'#f1ece0',accent:'#e0382e',inks:['#1a2347','#e0382e','#f1ece0','#2a8fd0']},
  konstruktywizm:{paper:'#efe8d8',dark:'#111111',light:'#efe8d8',accent:'#d62a1f',inks:['#d62a1f','#111111','#efe8d8']},
  lenica:{paper:'#e8dfcb',dark:'#1a1a1a',light:'#f4ede0',accent:'#d62a1f',inks:['#1a1a1a','#d62a1f','#f0c419','#2a6fb0','#f4ede0']},
+ jazz:{paper:'#f0b21a',dark:'#111111',light:'#f4efe4',accent:'#d62a1f',inks:['#111111','#f4efe4','#1a2347','#d62a1f']},
  fangor:{paper:'#e9e1d6',dark:'#10121a',light:'#f3ede4',accent:'#e23a2e',inks:['#e23a2e','#1b3f9e','#f3ede4','#10121a','#e98aa2']},
  fangor_blue:{paper:'#dde3ea',dark:'#0b1230',light:'#eef1f6',accent:'#ff5a36',inks:['#0b1230','#2a5bd7','#9db8f0','#eef1f6','#ff5a36']},
  fangor_green:{paper:'#e6e8d8',dark:'#0f3d2e',light:'#f2efe4',accent:'#e8503a',inks:['#0f3d2e','#2f9a62','#d9e8c4','#f2efe4','#e8503a']}};
@@ -353,6 +354,27 @@ MOTIF_OPTS.cutout = [
   { key: 'scale', label: 'Size', min: .5, max: 1.6, step: .01, def: 1 },
 ];
 
+// Rhythm bars (Swierzy, music and jazz posters): vertical bars of changing height in a color sequence on a gradient ground
+function bars(r, p, w, h, o = {}) {
+  const c1 = r(), c2 = r(), c3 = r(), c4 = r();
+  const n = Math.round(o.count ?? 10 + c1 * 14), rh = o.rhythm ?? (.3 + c2 * .6), ph = c3 * 6.28, gap = o.gap ?? (.15 + c4 * .35), mirror = (o.mirror ?? 0) >= .5;
+  const mx = w * .06, bw = (w - 2 * mx) / (n + (n - 1) * gap), step = bw * (1 + gap);
+  const defs = `<linearGradient id="bg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${p.paper}"/><stop offset="1" stop-color="${p.accent}"/></linearGradient>`;
+  let body = `<rect width="${w}" height="${h}" fill="url(#bg)"/>`;
+  for (let i = 0; i < n; i++) {
+    const e = Math.abs(Math.sin(i * rh + ph)) * (.65 + .35 * Math.sin(i * rh * 2.3 + ph * 1.7)), bh = h * (.14 + .72 * e);
+    const x = mx + i * step, y = mirror ? (h - bh) / 2 : h * .94 - bh;
+    body += `<rect x="${f(x)}" y="${f(y)}" width="${f(bw)}" height="${f(bh)}" fill="${p.inks[i % p.inks.length]}"/>`;
+  }
+  return { defs, body, bg: p.paper };
+}
+MOTIF_OPTS.bars = [
+  { key: 'count', label: 'Bars', min: 4, max: 48, step: 1, def: 16 },
+  { key: 'rhythm', label: 'Rhythm', min: .1, max: 1.6, step: .01, def: .6 },
+  { key: 'gap', label: 'Gap', min: 0, max: 1.2, step: .01, def: .3 },
+  { key: 'mirror', label: 'Mirror', min: 0, max: 1, step: 1, def: 0 },
+];
+
 // random harmonious palettes. kind: 'poster', 'random' (Fangor discs), 'ring' (inks run hole, bands..., halo) or 'dream'
 function hsl(h, s, l) {
   h = ((h % 360) + 360) % 360; s /= 100; l /= 100;
@@ -380,7 +402,7 @@ function randomPalette(kind, rnd = Math.random) {
 }
 
 MOTIF_OPTS.squares=[{key:'round',label:'Corners',min:0,max:.5,step:.01,def:.1},{key:'hole',label:'Centre',min:.04,max:.45,step:.01,def:.15},{key:'soft',label:'Softness',min:.2,max:2.5,step:.01,def:1}];
-const MOTIFS={stripes,rings,mosaic,blob,diagonals,steps,fangor,ring,squares,dream,stripewave,scope,stripedisc,construct,cutout};
+const MOTIFS={stripes,rings,mosaic,blob,diagonals,steps,fangor,ring,squares,dream,stripewave,scope,stripedisc,construct,cutout,bars};
 function generate(motif,palette,seed,w,h,o={}){const r=rng(seed),p=typeof palette==='string'?PALETTES[palette]:palette,m=MOTIFS[motif](r,p,w,h,o);
  return `<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="${w}" height="${h}" viewBox="0 0 ${w} ${h}"><defs>${m.defs||''}</defs><rect width="${w}" height="${h}" fill="${m.bg||p.paper}"/>${m.body}</svg>`;}
 
