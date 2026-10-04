@@ -339,7 +339,9 @@
         <h2 class="pull reveal">A poster as <em>one idea</em>, drawn with almost nothing.</h2>
         <div class="reveal">
           <p>After the Second World War Polish graphic designers were given a great deal of artistic freedom, and cultural posters became a place to experiment. Jan Lenica later gave the movement its name, the Polish School of Posters, in an article for the Swiss magazine Graphis. The posters are known for economy of form, wit, hand-made lettering and color used for feeling rather than description.</p>
+          <p>The story of the school is usually told through a list of men, but women worked in it from the start. Wanda Telakowska is credited with shaping the contemporary form of a Polish national style in design, and poster artists such as Maria Ihnatowicz, Anna Huskowska and Olga Binder-Siemaszko made posters of their own, though their names appear far less often.</p>
           <p>In the late 1950s and the 1960s a thread of that tradition turned geometric and abstract. Designers borrowed from constructivism, Bauhaus and the new op art, and painters such as Wojciech Fangor moved between the gallery and the street. This project borrows <em>techniques</em>, not compositions: soft edges, rhythm, repetition, flat ink.</p>
+          <p>That geometric thread has women in it too. Teresa Żarnower founded Blok, the first Polish constructivist group, Katarzyna Kobro built spatial compositions from flat planes, and Maria Jarema drew abstract forms out of music and dance. Later, Wanda Gołkowska made reliefs from wooden blocks and Magdalena Abakanowicz hung woven forms from the ceiling. Each of them has a motif here.</p>
           <p>The name comes from Study of Space, the 1958 installation by Wojciech Fangor and Stanisław Zamecznik, the first spatial installation in Poland.</p>
         </div>
       </div>
@@ -437,8 +439,8 @@ node poster-bg/scripts/gen.js --ring --colors random \
     </div>
   </footer>
 
-  <script src="poster-bg/scripts/gen.js?v=202610050009"></script>
-  <script src="portraits/ascii.js?v=202610050009"></script>
+  <script src="poster-bg/scripts/gen.js?v=202610050010"></script>
+  <script src="portraits/ascii.js?v=202610050010"></script>
   <script>
     const uri = s => "data:image/svg+xml;charset=utf-8," + encodeURIComponent(s);
 
@@ -479,6 +481,11 @@ node poster-bg/scripts/gen.js --ring --colors random \
       `<div class="cap"><b>${NAMES[m] || m}</b><span>${p} · ${s}</span></div></a>`).join("");
     const words = GALLERY.map(([m]) => (NAMES[m] || m));
     document.getElementById("marquee").innerHTML = [...words, ...words].map(w => `<span>${w}</span>`).join("");
+    { // constant calm speed (about 60px per second), however many words there are
+      const mq = document.getElementById("marquee");
+      const speed = () => { mq.style.animationDuration = Math.max(30, mq.scrollWidth / 2 / 60) + "s"; };
+      speed(); addEventListener("load", speed); document.fonts && document.fonts.ready.then(speed);
+    }
     const WORDS = ["Zero", "One", "Two", "Three", "Four", "Five", "Six", "Seven", "Eight", "Nine", "Ten", "Eleven", "Twelve", "Thirteen", "Fourteen", "Fifteen", "Sixteen", "Seventeen", "Eighteen", "Nineteen", "Twenty"];
     const nm = Object.keys(MOTIFS).length;
     document.getElementById("motifCount").textContent = WORDS[nm] || nm;
