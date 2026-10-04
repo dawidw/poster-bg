@@ -2,7 +2,8 @@
 const stage = document.getElementById("stage");
 
 const $ = id => document.getElementById(id);
-const MOTIF_LABEL = { stripes: "Stripes", rings: "Rings and towers", mosaic: "Mosaic", blob: "Halo blob", diagonals: "Triangles", steps: "Steps", stripewave: "Wavy stripes", scope: "Oscillogram", stripedisc: "Stripes and disc", construct: "Constructivist", cutout: "Cut-out", bars: "Rhythm bars", rotor: "Multiply and rotate", sunburst: "Sunburst and rings", outline: "Outlined stains", halftone: "Halftone", moire: "Moire", letters: "Block letters", unism: "Unism" };
+const MOTIF_LABEL = { stripes: "Stripes", rings: "Rings and towers", mosaic: "Mosaic", blob: "Halo blob", diagonals: "Triangles", steps: "Steps", stripewave: "Wavy stripes", scope: "Oscillogram", stripedisc: "Stripes and disc", construct: "Constructivist", cutout: "Cut-out", bars: "Rhythm bars", rotor: "Multiply and rotate", sunburst: "Sunburst and rings", outline: "Outlined stains", halftone: "Halftone", moire: "Moire", letters: "Block letters", unism: "Unism",
+  fangor: "Vibrating discs", ring: "Soft ring", squares: "Pulsating squares", dream: "Dream waves" };
 const PALETTE_LABEL = {
   bauhaus: "Bauhaus", kobalt: "Cobalt", pastel: "Pastel", neon: "Neon", ocean: "Ocean", forest: "Forest", sepia: "Sepia", mono: "Mono", pop: "Pop", lato: "Summer", fangor_fire: "Fire", fangor_ice: "Ice", fangor_mauve: "Mauve", fangor_acid: "Acid", fangor_earth: "Earth", soft_sunset: "Sunset", soft_ice: "Ice", soft_moss: "Moss", soft_cherry: "Cherry", soft_gold: "Gold", soft_ink: "Ink", soft_twilight: "Twilight", soft_peach: "Peach", dream_sunset: "Sunset", dream_ocean: "Ocean", dream_forest: "Forest", dream_pop: "Pop", dream_mono: "Mono", dream_peach: "Peach", dream_ember: "Ember", dream_ice: "Ice",
   baron: "Baron", zamecznik: "Zamecznik", lenica: "Lenica", mlodozeniec: "Mlodozeniec", jazz: "Jazz", konstruktywizm: "Constructivist", stanczak: "Stanczak", zloto: "Gold", roger: "King Roger", marek: "Father Marek", brasilia: "Brasília", anima: "Anima", wesoft: "Wesoft",
@@ -13,8 +14,21 @@ const PALETTE_LABEL = {
   dream_navy: "Navy and crimson", dream_sun: "Sun", dream_flag: "Flag", dream_azure: "Azure", dream_spectrum: "Spectrum", dream_candy: "Candy", dream_lagoon: "Lagoon", dream_rose: "Rose",
 };
 const SIZES = [["Portrait", 1200, 1600], ["Square", 1200, 1200], ["Landscape", 1440, 900], ["Card 16:10", 1280, 800], ["Banner", 1600, 500]];
-const POSTER_MOTIFS = Object.keys(MOTIF_LABEL);
+const ALL_MOTIFS = Object.keys(MOTIF_LABEL).filter(m => MOTIFS[m]);
 const VARIANT_MOTIF = { random: "fangor", ring: "ring", squares: "squares", dream: "dream" };
+// the motif list, grouped by whose work inspired it
+const ARTISTS = [
+  ["Wojciech Fangor", ["fangor", "ring", "squares", "dream"]],
+  ["Wojciech Zamecznik", ["scope", "stripedisc", "rotor"]],
+  ["Julian Stańczak", ["stripewave"]],
+  ["Polish constructivists", ["construct", "letters", "unism"]],
+  ["Jan Lenica", ["cutout"]],
+  ["Jan Młodożeniec", ["outline"]],
+  ["Waldemar Świerzy", ["bars"]],
+  ["Hubert Hilscher and Cyrk", ["sunburst"]],
+  ["Op art in general", ["halftone", "moire"]],
+  ["Polish School, general", ["stripes", "rings", "mosaic", "blob", "diagonals", "steps"]],
+];
 const PREFIX = { random: "fangor", ring: "soft_", squares: "soft_", dream: "dream_" };
 const clone = o => JSON.parse(JSON.stringify(o));
 const pick = a => a[Math.floor(Math.random() * a.length)];
@@ -25,7 +39,13 @@ const S = { group: "poster", variant: "random", motif: "stripes", palette: "baro
 let hist = [], lastSig = "", toastT;
 
 const kind = () => (S.group === "poster" ? "poster" : S.variant);
-const motifName = () => (S.group === "poster" ? S.motif : VARIANT_MOTIF[S.variant]);
+const motifName = () => S.motif;
+// set the motif and derive which family of palettes and settings it belongs to
+function applyMotif(m) {
+  S.motif = m;
+  const vm = Object.entries(VARIANT_MOTIF).find(([, v]) => v === m);
+  if (vm) { S.group = "fangor"; S.variant = vm[0]; } else S.group = "poster";
+}
 const palettesOf = k => Object.keys(PALETTES).filter(n => (k === "poster" ? !/^(fangor|soft_|dream_)/.test(n) : n.startsWith(PREFIX[k])));
 const opts = () => ({ size: S.size ?? undefined, x: S.cx ?? undefined, y: S.cy ?? undefined, grain: S.grain ?? undefined, angle: S.angle ?? undefined, amp: S.amp ?? undefined, wave: S.wave ?? undefined, softness: S.softness ?? undefined, ...S.opts });
 const svg = () => generate(motifName(), S.work, S.seed, S.w, S.h, opts());
@@ -45,13 +65,11 @@ function syncOpts() {
   }
 }
 function fillSelects() {
-  $("motif").innerHTML = POSTER_MOTIFS.map(m => `<option value="${m}">${MOTIF_LABEL[m]}</option>`).join("");
+  $("motif").innerHTML = ARTISTS.map(([artist, list]) => `<optgroup label="${artist}">${list.filter(m => MOTIFS[m]).map(m => `<option value="${m}">${MOTIF_LABEL[m]}</option>`).join("")}</optgroup>`).join("");
   $("palette").innerHTML = palettesOf(kind()).map(k => `<option value="${k}">${PALETTE_LABEL[k]}</option>`).join("");
   $("motif").value = S.motif;
   $("palette").value = S.palette;
-  $("motif-field").hidden = S.group !== "poster";
   buildOpts();
-  $("variant-field").hidden = S.group === "poster";
   $("size-field").hidden = S.group === "poster";
   $("rotate-field").hidden = !(S.group === "fangor" && S.variant !== "ring");
   $("wave-field").hidden = !(S.group === "fangor" && S.variant === "dream");
@@ -91,9 +109,6 @@ function render(push = true) {
   $("grain-field").hidden = !(S.group === "poster" && S.motif === "mosaic");
   $("grain").value = S.grain ?? 11; $("grainVal").textContent = S.grain == null ? "Auto" : S.grain + " across";
   $("seed").value = S.seed; $("w").value = S.w; $("h").value = S.h;
-  $("g-poster").setAttribute("aria-pressed", S.group === "poster");
-  $("g-fangor").setAttribute("aria-pressed", S.group === "fangor");
-  for (const v of Object.keys(VARIANT_MOTIF)) $("v-" + v).setAttribute("aria-pressed", S.variant === v);
   document.querySelectorAll("#sizes button").forEach(b => b.setAttribute("aria-pressed", +b.dataset.w === S.w && +b.dataset.h === S.h));
   const sig = [motifName(), S.palette, S.seed, S.w, S.h, S.size, S.cx, S.cy, S.grain, S.angle, S.amp, S.wave, S.softness, JSON.stringify(S.opts), JSON.stringify(S.work)].join("|");
   if (push && sig !== lastSig) {
@@ -112,16 +127,12 @@ function resetPalette(name) {
   S.work = clone(PALETTES[S.palette]);
   S.modified = false;
 }
-function setGroup(g) {
-  if (S.group === g) return;
-  S.group = g; S.opts = {};
-  resetPalette();
-  fillSelects(); fillSwatches(); render();
-}
-function setVariant(v) {
-  if (S.variant === v && S.group === "fangor") return;
-  S.variant = v; S.opts = {};
-  resetPalette();
+function setMotif(m) {
+  if (m === S.motif) return;
+  const before = kind();
+  applyMotif(m);
+  S.opts = {};
+  if (kind() !== before || !palettesOf(kind()).includes(S.palette)) resetPalette();
   fillSelects(); fillSwatches(); render();
 }
 function setPalette(k) { resetPalette(k); fillSwatches(); render(); }
@@ -131,14 +142,16 @@ function rollColors() {
   fillSwatches(); render();
 }
 function rollAll() {
-  if (!$("lockMotif").checked && S.group === "poster") S.motif = pick(POSTER_MOTIFS);
-  if (S.group === "fangor" && !$("lockMotif").checked) S.variant = pick(Object.keys(VARIANT_MOTIF));
+  if (!$("lockMotif").checked) applyMotif(pick(ALL_MOTIFS));
   if ($("randColors").checked) { S.work = randomPalette(kind(), Math.random); S.modified = true; S.palette = palettesOf(kind())[0]; }
   else if (!$("lockPalette").checked || !palettesOf(kind()).includes(S.palette)) resetPalette(pick(palettesOf(kind())));
   S.seed = Math.floor(Math.random() * 100000);
   S.size = null; S.cx = null; S.cy = null; S.grain = null; S.angle = null; S.amp = null; S.wave = null; S.softness = null; S.opts = {};
   fillSelects(); fillSwatches(); render();
 }
+function rndMotif() { setMotif(pick(ALL_MOTIFS.filter(m => m !== S.motif))); }
+function rndColors() { resetPalette(pick(palettesOf(kind()))); fillSwatches(); fillSelects(); render(); }
+function rndSeed() { S.seed = Math.floor(Math.random() * 100000); render(); }
 function addInk() {
   const c = hsl(Math.random() * 360, 55 + Math.random() * 30, 40 + Math.random() * 20);
   S.work.inks.splice(S.group === "fangor" && (S.variant === "ring" || S.variant === "squares") ? S.work.inks.length - 1 : S.work.inks.length, 0, c);
@@ -155,10 +168,10 @@ function save(blob, name) {
 }
 const fileName = ext => `${motifName()}-${S.palette}-${S.seed}.${ext}`;
 
-$("g-poster").onclick = () => setGroup("poster");
-$("g-fangor").onclick = () => setGroup("fangor");
-for (const v of Object.keys(VARIANT_MOTIF)) $("v-" + v).onclick = () => setVariant(v);
-$("motif").onchange = e => { S.motif = e.target.value; S.opts = {}; fillSelects(); render(); };
+$("rndMotif").onclick = rndMotif;
+$("rndColors").onclick = rndColors;
+$("rndSeed").onclick = rndSeed;
+$("motif").onchange = e => setMotif(e.target.value);
 $("opts-grid").oninput = e => { const k = e.target.dataset.key; if (!k) return; S.opts[k] = +e.target.value; render(); };
 $("optsAuto").onclick = () => { S.opts = {}; render(); };
 $("palette").onchange = e => setPalette(e.target.value);
@@ -254,8 +267,8 @@ document.addEventListener("keydown", e => {
 (function fromUrl() {
   const q = new URLSearchParams(location.search), m = q.get("motif");
   if (!m) return;
-  const vm = Object.entries(VARIANT_MOTIF).find(([, v]) => v === m);
-  if (vm) { S.group = "fangor"; S.variant = vm[0]; } else if (POSTER_MOTIFS.includes(m)) { S.group = "poster"; S.motif = m; } else return;
+  if (!ALL_MOTIFS.includes(m)) return;
+  applyMotif(m);
   resetPalette(q.get("palette") && PALETTES[q.get("palette")] ? q.get("palette") : undefined);
   if (q.get("seed")) S.seed = +q.get("seed");
 })();

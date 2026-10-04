@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Poster generator</title>
-  <link rel="stylesheet" href="style.css?v=202610042013">
+  <link rel="stylesheet" href="style.css?v=202610042019">
 </head>
 <body>
   <div id="stage" class="app">
@@ -20,24 +20,6 @@
 
     <aside class="controls">
       <h1>Poster generator</h1>
-
-      <div class="field">
-        <span class="lbl">Family</span>
-        <div class="seg" role="group" aria-label="Family">
-          <button type="button" id="g-poster" aria-pressed="true">Poster</button>
-          <button type="button" id="g-fangor" aria-pressed="false">Fangor</button>
-        </div>
-      </div>
-
-      <div class="field" id="variant-field" hidden>
-        <span class="lbl">Style</span>
-        <div class="seg" role="group" aria-label="Fangor style">
-          <button type="button" id="v-random" aria-pressed="true">Random</button>
-          <button type="button" id="v-ring" aria-pressed="false">Ring</button>
-          <button type="button" id="v-squares" aria-pressed="false">Squares</button>
-          <button type="button" id="v-dream" aria-pressed="false">Dream</button>
-        </div>
-      </div>
 
       <div class="field" id="motif-field">
         <label class="lbl" for="motif">Motif</label>
@@ -147,7 +129,6 @@
           <label class="check"><input type="checkbox" id="lockPalette"> Lock palette</label>
           <label class="check"><input type="checkbox" id="randColors"> Random colors</label>
         </div>
-        <button type="button" class="btn primary" id="rollAll">Randomize all <span class="kbd">space</span></button>
         <div class="grid-actions">
           <button type="button" class="btn" id="dlSvg">SVG</button>
           <button type="button" class="btn" id="dlPng">PNG</button>
@@ -158,7 +139,17 @@
     </aside>
   </div>
 
-  <script src="../poster-bg/scripts/gen.js?v=202610042013"></script>
-  <script src="ui.js?v=202610042013"></script>
+  <div class="dock" role="group" aria-label="Randomize">
+    <div class="dock-row">
+      <span class="dock-label">Random</span>
+      <button type="button" class="btn" id="rndMotif">Motif</button>
+      <button type="button" class="btn" id="rndColors">Colors</button>
+      <button type="button" class="btn" id="rndSeed">Seed</button>
+    </div>
+    <button type="button" class="btn primary wide" id="rollAll">Randomize all <span class="kbd">space</span></button>
+  </div>
+
+  <script src="../poster-bg/scripts/gen.js?v=202610042019"></script>
+  <script src="ui.js?v=202610042019"></script>
 </body>
 </html>
