@@ -79,3 +79,4 @@ input[type="range"] { accent-color: var(--accent); min-width: 0; width: 100%; }
 }
 @media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
 .row .control { width: auto; flex: 1; }
+.grid3.wide { grid-template-columns: 64px minmax(0, 1fr) 56px; }

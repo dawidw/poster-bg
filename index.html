@@ -1,0 +1,260 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>poster-bg</title>
+  <meta name="description" content="Seeded SVG backgrounds in the spirit of the Polish School of Posters and Wojciech Fangor's soft op art. One dependency-free JavaScript file, a Claude Code skill and a generator page.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Syne:wght@600;800&family=JetBrains+Mono:wght@400;500&family=Instrument+Sans:wght@400;500;600&display=swap">
+  <style>
+    :root {
+      --bg: #000; --fg: #fff; --muted: #9b9b9b; --line: #222; --card: #0b0b0b;
+      --display: "Syne", "Helvetica Neue", Arial, sans-serif;
+      --body: "Instrument Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+      --mono: "JetBrains Mono", ui-monospace, Menlo, Consolas, monospace;
+      --gutter: clamp(20px, 4vw, 56px);
+      color-scheme: dark;
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body { margin: 0; background: var(--bg); color: var(--fg); font: 17px/1.55 var(--body); -webkit-font-smoothing: antialiased; }
+    a { color: inherit; }
+    :focus-visible { outline: 2px solid var(--fg); outline-offset: 3px; }
+    .mono { font-family: var(--mono); }
+
+    /* ---------- hero ---------- */
+    .hero { position: relative; min-height: 100svh; display: flex; flex-direction: column; justify-content: space-between; overflow: hidden; isolation: isolate; }
+    .bg { position: absolute; inset: 0; z-index: -3; }
+    .bg img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; opacity: 0; transition: opacity 1800ms ease; transform: scale(1.04); }
+    .bg img.on { opacity: 1; animation: drift 24s ease-in-out infinite alternate; }
+    @keyframes drift { from { transform: scale(1.04) translate3d(0, 0, 0); } to { transform: scale(1.12) translate3d(-1.5%, -1%, 0); } }
+    .shade { position: absolute; inset: 0; z-index: -2; background:
+      linear-gradient(90deg, rgba(0,0,0,.88) 0%, rgba(0,0,0,.55) 38%, rgba(0,0,0,0) 72%),
+      linear-gradient(0deg, rgba(0,0,0,.85) 0%, rgba(0,0,0,0) 38%); }
+    .grain { position: absolute; inset: 0; z-index: -1; pointer-events: none; opacity: .22; mix-blend-mode: overlay;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E"); }
+
+    nav { display: flex; align-items: center; justify-content: space-between; padding: 22px var(--gutter); }
+    .logo { font: 800 20px/1 var(--display); letter-spacing: -.02em; text-decoration: none; }
+    nav ul { display: flex; gap: 28px; list-style: none; margin: 0; padding: 0; font-size: 15px; }
+    nav a { text-decoration: none; opacity: .8; transition: opacity .2s; }
+    nav a:hover { opacity: 1; }
+
+    .hero-copy { padding: 0 var(--gutter) clamp(28px, 6vh, 64px); max-width: 1200px; }
+    .eyebrow { font: 500 12px/1 var(--mono); letter-spacing: .14em; text-transform: uppercase; color: rgba(255,255,255,.7); display: flex; align-items: center; gap: 10px; margin-bottom: 22px; }
+    .eyebrow i { width: 28px; height: 1px; background: currentColor; }
+    h1 { margin: 0; font: 800 clamp(2.4rem, 7.4vw, 8rem)/.92 var(--display); letter-spacing: -.045em; text-wrap: balance; }
+    h1 span { display: block; }
+    h1 .outline { color: transparent; -webkit-text-stroke: 1.5px var(--fg); }
+    .lede { max-width: 560px; margin: 28px 0 0; font-size: clamp(1rem, 1.5vw, 1.2rem); color: rgba(255,255,255,.82); }
+    .cta { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 32px; }
+    .btn { display: inline-flex; align-items: center; gap: 10px; height: 48px; padding: 0 22px; border-radius: 999px; border: 1px solid rgba(255,255,255,.4); text-decoration: none; font-weight: 600; font-size: 15px; transition: background .2s, color .2s, border-color .2s, transform .2s; }
+    .btn:hover { border-color: #fff; transform: translateY(-1px); }
+    .btn.solid { background: #fff; color: #000; border-color: #fff; }
+    .btn.solid:hover { background: #e6e6e6; }
+    .btn svg { width: 16px; height: 16px; }
+    .recipe { position: absolute; right: var(--gutter); bottom: clamp(28px, 6vh, 64px); font: 400 12px/1.4 var(--mono); color: rgba(255,255,255,.75); text-align: right; }
+    .recipe b { display: block; font-weight: 500; color: #fff; margin-top: 4px; }
+
+    /* ---------- marquee ---------- */
+    .marquee { border-block: 1px solid var(--line); overflow: hidden; white-space: nowrap; padding: 18px 0; }
+    .marquee div { display: inline-flex; gap: 48px; animation: slide 38s linear infinite; padding-right: 48px; }
+    .marquee span { font: 800 clamp(1.4rem, 3vw, 2.4rem)/1 var(--display); letter-spacing: -.02em; text-transform: uppercase; }
+    .marquee span:nth-child(even) { color: transparent; -webkit-text-stroke: 1px var(--fg); }
+    @keyframes slide { to { transform: translateX(-50%); } }
+
+    /* ---------- sections ---------- */
+    section { padding: clamp(64px, 11vw, 140px) var(--gutter); }
+    .wrap { max-width: 1280px; margin: 0 auto; }
+    h2 { margin: 0 0 14px; font: 800 clamp(2rem, 5vw, 4rem)/.98 var(--display); letter-spacing: -.035em; text-wrap: balance; }
+    .sub { color: var(--muted); max-width: 580px; margin: 0 0 clamp(32px, 5vw, 56px); }
+
+    .gallery { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 280px), 1fr)); gap: clamp(14px, 2vw, 28px); }
+    .card { display: block; text-decoration: none; position: relative; }
+    .card .frame { position: relative; aspect-ratio: 3 / 4; overflow: hidden; background: var(--card); }
+    .card img { display: block; width: 100%; height: 100%; object-fit: cover; transition: transform .8s cubic-bezier(.2,.7,.2,1); }
+    .card:hover img { transform: scale(1.06); }
+    .card .cap { display: flex; justify-content: space-between; gap: 12px; margin-top: 12px; font: 400 12px/1.3 var(--mono); color: var(--muted); }
+    .card .cap b { color: var(--fg); font-weight: 500; }
+
+    .steps { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 340px), 1fr)); gap: clamp(14px, 2vw, 28px); }
+    .panel { border: 1px solid var(--line); background: var(--card); padding: 26px; display: flex; flex-direction: column; gap: 14px; min-width: 0; }
+    .panel h3 { margin: 0; font: 800 1.4rem/1.1 var(--display); letter-spacing: -.02em; }
+    .panel p { margin: 0; color: var(--muted); font-size: 15px; }
+    pre { margin: 0; padding: 16px 18px; background: #000; border: 1px solid var(--line); overflow-x: auto; font: 400 13px/1.7 var(--mono); color: #eaeaea; position: relative; }
+    pre .c { color: #6f6f6f; }
+    .copy { position: absolute; top: 8px; right: 8px; height: 28px; padding: 0 10px; border-radius: 6px; border: 1px solid var(--line); background: #111; color: var(--fg); font: 500 11px var(--mono); cursor: pointer; }
+    .copy:hover { border-color: #666; }
+
+    .facts { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 220px), 1fr)); gap: 0; border-top: 1px solid var(--line); }
+    .fact { padding: 28px 24px 28px 0; border-bottom: 1px solid var(--line); }
+    .fact b { display: block; font: 800 clamp(2rem, 4vw, 3.2rem)/1 var(--display); letter-spacing: -.03em; }
+    .fact span { color: var(--muted); font-size: 14px; }
+
+    footer { padding: 40px var(--gutter) 56px; border-top: 1px solid var(--line); color: var(--muted); font-size: 14px; }
+    footer .wrap { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 16px 32px; }
+    footer a { color: var(--fg); }
+
+    .reveal { opacity: 0; transform: translateY(24px); transition: opacity .9s ease, transform .9s cubic-bezier(.2,.7,.2,1); }
+    .reveal.in { opacity: 1; transform: none; }
+
+    @media (max-width: 720px) {
+      nav ul { gap: 18px; }
+      .recipe { display: none; }
+      .shade { background: linear-gradient(0deg, rgba(0,0,0,.92) 0%, rgba(0,0,0,.55) 55%, rgba(0,0,0,.15) 100%); }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .bg img.on, .marquee div { animation: none; }
+      .bg img { transition: none; }
+      .reveal { opacity: 1; transform: none; transition: none; }
+    }
+  </style>
+</head>
+<body>
+  <header class="hero">
+    <div class="bg" id="bg" aria-hidden="true"><img alt=""><img alt=""></div>
+    <div class="shade"></div>
+    <div class="grain"></div>
+
+    <nav>
+      <a class="logo" href="#top">poster-bg</a>
+      <ul>
+        <li><a href="#motifs">Motifs</a></li>
+        <li><a href="#use">Use it</a></li>
+        <li><a href="generator/">Generator</a></li>
+        <li><a href="https://github.com/dawidw/poster-bg-skill">GitHub</a></li>
+      </ul>
+    </nav>
+
+    <div class="hero-copy" id="top">
+      <div class="eyebrow"><i></i> Seeded SVG backgrounds</div>
+      <h1><span>Poster</span><span class="outline">backgrounds,</span><span>generated.</span></h1>
+      <p class="lede">In the spirit of the Polish School of Posters and Wojciech Fangor's soft op art. One dependency-free JavaScript file, a Claude Code skill and a generator page.</p>
+      <div class="cta">
+        <a class="btn solid" href="generator/">Open the generator
+          <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 8h10M9 4l4 4-4 4"/></svg></a>
+        <a class="btn" href="https://github.com/dawidw/poster-bg-skill">View on GitHub</a>
+      </div>
+    </div>
+    <div class="recipe" aria-hidden="true">now showing<b id="recipe">·</b></div>
+  </header>
+
+  <div class="marquee" aria-hidden="true">
+    <div>
+      <span>Stripes</span><span>Rings</span><span>Mosaic</span><span>Halo</span><span>Triangles</span><span>Steps</span><span>Fangor</span><span>Soft ring</span><span>Dream</span>
+      <span>Stripes</span><span>Rings</span><span>Mosaic</span><span>Halo</span><span>Triangles</span><span>Steps</span><span>Fangor</span><span>Soft ring</span><span>Dream</span>
+    </div>
+  </div>
+
+  <section id="motifs">
+    <div class="wrap">
+      <h2 class="reveal">Nine motifs.<br>Same seed, same poster.</h2>
+      <p class="sub reveal">Every picture below was just drawn in your browser by <span class="mono">gen.js</span>. Open the generator to change the palette, seed, size and the position of the circle.</p>
+      <div class="gallery" id="gallery"></div>
+    </div>
+  </section>
+
+  <section id="use" style="padding-top:0">
+    <div class="wrap">
+      <h2 class="reveal">Three ways in.</h2>
+      <p class="sub reveal">Node is the only requirement. The skill and the page use the same file.</p>
+      <div class="steps">
+        <div class="panel reveal">
+          <h3>Command line</h3>
+          <p>Prints the recipe to stderr, so any result can be reproduced.</p>
+          <pre><button class="copy" type="button">copy</button>node poster-bg/scripts/gen.js --dream --out waves.svg
+node poster-bg/scripts/gen.js --ring --colors random \
+  --circle 1.2 --x 0.4 --y 0.6 --out ring.svg</pre>
+        </div>
+        <div class="panel reveal">
+          <h3>Claude Code skill</h3>
+          <p>Copy the folder once, then ask in plain words or use flags.</p>
+          <pre><button class="copy" type="button">copy</button>cp -R poster-bg ~/.claude/skills/
+
+<span class="c"># in Claude Code</span>
+/poster-bg --dream</pre>
+        </div>
+        <div class="panel reveal">
+          <h3>Generator page</h3>
+          <p>Dark UI with history, editable colors, mosaic granularity, SVG and PNG export.</p>
+          <a class="btn solid" href="generator/" style="align-self:flex-start">Open the generator</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section style="padding-top:0">
+    <div class="wrap">
+      <div class="facts">
+        <div class="fact reveal"><b>0</b><span>dependencies</span></div>
+        <div class="fact reveal"><b>9</b><span>motifs, 40 palettes</span></div>
+        <div class="fact reveal"><b>0</b><span>filters, so it imports as plain vectors</span></div>
+        <div class="fact reveal"><b>1</b><span>seed gives one exact picture</span></div>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    <div class="wrap">
+      <span>MIT licensed. Inspired by the Polish School of Posters and the paintings of Wojciech Fangor: styles and techniques, not copies of any work.</span>
+      <span><a href="https://github.com/dawidw/poster-bg-skill">github.com/dawidw/poster-bg-skill</a></span>
+    </div>
+  </footer>
+
+  <script src="poster-bg/scripts/gen.js"></script>
+  <script>
+    const uri = s => "data:image/svg+xml;charset=utf-8," + encodeURIComponent(s);
+
+    /* hero: cross-fade through curated recipes. Circles are pushed to the right so the title stays clear. */
+    const HERO = [
+      ["dream", "dream_navy", 5], ["ring", "soft_orchid", 7, { x: .74, y: .5, size: 1.1 }], ["dream", "dream_sun", 11],
+      ["fangor", "fangor_blue", 4, { x: .74, y: .5 }], ["dream", "dream_azure", 8], ["ring", "soft_flame", 3, { x: .72, y: .48, size: 1.05 }],
+      ["dream", "dream_spectrum", 2], ["ring", "soft_redcore", 2, { x: .74, y: .5, size: .95 }],
+    ];
+    const imgs = [...document.querySelectorAll("#bg img")], recipe = document.getElementById("recipe");
+    let cur = 0, front = 0;
+    const show = i => {
+      const [m, p, s, o] = HERO[i];
+      const next = imgs[1 - front];
+      next.src = uri(generate(m, p, s, 1600, 1000, o || {}));
+      const done = () => {
+        imgs[front].classList.remove("on");
+        next.classList.add("on");
+        front = 1 - front;
+        recipe.textContent = `${m} · ${p} · ${s}`;
+      };
+      next.decode ? next.decode().then(done, done) : (next.onload = done);
+    };
+    show(0);
+    if (!matchMedia("(prefers-reduced-motion: reduce)").matches) {
+      setInterval(() => { cur = (cur + 1) % HERO.length; show(cur); }, 7000);
+    }
+
+    /* gallery: one poster per motif, drawn live */
+    const GALLERY = [
+      ["stripes", "baron", 7], ["rings", "brasilia", 3], ["mosaic", "roger", 5],
+      ["blob", "marek", 2], ["diagonals", "anima", 4], ["steps", "wesoft", 6],
+      ["fangor", "fangor_blue", 4], ["ring", "soft_orchid", 7], ["dream", "dream_navy", 5],
+    ];
+    const group = { fangor: "Fangor", ring: "Fangor", dream: "Fangor" };
+    document.getElementById("gallery").innerHTML = GALLERY.map(([m, p, s]) =>
+      `<a class="card reveal" href="generator/"><div class="frame"><img loading="lazy" alt="${m}, ${p}" src="${uri(generate(m, p, s, 600, 800))}"></div>` +
+      `<div class="cap"><b>${m}</b><span>${p} · ${s}</span></div></a>`).join("");
+
+    /* copy buttons */
+    document.querySelectorAll(".copy").forEach(b => b.addEventListener("click", () => {
+      const text = b.parentElement.innerText.replace(/^copy\n?/, "");
+      const ok = () => { b.textContent = "copied"; setTimeout(() => (b.textContent = "copy"), 1400); };
+      (navigator.clipboard ? navigator.clipboard.writeText(text) : Promise.reject()).then(ok, () => {
+        const r = document.createRange(); r.selectNodeContents(b.parentElement); const sel = getSelection(); sel.removeAllRanges(); sel.addRange(r);
+      });
+    }));
+
+    /* reveal on scroll */
+    const io = new IntersectionObserver(es => es.forEach(e => { if (e.isIntersecting) { e.target.classList.add("in"); io.unobserve(e.target); } }), { threshold: .12 });
+    document.querySelectorAll(".reveal").forEach(el => io.observe(el));
+  </script>
+</body>
+</html>

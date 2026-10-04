@@ -2,7 +2,7 @@
 // 60s/70s geometric modernism and Wojciech Fangor's soft op art. Plain JS, no dependencies.
 // It runs in node (CLI below), in the browser (experiments/generator) and inside Figma's use_figma.
 //   node gen.js --motif stripes --palette baron --seed 7 --size 1200x1600 --out bg.svg
-//   node gen.js --poster | --fangor | --ring | --dream [--colors random] [--circle 1.2] [--x 0.4 --y 0.6] [--grain 16 (mosaic tiles across)] --out bg.svg
+//   node gen.js --poster | --fangor | --ring | --dream [--colors random] [--circle 1.2] [--x 0.4 --y 0.6] [--grain 16 (mosaic tiles across)] [--angle 30] [--amp 1.4 --wavelength 1.2 --softness 1.5 (dream)] --out bg.svg
 // In use_figma: paste everything above the CLI block, then figma.createNodeFromSvg(generate(...)).
 
 function rng(seed){let a=seed>>>0;return()=>{a=(a+0x6D2B79F5)|0;let t=Math.imul(a^(a>>>15),1|a);t=(t+Math.imul(t^(t>>>7),61|t))^t;return((t^(t>>>14))>>>0)/4294967296;};}
@@ -98,8 +98,8 @@ function fangor(r, p, w, h, o = {}) {
   const g = stops.map(([off, c, a]) => `<stop offset="${f(off)}" stop-color="${c}" stop-opacity="${a}"/>`).join('');
   const dx = rx * .07 * (r() < .5 ? -1 : 1), dy = ry * .05 * (r() < .5 ? -1 : 1);
   // a faint, slightly larger echo behind the main disc makes the edge vibrate
-  const body = `<ellipse cx="${f(cx + dx)}" cy="${f(cy + dy)}" rx="${f(rx * 1.08)}" ry="${f(ry * 1.08)}" fill="url(#fr)" opacity=".22"/>` +
-    `<ellipse cx="${f(cx)}" cy="${f(cy)}" rx="${f(rx)}" ry="${f(ry)}" fill="url(#fr)"/>`;
+  const body = `<ellipse transform="rotate(${o.angle ?? 0} ${f(cx)} ${f(cy)})" cx="${f(cx + dx)}" cy="${f(cy + dy)}" rx="${f(rx * 1.08)}" ry="${f(ry * 1.08)}" fill="url(#fr)" opacity=".22"/>` +
+    `<ellipse transform="rotate(${o.angle ?? 0} ${f(cx)} ${f(cy)})" cx="${f(cx)}" cy="${f(cy)}" rx="${f(rx)}" ry="${f(ry)}" fill="url(#fr)"/>`;
   return { defs: `<radialGradient id="fr">${g}</radialGradient>`, body };
 }
 // one soft-edged ring on a flat ground. inks run from the centre out: [hole, band, band, ..., halo];
@@ -117,36 +117,43 @@ function ring(r, p, w, h, o = {}) {
   return { defs: `<radialGradient id="ring">${g}</radialGradient>`, body: `<circle cx="${f(cx)}" cy="${f(cy)}" r="${f(R * 1.15)}" fill="url(#ring)"/>` };
 }
 
-// flowing wavy bands with soft edges (Fangor's wave paintings): every band is a stack of translucent strokes
-// along a wavy centreline, so no filters are needed. inks run across the bands, the first and last reach the edges.
+// flowing wavy bands with soft edges (Fangor's wave paintings). The picture is painted as stacked half-planes:
+// ink 0 fills the canvas, then each next ink covers everything beyond its boundary. Every boundary is the same
+// wavy curve, shifted along v, and drawn K times with a smoothstep spread so its edge fades in an S curve.
+// Shifting one curve (instead of offsetting it with a wide stroke) means the edges never pinch into cusps.
 function dream(r, p, w, h, o = {}) {
   const k = o.size ?? 1, D = Math.hypot(w, h), m = Math.min(w, h), n = p.inks.length;
-  const th = [-38, -22, 0, 90, 28, -62][Math.floor(r() * 6)] * Math.PI / 180, ca = Math.cos(th), sa = Math.sin(th);
-  const lam = m * (.75 + r() * .7) * k, A = m * (.06 + r() * .09) * k, ph = r() * 6.28, ph2 = r() * 6.28;
+  const dpick = [-38, -22, 0, 90, 28, -62][Math.floor(r() * 6)], deg = o.angle ?? dpick;
+  const lam = m * (.75 + r() * .7) * k * (o.wave ?? 1), A = m * (.06 + r() * .09) * k * (o.amp ?? 1), ph = r() * 6.28, ph2 = r() * 6.28;
   const cx = w * (o.x ?? .5), cy = h * (o.y ?? .5), widths = p.inks.map(() => .7 + r() * .8);
-  const sum = widths.reduce((a, b) => a + b, 0), span = D * .9 * k, R = D / 2 + 100, N = 36, K = 24;
+  const sum = widths.reduce((a, b) => a + b, 0), span = D * .9 * k, R = D / 2 + 100, FAR = D * 1.5, N = 28, K = 40, ALPHA = .1;
+  const wave = u => A * Math.sin(2 * Math.PI * u / lam + ph) + A * .12 * Math.sin(2 * Math.PI * u / (lam * .6) + ph2);
+  const q = [];
+  for (let i = 0; i <= N; i++) { const u = -R + 2 * R * i / N; q.push([u, wave(u)]); }
+  let d = `M${f(q[0][0])} ${f(q[0][1])}`;   // Catmull-Rom through the points, written as cubic beziers
+  for (let i = 0; i < N; i++) {
+    const p0 = q[i - 1] || q[i], p1 = q[i], p2 = q[i + 1], p3 = q[i + 2] || p2;
+    d += `C${f(p1[0] + (p2[0] - p0[0]) / 6)} ${f(p1[1] + (p2[1] - p0[1]) / 6)} ${f(p2[0] - (p3[0] - p1[0]) / 6)} ${f(p2[1] - (p3[1] - p1[1]) / 6)} ${f(p2[0])} ${f(p2[1])}`;
+  }
+  d += `L${f(R)} ${f(FAR)}L${f(-R)} ${f(FAR)}Z`;
   const lum = c => { const x = parseInt(c.slice(1), 16); return (x >> 16) * .3 + ((x >> 8) & 255) * .59 + (x & 255) * .11; };
   const darkest = p.inks.reduce((bi, c, i) => (lum(c) < lum(p.inks[bi]) ? i : bi), 0);
-  const ribbon = (v0, hw, soft, color, a) => {
-    const pts = [];
-    for (let i = 0; i <= N; i++) {
-      const u = -R + 2 * R * i / N, v = v0 + A * Math.sin(2 * Math.PI * u / lam + ph) + A * .3 * Math.sin(2 * Math.PI * u / (lam * .43) + ph2);
-      pts.push(`${f(cx + u * ca - v * sa)} ${f(cy + u * sa + v * ca)}`);
-    }
-    const d = 'M' + pts.join('L');
+  const layers = (at, soft, color) => {
     let s = '';
-    for (let j = 0; j < K; j++) s += `<path d="${d}" fill="none" stroke="${color}" stroke-width="${f(Math.max(1, (hw + soft * (1 - 2 * j / (K - 1))) * 2))}" stroke-opacity="${a}" stroke-linejoin="round"/>`;
+    for (let j = 0; j < K; j++) {
+      const t = j / (K - 1), e = t * t * (3 - 2 * t);
+      s += `<use xlink:href="#hp" transform="translate(${f(cx)} ${f(cy)}) rotate(${deg}) translate(0 ${f(at + soft * (1 - 2 * e))})" fill="${color}" fill-opacity="${ALPHA}"/>`;
+    }
     return s;
   };
-  let v = -span / 2, body = '';
-  p.inks.forEach((c, i) => {
-    const bw = span * widths[i] / sum, hw = bw * .62, soft = Math.min(hw * .9, bw * (.25 + r() * .35) * (p.soft || 1));
-    const ext = i === 0 ? -D : i === n - 1 ? D : 0, v0 = v + bw / 2 + ext, hwe = hw + Math.abs(ext);
-    if (p.glow && i === darkest) body += ribbon(v0, hwe + bw * .12, soft * 1.1, p.glow, .13);
-    body += ribbon(v0, hwe, soft, c, .13);
-    v += bw;
-  });
-  return { defs: `<clipPath id="dc"><rect width="${w}" height="${h}"/></clipPath>`, body: `<g clip-path="url(#dc)">${body}</g>` };
+  let body = '', pos = -span / 2 + span * widths[0] / sum;
+  for (let i = 1; i < n; i++) {
+    const bw = span * widths[i] / sum, soft = Math.min(bw * 1.1, bw * (.25 + r() * .35) * (p.soft || 1) * (o.softness ?? 1)), gw = bw * .14;
+    if (p.glow && (i === darkest || i - 1 === darkest)) body += layers(pos - gw, soft, p.glow);
+    body += layers(pos, soft, p.inks[i]);
+    pos += bw;
+  }
+  return { defs: `<clipPath id="dc"><rect width="${w}" height="${h}"/></clipPath><path id="hp" d="${d}"/>`, body: `<g clip-path="url(#dc)">${body}</g>`, bg: p.inks[0] };
 }
 
 // random harmonious palettes. kind: 'poster', 'random' (Fangor discs), 'ring' (inks run hole, bands..., halo) or 'dream'
@@ -177,7 +184,7 @@ function randomPalette(kind, rnd = Math.random) {
 
 const MOTIFS={stripes,rings,mosaic,blob,diagonals,steps,fangor,ring,dream};
 function generate(motif,palette,seed,w,h,o={}){const r=rng(seed),p=typeof palette==='string'?PALETTES[palette]:palette,m=MOTIFS[motif](r,p,w,h,o);
- return `<svg xmlns="http://www.w3.org/2000/svg" width="${w}" height="${h}" viewBox="0 0 ${w} ${h}"><defs>${m.defs||''}</defs><rect width="${w}" height="${h}" fill="${m.bg||p.paper}"/>${m.body}</svg>`;}
+ return `<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="${w}" height="${h}" viewBox="0 0 ${w} ${h}"><defs>${m.defs||''}</defs><rect width="${w}" height="${h}" fill="${m.bg||p.paper}"/>${m.body}</svg>`;}
 
 // ---- CLI (node only) ----
 if (typeof module !== 'undefined' && typeof require !== 'undefined' && require.main === module) {
@@ -196,7 +203,7 @@ if (typeof module !== 'undefined' && typeof require !== 'undefined' && require.m
   if (!MOTIFS[motif] || (!PALETTES[palette] && !rc)) { console.error('motifs:', Object.keys(MOTIFS).join(' '), '| palettes:', Object.keys(PALETTES).join(' ')); process.exit(1); }
   const num = k => (get(k) ? +get(k) : undefined);
   const pal = rc ? randomPalette(kindOf(motif), rng(seed * 2 + 1)) : palette;
-  const svg = generate(motif, pal, seed, w, h, { size: num('circle'), x: num('x'), y: num('y'), grain: num('grain') });
+  const svg = generate(motif, pal, seed, w, h, { size: num('circle'), x: num('x'), y: num('y'), grain: num('grain'), angle: num('angle'), amp: num('amp'), wave: num('wavelength'), softness: num('softness') });
   console.error(`motif=${motif} palette=${rc ? 'random(seeded)' : palette} seed=${seed} size=${w}x${h}`);
   if (get('out')) require('fs').writeFileSync(get('out'), svg); else process.stdout.write(svg);
 }

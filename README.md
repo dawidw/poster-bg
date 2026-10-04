@@ -21,8 +21,8 @@ The same motif, palette and seed always give the same image, so any result can b
 |---|---|---|
 | ![Dream, navy](examples/dream-navy.svg) | ![Dream, sun](examples/dream-sun.svg) | ![Fangor, blue](examples/fangor-blue.svg) |
 | `dream` · `dream_navy` | `dream` · `dream_sun` | `fangor` · `fangor_blue` |
-| ![Ring, orchid](examples/ring-orchid.svg) | ![Ring, flame](examples/ring-flame.svg) | |
-| `ring` · `soft_orchid` | `ring` · `soft_flame` | |
+| ![Ring, orchid](examples/ring-orchid.svg) | ![Ring, flame](examples/ring-flame.svg) | ![Dream, azure](examples/dream-azure.svg) |
+| `ring` · `soft_orchid` | `ring` · `soft_flame` | `dream` · `dream_azure` · `--amp 1.5 --wavelength 0.8` |
 
 ## Use it from the command line
 
@@ -47,6 +47,8 @@ It prints `motif=… palette=… seed=… size=…` to stderr, which is the reci
 | `--colors random` | harmonious random colors (seeded) |
 | `--seed N`, `--size WxH` | seed and size (default 1200x1600) |
 | `--circle N`, `--x N`, `--y N` | size (0.5 to 1.5) and centre (0 to 1) for `ring`, `fangor`, `dream` |
+| `--angle N` | rotation in degrees: wave direction for `dream`, tilt of the ellipses for `fangor` |
+| `--amp N`, `--wavelength N`, `--softness N` | `dream` only: wave height, length and edge softness (about 0.2 to 2.5) |
 | `--grain N` | mosaic tiles across the width (5 to 30) |
 
 Run the script with an unknown palette name to list all motifs and palettes.
@@ -72,13 +74,17 @@ python3 -m http.server
 # then open http://localhost:8000/generator/
 ```
 
-Live: <https://dawidw.github.io/poster-bg-skill/generator/>
+Live: <https://dawidw.github.io/poster-bg-skill/generator/>. The landing page is at <https://dawidw.github.io/poster-bg-skill/>.
 
 ## How it works
 
 Every motif is a function `(r, palette, w, h, options) → { defs, body }` built from plain SVG shapes and gradients, driven by a seeded random generator. There are no filters: even the soft edges of `dream` come from stacks of translucent strokes, so the output imports into design tools as ordinary vectors.
 
 New palettes are one entry in `PALETTES`; new motifs are one function registered in `MOTIFS` (see the skill's "Extending" section).
+
+## Roadmap
+
+Candidate motifs from the Polish poster tradition (oscillogram, stripes with a disc, multiply and rotate, cut-outs and more) are collected in [docs/motif-research.md](docs/motif-research.md).
 
 ## Credits
 

@@ -20,13 +20,13 @@ const pick = a => a[Math.floor(Math.random() * a.length)];
 const uri = s => "data:image/svg+xml;charset=utf-8," + encodeURIComponent(s);
 
 // group: poster | fangor. variant (fangor only): random | ring | dream
-const S = { group: "poster", variant: "random", motif: "stripes", palette: "baron", seed: 7, w: 1200, h: 1600, work: clone(PALETTES.baron), modified: false, size: null, cx: null, cy: null, grain: null };
+const S = { group: "poster", variant: "random", motif: "stripes", palette: "baron", seed: 7, w: 1200, h: 1600, work: clone(PALETTES.baron), modified: false, size: null, cx: null, cy: null, grain: null, angle: null, amp: null, wave: null, softness: null };
 let hist = [], lastSig = "", toastT;
 
 const kind = () => (S.group === "poster" ? "poster" : S.variant);
 const motifName = () => (S.group === "poster" ? S.motif : VARIANT_MOTIF[S.variant]);
 const palettesOf = k => Object.keys(PALETTES).filter(n => (k === "poster" ? !/^(fangor|soft_|dream_)/.test(n) : n.startsWith(PREFIX[k])));
-const opts = () => ({ size: S.size ?? undefined, x: S.cx ?? undefined, y: S.cy ?? undefined, grain: S.grain ?? undefined });
+const opts = () => ({ size: S.size ?? undefined, x: S.cx ?? undefined, y: S.cy ?? undefined, grain: S.grain ?? undefined, angle: S.angle ?? undefined, amp: S.amp ?? undefined, wave: S.wave ?? undefined, softness: S.softness ?? undefined });
 const svg = () => generate(motifName(), S.work, S.seed, S.w, S.h, opts());
 const minInks = () => (S.variant === "ring" && S.group === "fangor" ? 3 : 2);
 
@@ -38,6 +38,8 @@ function fillSelects() {
   $("motif-field").hidden = S.group !== "poster";
   $("variant-field").hidden = S.group === "poster";
   $("size-field").hidden = S.group === "poster";
+  $("rotate-field").hidden = !(S.group === "fangor" && S.variant !== "ring");
+  $("wave-field").hidden = !(S.group === "fangor" && S.variant === "dream");
 }
 function fillSizes() {
   $("sizes").innerHTML = SIZES.map(([n, w, h]) => `<button type="button" data-w="${w}" data-h="${h}" aria-pressed="${S.w === w && S.h === h}">${n}</button>`).join("");
@@ -65,6 +67,11 @@ function render(push = true) {
   $("csizeVal").textContent = S.size == null ? "Auto" : S.size.toFixed(2) + "×";
   $("cx").value = S.cx ?? .5; $("cxVal").textContent = S.cx == null ? "Auto" : Math.round(S.cx * 100) + "%";
   $("cy").value = S.cy ?? .5; $("cyVal").textContent = S.cy == null ? "Auto" : Math.round(S.cy * 100) + "%";
+  $("sizeLbl").textContent = S.variant === "dream" ? "Zoom and position" : "Circle";
+  $("rot").value = S.angle ?? 0; $("rotVal").textContent = S.angle == null ? "Auto" : S.angle + "°";
+  $("amp").value = S.amp ?? 1; $("ampVal").textContent = S.amp == null ? "Auto" : S.amp.toFixed(2) + "×";
+  $("wave").value = S.wave ?? 1; $("waveVal").textContent = S.wave == null ? "Auto" : S.wave.toFixed(2) + "×";
+  $("soft").value = S.softness ?? 1; $("softVal").textContent = S.softness == null ? "Auto" : S.softness.toFixed(2) + "×";
   $("grain-field").hidden = !(S.group === "poster" && S.motif === "mosaic");
   $("grain").value = S.grain ?? 11; $("grainVal").textContent = S.grain == null ? "Auto" : S.grain + " across";
   $("seed").value = S.seed; $("w").value = S.w; $("h").value = S.h;
@@ -72,7 +79,7 @@ function render(push = true) {
   $("g-fangor").setAttribute("aria-pressed", S.group === "fangor");
   for (const v of Object.keys(VARIANT_MOTIF)) $("v-" + v).setAttribute("aria-pressed", S.variant === v);
   document.querySelectorAll("#sizes button").forEach(b => b.setAttribute("aria-pressed", +b.dataset.w === S.w && +b.dataset.h === S.h));
-  const sig = [motifName(), S.palette, S.seed, S.w, S.h, S.size, S.cx, S.cy, S.grain, JSON.stringify(S.work)].join("|");
+  const sig = [motifName(), S.palette, S.seed, S.w, S.h, S.size, S.cx, S.cy, S.grain, S.angle, S.amp, S.wave, S.softness, JSON.stringify(S.work)].join("|");
   if (push && sig !== lastSig) {
     lastSig = sig;
     hist.unshift({ sig, state: clone(S), thumb: uri(generate(motifName(), S.work, S.seed, Math.round(S.w / 4), Math.round(S.h / 4), opts())) });
@@ -113,7 +120,7 @@ function rollAll() {
   if ($("randColors").checked) { S.work = randomPalette(kind(), Math.random); S.modified = true; S.palette = palettesOf(kind())[0]; }
   else if (!$("lockPalette").checked || !palettesOf(kind()).includes(S.palette)) resetPalette(pick(palettesOf(kind())));
   S.seed = Math.floor(Math.random() * 100000);
-  S.size = null; S.cx = null; S.cy = null; S.grain = null;
+  S.size = null; S.cx = null; S.cy = null; S.grain = null; S.angle = null; S.amp = null; S.wave = null; S.softness = null;
   fillSelects(); fillSwatches(); render();
 }
 function addInk() {
@@ -146,6 +153,12 @@ $("rollColors").onclick = rollColors;
 $("csize").oninput = e => { S.size = +e.target.value; render(); };
 $("cx").oninput = e => { S.cx = +e.target.value; render(); };
 $("cy").oninput = e => { S.cy = +e.target.value; render(); };
+$("rot").oninput = e => { S.angle = +e.target.value; render(); };
+$("rotAuto").onclick = () => { S.angle = null; render(); };
+$("amp").oninput = e => { S.amp = +e.target.value; render(); };
+$("wave").oninput = e => { S.wave = +e.target.value; render(); };
+$("soft").oninput = e => { S.softness = +e.target.value; render(); };
+$("waveAuto").onclick = () => { S.amp = null; S.wave = null; S.softness = null; render(); };
 $("grain").oninput = e => { S.grain = +e.target.value; render(); };
 $("grainAuto").onclick = () => { S.grain = null; render(); };
 $("csizeAuto").onclick = () => { S.size = null; S.cx = null; S.cy = null; render(); };
@@ -205,7 +218,7 @@ $("dlPng").onclick = () => {
 };
 $("copyCmd").onclick = () => {
   const cmd = `node scripts/gen.js --motif ${motifName()} --palette ${S.palette} --seed ${S.seed} --size ${S.w}x${S.h}` +
-    (S.size != null ? ` --circle ${S.size.toFixed(2)}` : "") + (S.cx != null ? ` --x ${S.cx.toFixed(2)}` : "") + (S.cy != null ? ` --y ${S.cy.toFixed(2)}` : "") + (S.grain != null ? ` --grain ${S.grain}` : "") + " --out bg.svg";
+    (S.size != null ? ` --circle ${S.size.toFixed(2)}` : "") + (S.cx != null ? ` --x ${S.cx.toFixed(2)}` : "") + (S.cy != null ? ` --y ${S.cy.toFixed(2)}` : "") + (S.grain != null ? ` --grain ${S.grain}` : "") + (S.angle != null ? ` --angle ${S.angle}` : "") + (S.amp != null ? ` --amp ${S.amp.toFixed(2)}` : "") + (S.wave != null ? ` --wavelength ${S.wave.toFixed(2)}` : "") + (S.softness != null ? ` --softness ${S.softness.toFixed(2)}` : "") + " --out bg.svg";
   const note = S.modified ? " Custom colors are not part of the command." : "";
   if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(cmd).then(() => toast("Command copied." + note), () => toast(cmd));
   else toast(cmd);
