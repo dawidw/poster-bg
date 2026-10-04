@@ -244,6 +244,31 @@ MOTIF_OPTS.scope = [
   { key: 'rings', label: 'Rings mode', min: 0, max: 1, step: 1, def: 0 },
 ];
 
+// Zamecznik's 1961 film poster: vertical stripes in one half, horizontal in the other, a big solid disc on top
+// with a few bars cut into it. Stripe pairs are ink / paper, bars use the accent.
+function stripedisc(r, p, w, h, o = {}) {
+  const c1 = r(), c2 = r(), c3 = r(), c4 = r(), c5 = r();
+  const m = Math.min(w, h), sw = m * (.026 + c1 * .03) * (o.width ?? 1), split = h * (.42 + c2 * .16);
+  const R = m * (.26 + c3 * .12) * (o.disc ?? 1), cx = w * (o.x ?? .5), cy = h * (o.y ?? (.4 + c4 * .2));
+  const bars = Math.round(o.bars ?? 3 + Math.floor(c5 * 5));
+  const ink = p.dark, paper = p.paper, acc = p.accent;
+  let body = `<defs></defs>`;
+  const defs = `<clipPath id="sd"><circle cx="${f(cx)}" cy="${f(cy)}" r="${f(R)}"/></clipPath>`;
+  for (let x = 0; x < w; x += sw * 2) body += `<rect x="${f(x)}" y="0" width="${f(sw)}" height="${f(split)}" fill="${ink}"/>`;
+  for (let y = split; y < h; y += sw * 2) body += `<rect x="0" y="${f(y)}" width="${f(w)}" height="${f(sw)}" fill="${ink}"/>`;
+  body += `<circle cx="${f(cx)}" cy="${f(cy)}" r="${f(R)}" fill="${ink}"/><g clip-path="url(#sd)">`;
+  const by = cy + R * .1, bh = (R * .9) / (bars * 2);
+  for (let k = 0; k < bars; k++) body += `<rect x="${f(cx - R)}" y="${f(by + k * bh * 2)}" width="${f(2 * R)}" height="${f(bh)}" fill="${acc}"/>`;
+  return { defs, body: body + '</g>', bg: paper };
+}
+MOTIF_OPTS.stripedisc = [
+  { key: 'width', label: 'Stripe width', min: .5, max: 2.5, step: .01, def: 1 },
+  { key: 'disc', label: 'Disc size', min: .4, max: 1.8, step: .01, def: 1 },
+  { key: 'bars', label: 'Disc bars', min: 0, max: 12, step: 1, def: 4 },
+  { key: 'x', label: 'Disc x', min: 0, max: 1, step: .005, def: .5 },
+  { key: 'y', label: 'Disc y', min: 0, max: 1, step: .005, def: .5 },
+];
+
 // random harmonious palettes. kind: 'poster', 'random' (Fangor discs), 'ring' (inks run hole, bands..., halo) or 'dream'
 function hsl(h, s, l) {
   h = ((h % 360) + 360) % 360; s /= 100; l /= 100;
@@ -271,7 +296,7 @@ function randomPalette(kind, rnd = Math.random) {
 }
 
 MOTIF_OPTS.squares=[{key:'round',label:'Corners',min:0,max:.5,step:.01,def:.1},{key:'hole',label:'Centre',min:.04,max:.45,step:.01,def:.15},{key:'soft',label:'Softness',min:.2,max:2.5,step:.01,def:1}];
-const MOTIFS={stripes,rings,mosaic,blob,diagonals,steps,fangor,ring,squares,dream,stripewave,scope};
+const MOTIFS={stripes,rings,mosaic,blob,diagonals,steps,fangor,ring,squares,dream,stripewave,scope,stripedisc};
 function generate(motif,palette,seed,w,h,o={}){const r=rng(seed),p=typeof palette==='string'?PALETTES[palette]:palette,m=MOTIFS[motif](r,p,w,h,o);
  return `<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="${w}" height="${h}" viewBox="0 0 ${w} ${h}"><defs>${m.defs||''}</defs><rect width="${w}" height="${h}" fill="${m.bg||p.paper}"/>${m.body}</svg>`;}
 
