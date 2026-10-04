@@ -18,7 +18,8 @@
     :focus-visible { outline:2px solid var(--fg); outline-offset:3px; }
     .mono { font-family:var(--mono); }
     nav { display:flex; justify-content:space-between; align-items:center; padding:22px var(--gutter); border-bottom:1px solid var(--line); }
-    .logo { font:800 20px/1 var(--display); letter-spacing:-.02em; text-decoration:none; }
+    .logo { font:800 20px/1 var(--display); letter-spacing:-.02em; text-decoration:none; white-space:nowrap; }
+    @media (max-width:520px) { .logo { font-size:17px; } nav a.link { margin-left:16px; } }
     nav a.link { font-size:15px; opacity:.8; text-decoration:none; margin-left:24px; }
     nav a.link:hover { opacity:1; }
     main { padding:clamp(48px,8vw,100px) var(--gutter) 80px; max-width:1280px; margin:0 auto; }
@@ -101,7 +102,7 @@
   </main>
   <footer>Part of <a href="../">Study of Space</a>. MIT licensed. <a href="https://github.com/dawidw/poster-bg/blob/main/docs/motif-research.md">Plain-text version of these notes</a><br><span class="made">made with 🤍 in 🇵🇱 Poland by <a href="https://x.com/dawidwu" target="_blank" rel="noopener">Dawid W</a></span></footer>
 
-  <script src="../poster-bg/scripts/gen.js?v=202610042040"></script>
+  <script src="../poster-bg/scripts/gen.js?v=202610042130"></script>
   <script>
     const uri = s => "data:image/svg+xml;charset=utf-8," + encodeURIComponent(s);
     const sk = {

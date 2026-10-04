@@ -36,8 +36,10 @@
     .grain { position: absolute; inset: 0; z-index: -1; pointer-events: none; opacity: .22; mix-blend-mode: overlay;
       background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E"); }
 
-    nav { display: flex; align-items: center; justify-content: space-between; padding: 22px var(--gutter); }
-    .logo { font: 800 20px/1 var(--display); letter-spacing: -.02em; text-decoration: none; }
+    nav { position: relative; z-index: 60; display: flex; align-items: center; justify-content: space-between; padding: 22px var(--gutter); }
+    .logo { font: 800 20px/1 var(--display); letter-spacing: -.02em; text-decoration: none; white-space: nowrap; }
+    .menu-btn { display: none; }
+    .sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
     nav ul { display: flex; gap: 28px; list-style: none; margin: 0; padding: 0; font-size: 15px; }
     nav a { text-decoration: none; opacity: .8; transition: opacity .2s; }
     nav a:hover { opacity: 1; }
@@ -170,7 +172,23 @@
     .reveal.in { opacity: 1; transform: none; }
 
     @media (max-width: 720px) {
-      nav ul { gap: 18px; }
+      .logo { font-size: 18px; }
+      nav { padding-block: 18px; }
+      .menu-btn { display: inline-flex; align-items: center; justify-content: center; width: 44px; height: 44px; margin-right: -10px; border: 0; background: transparent; color: #fff; cursor: pointer; position: relative; z-index: 61; }
+      .menu-btn .bars, .menu-btn .bars::before { content: ""; display: block; width: 22px; height: 2px; background: currentColor; transition: transform .3s ease, background .3s; }
+      .menu-btn .bars { position: relative; transform: translateY(-4px); }
+      .menu-btn .bars::before { position: absolute; left: 0; top: 8px; }
+      nav.open .menu-btn .bars { transform: rotate(45deg); }
+      nav.open .menu-btn .bars::before { top: 0; transform: rotate(-90deg); }
+      nav ul { display: none; }
+      nav.open ul { display: flex; position: fixed; inset: 0; z-index: 60; flex-direction: column; justify-content: center; align-items: flex-start; gap: 6px; padding: 80px var(--gutter) 40px; background: rgba(0, 0, 0, .94); -webkit-backdrop-filter: blur(14px); backdrop-filter: blur(14px); }
+      nav.open ul a { display: block; padding: 6px 0; font: 800 clamp(2rem, 11vw, 3rem)/1.1 var(--display); letter-spacing: -.03em; opacity: 1; }
+      nav.open ul li:last-child a, nav.open ul li:nth-last-child(2) a { opacity: .6; }
+      h1 { font-size: clamp(1.7rem, 8.2vw, 3rem); }
+      .eyebrow { margin-bottom: 14px; }
+      .lede { margin-top: 20px; }
+      .cta { margin-top: 24px; }
+      .btn { height: 46px; padding: 0 20px; }
       .recipe { display: none; }
       .shade { background: linear-gradient(0deg, rgba(0,0,0,.92) 0%, rgba(0,0,0,.55) 55%, rgba(0,0,0,.15) 100%); }
     }
@@ -189,7 +207,8 @@
 
     <nav>
       <a class="logo" href="#top">Study of Space</a>
-      <ul>
+      <button class="menu-btn" id="menuBtn" type="button" aria-expanded="false" aria-controls="menu"><span class="bars" aria-hidden="true"></span><span class="sr">Menu</span></button>
+      <ul id="menu">
         <li><a href="#motifs">Motifs</a></li>
         <li><a href="#history">History</a></li>
         <li><a href="#use">Use it</a></li>
@@ -324,7 +343,7 @@ node poster-bg/scripts/gen.js --ring --colors random \
     </div>
   </footer>
 
-  <script src="poster-bg/scripts/gen.js?v=202610042040"></script>
+  <script src="poster-bg/scripts/gen.js?v=202610042130"></script>
   <script>
     const uri = s => "data:image/svg+xml;charset=utf-8," + encodeURIComponent(s);
 
@@ -437,6 +456,16 @@ node poster-bg/scripts/gen.js --ring --colors random \
       scroller.addEventListener("scroll", () => { if (!ticking) { ticking = true; requestAnimationFrame(pick); } }, { passive: true });
       lis.forEach((li, k) => li.addEventListener("click", () => li.scrollIntoView({ block: "center", behavior: "smooth" })));
       pick();
+    })();
+
+    /* mobile menu */
+    (function () {
+      const nav = document.querySelector("nav"), btn = document.getElementById("menuBtn");
+      const set = open => { nav.classList.toggle("open", open); btn.setAttribute("aria-expanded", open); document.documentElement.style.overflow = open ? "hidden" : ""; };
+      btn.addEventListener("click", () => set(!nav.classList.contains("open")));
+      nav.querySelectorAll("#menu a").forEach(a => a.addEventListener("click", () => set(false)));
+      document.addEventListener("keydown", e => { if (e.key === "Escape") set(false); });
+      matchMedia("(min-width: 721px)").addEventListener("change", e => { if (e.matches) set(false); });
     })();
 
     /* copy buttons */
