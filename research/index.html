@@ -1,0 +1,149 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Research: Polish geometric posters</title>
+  <meta name="description" content="Research notes on Polish geometric and op-art posters, and the motifs they inspired in poster-bg.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Syne:wght@600;800&family=JetBrains+Mono:wght@400;500&family=Instrument+Sans:wght@400;500;600&display=swap">
+  <style>
+    :root { --bg:#000; --fg:#fff; --muted:#9b9b9b; --line:#222; --card:#0b0b0b; --ok:#8be28b; --soon:#f2c14e;
+      --display:"Syne","Helvetica Neue",Arial,sans-serif; --body:"Instrument Sans",system-ui,-apple-system,"Segoe UI",sans-serif; --mono:"JetBrains Mono",ui-monospace,Menlo,Consolas,monospace;
+      --gutter:clamp(20px,4vw,56px); color-scheme:dark; }
+    * { box-sizing:border-box; }
+    body { margin:0; background:var(--bg); color:var(--fg); font:17px/1.55 var(--body); -webkit-font-smoothing:antialiased; }
+    a { color:inherit; }
+    :focus-visible { outline:2px solid var(--fg); outline-offset:3px; }
+    .mono { font-family:var(--mono); }
+    nav { display:flex; justify-content:space-between; align-items:center; padding:22px var(--gutter); border-bottom:1px solid var(--line); }
+    .logo { font:800 20px/1 var(--display); letter-spacing:-.02em; text-decoration:none; }
+    nav a.link { font-size:15px; opacity:.8; text-decoration:none; margin-left:24px; }
+    nav a.link:hover { opacity:1; }
+    main { padding:clamp(48px,8vw,100px) var(--gutter) 80px; max-width:1280px; margin:0 auto; }
+    .eyebrow { font:500 12px/1 var(--mono); letter-spacing:.14em; text-transform:uppercase; color:var(--muted); margin-bottom:20px; }
+    h1 { margin:0; font:800 clamp(2.2rem,6vw,5.5rem)/.95 var(--display); letter-spacing:-.04em; text-wrap:balance; }
+    h2 { margin:clamp(56px,8vw,96px) 0 12px; font:800 clamp(1.6rem,3.4vw,2.6rem)/1 var(--display); letter-spacing:-.03em; }
+    .lede { max-width:680px; color:rgba(255,255,255,.8); margin:24px 0 0; }
+    .count { margin-top:20px; font:500 13px/1 var(--mono); color:var(--muted); }
+    .count b { color:var(--ok); font-weight:500; }
+    .facts { display:grid; grid-template-columns:repeat(auto-fit,minmax(min(100%,340px),1fr)); gap:16px; margin-top:24px; }
+    .fact { border:1px solid var(--line); background:var(--card); padding:22px; }
+    .fact h3 { margin:0 0 8px; font:800 1.15rem/1.1 var(--display); letter-spacing:-.02em; }
+    .fact p { margin:0; color:var(--muted); font-size:15px; }
+    .fact a { color:var(--fg); }
+    .grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(min(100%,270px),1fr)); gap:34px 22px; margin-top:28px; }
+    figure { margin:0; }
+    .shot { display:block; position:relative; aspect-ratio:3/4; background:var(--card); overflow:hidden; }
+    .shot svg, .shot img { display:block; width:100%; height:100%; object-fit:cover; transition:transform .8s cubic-bezier(.2,.7,.2,1); }
+    a.shot:hover img { transform:scale(1.05); }
+    .badge { position:absolute; left:10px; top:10px; font:500 11px/1 var(--mono); letter-spacing:.06em; text-transform:uppercase; padding:6px 8px; background:rgba(0,0,0,.72); color:var(--soon); border:1px solid rgba(255,255,255,.18); }
+    .badge.built { color:var(--ok); }
+    figcaption b { display:block; margin-top:12px; font:800 1.2rem/1.15 var(--display); letter-spacing:-.02em; }
+    .n { display:inline-block; width:22px; height:22px; border-radius:50%; background:var(--fg); color:#000; text-align:center; font:600 12px/22px var(--body); margin-right:8px; vertical-align:2px; }
+    .src { color:var(--muted); font-size:14px; margin-top:2px; }
+    .ctl { font:400 12px/1.5 var(--mono); color:#cfcfcf; margin-top:6px; }
+    ul.plain { padding-left:1.1em; color:rgba(255,255,255,.82); max-width:760px; }
+    ul.plain li { margin:6px 0; }
+    .src-list a { color:var(--fg); }
+    footer { border-top:1px solid var(--line); padding:32px var(--gutter) 56px; color:var(--muted); font-size:14px; }
+    footer a { color:var(--fg); }
+  </style>
+</head>
+<body>
+  <nav>
+    <a class="logo" href="../">poster-bg</a>
+    <div><a class="link" href="../generator/">Generator</a><a class="link" href="https://github.com/dawidw/poster-bg-skill">GitHub</a></div>
+  </nav>
+  <main>
+    <div class="eyebrow">Research</div>
+    <h1>Polish geometric posters, and what we built from them</h1>
+    <p class="lede">Notes from the Polish School of Posters, Fangor, Zamecznik, the Cyrk circus posters and the Polish constructivists, turned into a list of motifs. Every card below is either drawn live by the generator or still a rough sketch.</p>
+    <div class="count" id="count"></div>
+
+    <h2>What the sources say</h2>
+    <div class="facts">
+      <div class="fact"><h3>The school</h3><p>Economy of form, expressive irony and new lettering. In the 1960s and 70s artists also worked with abstraction and op art, including blurred circles and waves of color. <a href="https://pl.wikipedia.org/wiki/Polska_szko%C5%82a_plakatu">Wikipedia PL</a></p></div>
+      <div class="fact"><h3>Zamecznik</h3><p>A poster as "a mathematical operation": two or three elements, built from prefabricated parts. Geometric repetition, inversions, hand lettering, restrained palettes. Sound drawn as an oscillogram zigzag or waves spreading in circles. <a href="https://faf.org.pl/galleries/wojciech-zamecznik/creativity/posters/?lang=en">FAF</a></p></div>
+      <div class="fact"><h3>Fangor and Stańczak</h3><p>Fangor: pulsating squares of luminous color ringed by darker, softly diffusing bands. Stańczak, who gave op art its name in 1964: narrow vibrating stripes, straight and wavy, concentric squares, grids. <a href="https://en.wikipedia.org/wiki/Wojciech_Fangor">Fangor</a>, <a href="https://en.wikipedia.org/wiki/Julian_Stanczak">Stańczak</a></p></div>
+      <div class="fact"><h3>Cyrk and Hilscher</h3><p>One theme, a metaphor, geometric reduction, high-contrast color. Second-generation designers worked in a more restrained, often abstract way. <a href="https://www.circopedia.org/The_Polish_%22Cyrk%22_Posters">Circopedia</a></p></div>
+      <div class="fact"><h3>Lenica, Młodożeniec, Świerzy</h3><p>Lenica: paper cut-outs. Młodożeniec: bright stains in thick black outlines, strong lettering. Świerzy: abstract rhythmic waves of color for Warsaw Autumn. <a href="https://cinemawavesblog.com/film-blog/polish-school-of-posters-explained/">Cinema Waves</a>, <a href="https://polishposter.com/3817-the-warsaw-autumn-polish-poster.html">Polish Poster</a></p></div>
+      <div class="fact"><h3>Constructivism</h3><p>Szczuka, Żarnower, Strzemiński and Kobro: Strzemiński's unism (unity of color, line and rhythm), typography built from letters like blocks. <a href="https://en.wikipedia.org/wiki/W%C5%82adys%C5%82aw_Strzemi%C5%84ski">Wikipedia</a>, <a href="https://www.moma.org/docs/press_archives/5347/releases/MOMA_1976_0006_6.pdf">MoMA</a></p></div>
+    </div>
+
+    <h2>Motifs</h2>
+    <p class="lede" style="margin-top:0">Built motifs open in the generator with the same recipe. Planned ones are concept sketches.</p>
+    <div class="grid" id="grid"></div>
+
+    <h2>Palettes that go with them</h2>
+    <ul class="plain">
+      <li>Zamecznik: black, white and one cold blue or red accent.</li>
+      <li>Cyrk: saturated primary pairs on cream, with black.</li>
+      <li>Młodożeniec: pink, yellow, green and orange on white with black line.</li>
+      <li>Constructivists: red, black and cream.</li>
+    </ul>
+
+    <h2>Caveat</h2>
+    <p class="lede" style="margin-top:0">These are style ideas and techniques. The motifs stay generic (stripes, rings, waves, cut-outs), never a reconstruction of a specific poster or its lettering. The descriptions come from public pages about the artists, not from studying the posters one by one.</p>
+
+    <h2>Sources</h2>
+    <ul class="plain src-list">
+      <li><a href="https://pl.wikipedia.org/wiki/Polska_szko%C5%82a_plakatu">Polska szkoła plakatu (Wikipedia)</a></li>
+      <li><a href="https://faf.org.pl/galleries/wojciech-zamecznik/creativity/posters/?lang=en">Wojciech Zamecznik posters, Fundacja Archeologia Fotografii</a></li>
+      <li><a href="https://www.circopedia.org/The_Polish_%22Cyrk%22_Posters">The Polish "Cyrk" posters, Circopedia</a></li>
+      <li><a href="https://cinemawavesblog.com/film-blog/polish-school-of-posters-explained/">Polish School of Posters explained, Cinema Waves</a></li>
+      <li><a href="https://en.wikipedia.org/wiki/Wojciech_Fangor">Wojciech Fangor (Wikipedia)</a>, <a href="https://en.wikipedia.org/wiki/Julian_Stanczak">Julian Stańczak (Wikipedia)</a></li>
+      <li><a href="https://polishposter.com/3817-the-warsaw-autumn-polish-poster.html">The Warsaw Autumn, Polish Poster</a></li>
+      <li><a href="https://en.wikipedia.org/wiki/W%C5%82adys%C5%82aw_Strzemi%C5%84ski">Władysław Strzemiński (Wikipedia)</a>, <a href="https://www.moma.org/docs/press_archives/5347/releases/MOMA_1976_0006_6.pdf">Constructivism in Poland 1923 to 1936 (MoMA)</a></li>
+      <li><a href="https://www.limitedruns.com/blog/rock-gig/jazz-and-the-polish-posters/">Jazz and the Polish posters, Limited Runs</a></li>
+    </ul>
+  </main>
+  <footer>Part of <a href="../">poster-bg</a>. MIT licensed. <a href="https://github.com/dawidw/poster-bg-skill/blob/main/docs/motif-research.md">Plain-text version of these notes</a></footer>
+
+  <script src="../poster-bg/scripts/gen.js?v=202610041947"></script>
+  <script>
+    const uri = s => "data:image/svg+xml;charset=utf-8," + encodeURIComponent(s);
+    const sk = {
+      squares: () => `<rect width="300" height="400" fill="#ede6d8"/><rect x="40" y="90" width="220" height="220" rx="10" fill="#c8283a"/><rect x="70" y="120" width="160" height="160" rx="8" fill="#1a2347"/><rect x="104" y="154" width="92" height="92" rx="6" fill="#2a8fd0"/><rect x="132" y="182" width="36" height="36" fill="#f4eee0"/>`,
+      stripewave: () => { let s = '<rect width="300" height="400" fill="#f1ece0"/>'; const c = ['#1a2347', '#e0382e', '#f1ece0', '#2a8fd0']; for (let i = -4; i < 22; i++) { let d = 'M-20 ' + i * 22; for (let x = -20; x <= 320; x += 10) d += `L${x} ${i * 22 + Math.sin(x / 38 + i * .05) * 26}`; d += `L320 ${i * 22 + 22}`; for (let x = 320; x >= -20; x -= 10) d += `L${x} ${i * 22 + 22 + Math.sin(x / 38 + i * .05) * 26}`; s += `<path d="${d}Z" fill="${c[((i % 4) + 4) % 4]}"/>`; } return s; },
+      scope: () => { let s = '<rect width="300" height="400" fill="#050505"/>'; for (let k = 0; k < 9; k++) { const y = 60 + k * 36, a = (k % 3) * 10 + 8; let d = ''; for (let x = 10; x <= 290; x += 8) d += (x == 10 ? 'M' : 'L') + x + ' ' + (y + ((x / 8) % 2 ? 1 : -1) * a * Math.sin((x - 10) / 280 * Math.PI)); s += `<path d="${d}" fill="none" stroke="${k == 5 ? '#e0382e' : '#f4f4f4'}" stroke-width="${k == 5 ? 3 : 1.5}"/>`; } return s; },
+      stripedisc: () => { let s = '<rect width="300" height="400" fill="#f4f4f4"/>'; for (let x = 0; x < 300; x += 20) s += `<rect x="${x}" width="10" height="200" fill="#111"/>`; for (let y = 200; y < 400; y += 20) s += `<rect y="${y}" width="300" height="10" fill="#111"/>`; return s + '<circle cx="150" cy="200" r="92" fill="#111"/>'; },
+      construct: () => `<rect width="300" height="400" fill="#efe8d8"/><rect x="30" y="40" width="240" height="40" fill="#111"/><rect x="30" y="100" width="40" height="260" fill="#d62a1f"/><circle cx="190" cy="230" r="80" fill="#d62a1f"/><polygon points="90,360 270,150 270,175 110,360" fill="#111"/>`,
+      cutout: () => `<rect width="300" height="400" fill="#e8dfcb"/><polygon points="40,320 70,120 160,70 250,130 230,280 130,350" fill="#1a1a1a"/><polygon points="95,300 120,170 190,140 235,210 200,290" fill="#d62a1f"/><polygon points="140,250 160,190 205,185 210,235" fill="#f0c419"/>`,
+      bars: () => { let s = '<rect width="300" height="400" fill="#f0b21a"/>'; for (let i = 0; i < 14; i++) { const h = 60 + Math.abs(Math.sin(i * .55)) * 230; s += `<rect x="${14 + i * 20}" y="${390 - h}" width="14" height="${h}" fill="${['#111', '#f4efe4', '#1a2347'][i % 3]}"/>`; } return s; },
+      rotor: () => { let s = '<rect width="300" height="400" fill="#101010"/><g transform="translate(150 200)">'; for (let i = 0; i < 16; i++) s += `<rect x="-6" y="-150" width="12" height="90" fill="${i % 2 ? '#f4f4f4' : '#d62a1f'}" transform="rotate(${i * 22.5})"/>`; return s + '</g>'; },
+      sunburst: () => { let s = '<rect width="300" height="400" fill="#f1ead8"/><g transform="translate(150 200)">'; const c = ['#d62a1f', '#f1ead8', '#1a2347', '#f0c419']; for (let i = 0; i < 24; i++) { const a = i * 15 * Math.PI / 180, b = (i + 1) * 15 * Math.PI / 180; s += `<path d="M0 0L${Math.cos(a) * 260} ${Math.sin(a) * 260}L${Math.cos(b) * 260} ${Math.sin(b) * 260}Z" fill="${c[i % 4]}"/>`; } return s + '<circle r="72" fill="#d62a1f"/><circle r="22" fill="#f0c419"/></g>'; },
+      outline: () => `<rect width="300" height="400" fill="#fbf8ef"/><path d="M60 150C40 90 120 60 170 90C230 70 250 150 220 190C250 250 190 300 130 280C80 300 30 230 60 150Z" fill="#ff4f9a" stroke="#111" stroke-width="10" transform="translate(8 6)"/><path d="M60 150C40 90 120 60 170 90C230 70 250 150 220 190C250 250 190 300 130 280C80 300 30 230 60 150Z" fill="none" stroke="#111" stroke-width="10"/>`,
+      halftone: () => { let s = '<rect width="300" height="400" fill="#f4efe4"/>'; for (let y = 10; y < 400; y += 18) for (let x = 10; x < 300; x += 18) { const d = Math.hypot(x - 150, y - 200) / 220; s += `<circle cx="${x}" cy="${y}" r="${Math.max(.5, 8 * (1 - d))}" fill="#111"/>`; } return s; },
+      moire: () => { let s = '<rect width="300" height="400" fill="#f4efe4"/><g stroke="#111" stroke-width="1.2">'; for (let x = 0; x < 300; x += 7) s += `<line x1="${x}" y1="0" x2="${x}" y2="400"/>`; s += '</g><g stroke="#111" stroke-width="1.2" transform="rotate(4 150 200)">'; for (let x = -20; x < 320; x += 7) s += `<line x1="${x}" y1="-20" x2="${x}" y2="420"/>`; return s + '</g>'; },
+    };
+    /* motif: generator motif name (card goes live when gen.js has it); pal/seed: the recipe shown */
+    const ITEMS = [
+      { name: "Pulsating squares", src: "Fangor mature works, Stańczak", ctl: "Corners, centre, softness, size, rotate, x/y", sk: "squares", motif: "squares", pal: "soft_orchid", seed: 7 },
+      { name: "Undulating stripes", src: "Julian Stańczak, parallel straight and wavy stripes", ctl: "Stripe width, wave height and length, drift, rotate", sk: "stripewave", motif: "stripewave", pal: "zamecznik", seed: 3 },
+      { name: "Oscillogram", src: "Zamecznik, Warsaw Autumn posters", ctl: "Lines, frequency, amplitude, rings mode", sk: "scope", motif: "scope", pal: "zamecznik", seed: 4 },
+      { name: "Stripes and disc", src: "Zamecznik, film poster 1961", ctl: "Stripe width, disc size, disc bars", sk: "stripedisc", motif: "stripedisc", pal: "zamecznik", seed: 2 },
+      { name: "Constructivist composition", src: "Szczuka, Żarnower, Strzemiński", ctl: "Elements, grid, layout seed", sk: "construct", motif: "construct", pal: "konstruktywizm", seed: 5 },
+      { name: "Cut-out", src: "Jan Lenica, paper cut-outs", ctl: "Shapes, ragged edges, layers", sk: "cutout", motif: "cutout", pal: "lenica", seed: 3 },
+      { name: "Rhythm bars", src: "Świerzy, music and jazz posters", ctl: "Bars, rhythm, mirror", sk: "bars", motif: "bars", pal: "jazz", seed: 6 },
+      { name: "Multiply and rotate", src: "Zamecznik, geometric repetition", ctl: "Copies, step, form, length", sk: "rotor", motif: "rotor", pal: "zamecznik", seed: 2 },
+      { name: "Sunburst and rings", src: "Hilscher and Cyrk circus posters", ctl: "Rays, rings, twist", sk: "sunburst", motif: "sunburst", pal: "cyrk", seed: 3 },
+      { name: "Outlined stains", src: "Jan Młodożeniec", ctl: "Stains, outline, off-register, wobble", sk: "outline", motif: "outline", pal: "mlodozeniec", seed: 4 },
+      { name: "Halftone", src: "Op art in general", ctl: "Dot size, angle, field", sk: "halftone", motif: "halftone", pal: "zamecznik", seed: 2 },
+      { name: "Moire", src: "Op art in general", ctl: "Line spacing, angle difference, rings", sk: "moire", motif: "moire", pal: "zamecznik", seed: 3 },
+    ];
+    let built = 0;
+    document.getElementById("grid").innerHTML = ITEMS.map((it, i) => {
+      const live = !!MOTIFS[it.motif];
+      if (live) built++;
+      const pal = PALETTES[it.pal] ? it.pal : Object.keys(PALETTES).find(k => !/^(fangor|soft_|dream_)/.test(k));
+      const shot = live
+        ? `<a class="shot" href="../generator/?motif=${it.motif}&palette=${pal}&seed=${it.seed}"><img loading="lazy" alt="${it.name}" src="${uri(generate(it.motif, pal, it.seed, 600, 800))}"><span class="badge built">Built</span></a>`
+        : `<div class="shot"><svg viewBox="0 0 300 400" role="img" aria-label="${it.name} sketch">${sk[it.sk]()}</svg><span class="badge">Planned</span></div>`;
+      return `<figure>${shot}<figcaption><b><span class="n">${i + 1}</span>${it.name}</b><div class="src">${it.src}</div><div class="ctl">${it.ctl}</div></figcaption></figure>`;
+    }).join("");
+    document.getElementById("count").innerHTML = `<b>${built}</b> of ${ITEMS.length} built`;
+  </script>
+</body>
+</html>

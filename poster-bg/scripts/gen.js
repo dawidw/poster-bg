@@ -156,6 +156,24 @@ function dream(r, p, w, h, o = {}) {
   return { defs: `<clipPath id="dc"><rect width="${w}" height="${h}"/></clipPath><path id="hp" d="${d}"/>`, body: `<g clip-path="url(#dc)">${body}</g>`, bg: p.inks[0] };
 }
 
+// nested soft-edged squares (Fangor's pulsating squares, Stanczak). inks run from the centre out: [hole, bands..., halo]
+function squares(r, p, w, h, o = {}) {
+  const n = p.inks.length, m = Math.min(w, h), K = 22, ALPHA = .11;
+  const jx = r(), jy = r(), rs = r(), rr = r(), hr = r();
+  const cx = w * (o.x ?? (.5 + (jx - .5) * .08)), cy = h * (o.y ?? (.5 + (jy - .5) * .08));
+  const Rb = m * .41 * (o.size ?? (.75 + rs * .5)), rnd = o.round ?? (.04 + rr * .12), hs = o.hole ?? (.1 + hr * .12), sf = o.soft ?? 1;
+  let body = '';
+  for (let i = n - 1; i >= 0; i--) {
+    const half = Rb * (i === 0 ? hs : hs + (1 - hs) * (i / (n - 1)));
+    const soft = Math.min(half * .95, Rb * (i === n - 1 ? .16 : i === 0 ? .05 : .09) * sf);
+    for (let j = 0; j < K; j++) {
+      const t = j / (K - 1), e = t * t * (3 - 2 * t), hh = half + soft * (1 - 2 * e);
+      body += `<rect x="${f(cx - hh)}" y="${f(cy - hh)}" width="${f(2 * hh)}" height="${f(2 * hh)}" rx="${f(Math.min(hh, rnd * 2 * hh))}" fill="${p.inks[i]}" fill-opacity="${ALPHA}"/>`;
+    }
+  }
+  return { defs: '', body: `<g transform="rotate(${o.angle ?? 0} ${f(cx)} ${f(cy)})">${body}</g>` };
+}
+
 // random harmonious palettes. kind: 'poster', 'random' (Fangor discs), 'ring' (inks run hole, bands..., halo) or 'dream'
 function hsl(h, s, l) {
   h = ((h % 360) + 360) % 360; s /= 100; l /= 100;
@@ -182,7 +200,10 @@ function randomPalette(kind, rnd = Math.random) {
   return { paper: hsl(h0, R(10, 30), R(84, 93)), dark: hsl(h0 + 180, R(25, 45), R(8, 16)), light: hsl(h0, R(30, 60), R(86, 94)), accent: hsl(h0 + R(150, 210), R(70, 90), R(50, 58)), inks };
 }
 
-const MOTIFS={stripes,rings,mosaic,blob,diagonals,steps,fangor,ring,dream};
+// per-motif settings: the generator page builds its sliders from this, the CLI accepts them as --key value
+const MOTIF_OPTS={};
+MOTIF_OPTS.squares=[{key:'round',label:'Corners',min:0,max:.5,step:.01,def:.1},{key:'hole',label:'Centre',min:.04,max:.45,step:.01,def:.15},{key:'soft',label:'Softness',min:.2,max:2.5,step:.01,def:1}];
+const MOTIFS={stripes,rings,mosaic,blob,diagonals,steps,fangor,ring,squares,dream};
 function generate(motif,palette,seed,w,h,o={}){const r=rng(seed),p=typeof palette==='string'?PALETTES[palette]:palette,m=MOTIFS[motif](r,p,w,h,o);
  return `<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="${w}" height="${h}" viewBox="0 0 ${w} ${h}"><defs>${m.defs||''}</defs><rect width="${w}" height="${h}" fill="${m.bg||p.paper}"/>${m.body}</svg>`;}
 
@@ -203,8 +224,10 @@ if (typeof module !== 'undefined' && typeof require !== 'undefined' && require.m
   if (!MOTIFS[motif] || (!PALETTES[palette] && !rc)) { console.error('motifs:', Object.keys(MOTIFS).join(' '), '| palettes:', Object.keys(PALETTES).join(' ')); process.exit(1); }
   const num = k => (get(k) ? +get(k) : undefined);
   const pal = rc ? randomPalette(kindOf(motif), rng(seed * 2 + 1)) : palette;
-  const svg = generate(motif, pal, seed, w, h, { size: num('circle'), x: num('x'), y: num('y'), grain: num('grain'), angle: num('angle'), amp: num('amp'), wave: num('wavelength'), softness: num('softness') });
+  const extra = {};
+  for (const o of (MOTIF_OPTS[motif] || [])) if (get(o.key) !== null) extra[o.key] = +get(o.key);
+  const svg = generate(motif, pal, seed, w, h, { size: num('circle'), x: num('x'), y: num('y'), grain: num('grain'), angle: num('angle'), amp: num('amp'), wave: num('wavelength'), softness: num('softness'), ...extra });
   console.error(`motif=${motif} palette=${rc ? 'random(seeded)' : palette} seed=${seed} size=${w}x${h}`);
   if (get('out')) require('fs').writeFileSync(get('out'), svg); else process.stdout.write(svg);
 }
-if (typeof module !== 'undefined') module.exports = { generate, PALETTES, MOTIFS, randomPalette };
+if (typeof module !== 'undefined') module.exports = { generate, PALETTES, MOTIFS, MOTIF_OPTS, randomPalette };

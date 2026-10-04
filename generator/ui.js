@@ -13,29 +13,43 @@ const PALETTE_LABEL = {
 };
 const SIZES = [["Portrait", 1200, 1600], ["Square", 1200, 1200], ["Landscape", 1440, 900], ["Card 16:10", 1280, 800], ["Banner", 1600, 500]];
 const POSTER_MOTIFS = Object.keys(MOTIF_LABEL);
-const VARIANT_MOTIF = { random: "fangor", ring: "ring", dream: "dream" };
-const PREFIX = { random: "fangor", ring: "soft_", dream: "dream_" };
+const VARIANT_MOTIF = { random: "fangor", ring: "ring", squares: "squares", dream: "dream" };
+const PREFIX = { random: "fangor", ring: "soft_", squares: "soft_", dream: "dream_" };
 const clone = o => JSON.parse(JSON.stringify(o));
 const pick = a => a[Math.floor(Math.random() * a.length)];
 const uri = s => "data:image/svg+xml;charset=utf-8," + encodeURIComponent(s);
 
 // group: poster | fangor. variant (fangor only): random | ring | dream
-const S = { group: "poster", variant: "random", motif: "stripes", palette: "baron", seed: 7, w: 1200, h: 1600, work: clone(PALETTES.baron), modified: false, size: null, cx: null, cy: null, grain: null, angle: null, amp: null, wave: null, softness: null };
+const S = { group: "poster", variant: "random", motif: "stripes", palette: "baron", seed: 7, w: 1200, h: 1600, work: clone(PALETTES.baron), modified: false, size: null, cx: null, cy: null, grain: null, angle: null, amp: null, wave: null, softness: null, opts: {} };
 let hist = [], lastSig = "", toastT;
 
 const kind = () => (S.group === "poster" ? "poster" : S.variant);
 const motifName = () => (S.group === "poster" ? S.motif : VARIANT_MOTIF[S.variant]);
 const palettesOf = k => Object.keys(PALETTES).filter(n => (k === "poster" ? !/^(fangor|soft_|dream_)/.test(n) : n.startsWith(PREFIX[k])));
-const opts = () => ({ size: S.size ?? undefined, x: S.cx ?? undefined, y: S.cy ?? undefined, grain: S.grain ?? undefined, angle: S.angle ?? undefined, amp: S.amp ?? undefined, wave: S.wave ?? undefined, softness: S.softness ?? undefined });
+const opts = () => ({ size: S.size ?? undefined, x: S.cx ?? undefined, y: S.cy ?? undefined, grain: S.grain ?? undefined, angle: S.angle ?? undefined, amp: S.amp ?? undefined, wave: S.wave ?? undefined, softness: S.softness ?? undefined, ...S.opts });
 const svg = () => generate(motifName(), S.work, S.seed, S.w, S.h, opts());
-const minInks = () => (S.variant === "ring" && S.group === "fangor" ? 3 : 2);
+const minInks = () => (S.group === "fangor" && (S.variant === "ring" || S.variant === "squares") ? 3 : 2);
 
+const motifOpts = () => MOTIF_OPTS[motifName()] || [];
+function buildOpts() {
+  const list = motifOpts();
+  $("opts-field").hidden = !list.length;
+  $("opts-grid").innerHTML = list.map(o => `<label for="o-${o.key}">${o.label}</label><input type="range" id="o-${o.key}" data-key="${o.key}" min="${o.min}" max="${o.max}" step="${o.step}" value="${o.def}"><span id="ov-${o.key}" class="mono val">Auto</span>`).join("");
+}
+function syncOpts() {
+  for (const o of motifOpts()) {
+    const v = S.opts[o.key];
+    $("o-" + o.key).value = v ?? o.def;
+    $("ov-" + o.key).textContent = v == null ? "Auto" : (Number.isInteger(o.step) ? v : (+v).toFixed(2));
+  }
+}
 function fillSelects() {
   $("motif").innerHTML = POSTER_MOTIFS.map(m => `<option value="${m}">${MOTIF_LABEL[m]}</option>`).join("");
   $("palette").innerHTML = palettesOf(kind()).map(k => `<option value="${k}">${PALETTE_LABEL[k]}</option>`).join("");
   $("motif").value = S.motif;
   $("palette").value = S.palette;
   $("motif-field").hidden = S.group !== "poster";
+  buildOpts();
   $("variant-field").hidden = S.group === "poster";
   $("size-field").hidden = S.group === "poster";
   $("rotate-field").hidden = !(S.group === "fangor" && S.variant !== "ring");
@@ -67,11 +81,12 @@ function render(push = true) {
   $("csizeVal").textContent = S.size == null ? "Auto" : S.size.toFixed(2) + "×";
   $("cx").value = S.cx ?? .5; $("cxVal").textContent = S.cx == null ? "Auto" : Math.round(S.cx * 100) + "%";
   $("cy").value = S.cy ?? .5; $("cyVal").textContent = S.cy == null ? "Auto" : Math.round(S.cy * 100) + "%";
-  $("sizeLbl").textContent = S.variant === "dream" ? "Zoom and position" : "Circle";
+  $("sizeLbl").textContent = S.variant === "dream" ? "Zoom and position" : S.variant === "squares" ? "Size and position" : "Circle";
   $("rot").value = S.angle ?? 0; $("rotVal").textContent = S.angle == null ? "Auto" : S.angle + "°";
   $("amp").value = S.amp ?? 1; $("ampVal").textContent = S.amp == null ? "Auto" : S.amp.toFixed(2) + "×";
   $("wave").value = S.wave ?? 1; $("waveVal").textContent = S.wave == null ? "Auto" : S.wave.toFixed(2) + "×";
   $("soft").value = S.softness ?? 1; $("softVal").textContent = S.softness == null ? "Auto" : S.softness.toFixed(2) + "×";
+  syncOpts();
   $("grain-field").hidden = !(S.group === "poster" && S.motif === "mosaic");
   $("grain").value = S.grain ?? 11; $("grainVal").textContent = S.grain == null ? "Auto" : S.grain + " across";
   $("seed").value = S.seed; $("w").value = S.w; $("h").value = S.h;
@@ -79,7 +94,7 @@ function render(push = true) {
   $("g-fangor").setAttribute("aria-pressed", S.group === "fangor");
   for (const v of Object.keys(VARIANT_MOTIF)) $("v-" + v).setAttribute("aria-pressed", S.variant === v);
   document.querySelectorAll("#sizes button").forEach(b => b.setAttribute("aria-pressed", +b.dataset.w === S.w && +b.dataset.h === S.h));
-  const sig = [motifName(), S.palette, S.seed, S.w, S.h, S.size, S.cx, S.cy, S.grain, S.angle, S.amp, S.wave, S.softness, JSON.stringify(S.work)].join("|");
+  const sig = [motifName(), S.palette, S.seed, S.w, S.h, S.size, S.cx, S.cy, S.grain, S.angle, S.amp, S.wave, S.softness, JSON.stringify(S.opts), JSON.stringify(S.work)].join("|");
   if (push && sig !== lastSig) {
     lastSig = sig;
     hist.unshift({ sig, state: clone(S), thumb: uri(generate(motifName(), S.work, S.seed, Math.round(S.w / 4), Math.round(S.h / 4), opts())) });
@@ -98,13 +113,13 @@ function resetPalette(name) {
 }
 function setGroup(g) {
   if (S.group === g) return;
-  S.group = g;
+  S.group = g; S.opts = {};
   resetPalette();
   fillSelects(); fillSwatches(); render();
 }
 function setVariant(v) {
   if (S.variant === v && S.group === "fangor") return;
-  S.variant = v;
+  S.variant = v; S.opts = {};
   resetPalette();
   fillSelects(); fillSwatches(); render();
 }
@@ -120,12 +135,12 @@ function rollAll() {
   if ($("randColors").checked) { S.work = randomPalette(kind(), Math.random); S.modified = true; S.palette = palettesOf(kind())[0]; }
   else if (!$("lockPalette").checked || !palettesOf(kind()).includes(S.palette)) resetPalette(pick(palettesOf(kind())));
   S.seed = Math.floor(Math.random() * 100000);
-  S.size = null; S.cx = null; S.cy = null; S.grain = null; S.angle = null; S.amp = null; S.wave = null; S.softness = null;
+  S.size = null; S.cx = null; S.cy = null; S.grain = null; S.angle = null; S.amp = null; S.wave = null; S.softness = null; S.opts = {};
   fillSelects(); fillSwatches(); render();
 }
 function addInk() {
   const c = hsl(Math.random() * 360, 55 + Math.random() * 30, 40 + Math.random() * 20);
-  S.work.inks.splice(S.variant === "ring" && S.group === "fangor" ? S.work.inks.length - 1 : S.work.inks.length, 0, c);
+  S.work.inks.splice(S.group === "fangor" && (S.variant === "ring" || S.variant === "squares") ? S.work.inks.length - 1 : S.work.inks.length, 0, c);
   S.modified = true;
   fillSwatches(); render();
 }
@@ -142,7 +157,9 @@ const fileName = ext => `${motifName()}-${S.palette}-${S.seed}.${ext}`;
 $("g-poster").onclick = () => setGroup("poster");
 $("g-fangor").onclick = () => setGroup("fangor");
 for (const v of Object.keys(VARIANT_MOTIF)) $("v-" + v).onclick = () => setVariant(v);
-$("motif").onchange = e => { S.motif = e.target.value; render(); };
+$("motif").onchange = e => { S.motif = e.target.value; S.opts = {}; fillSelects(); render(); };
+$("opts-grid").oninput = e => { const k = e.target.dataset.key; if (!k) return; S.opts[k] = +e.target.value; render(); };
+$("optsAuto").onclick = () => { S.opts = {}; render(); };
 $("palette").onchange = e => setPalette(e.target.value);
 $("seed").oninput = e => { S.seed = Math.max(0, Math.min(999999, Math.floor(+e.target.value || 0))); render(); };
 $("seedPrev").onclick = () => { S.seed = Math.max(0, S.seed - 1); render(); };
@@ -218,7 +235,7 @@ $("dlPng").onclick = () => {
 };
 $("copyCmd").onclick = () => {
   const cmd = `node scripts/gen.js --motif ${motifName()} --palette ${S.palette} --seed ${S.seed} --size ${S.w}x${S.h}` +
-    (S.size != null ? ` --circle ${S.size.toFixed(2)}` : "") + (S.cx != null ? ` --x ${S.cx.toFixed(2)}` : "") + (S.cy != null ? ` --y ${S.cy.toFixed(2)}` : "") + (S.grain != null ? ` --grain ${S.grain}` : "") + (S.angle != null ? ` --angle ${S.angle}` : "") + (S.amp != null ? ` --amp ${S.amp.toFixed(2)}` : "") + (S.wave != null ? ` --wavelength ${S.wave.toFixed(2)}` : "") + (S.softness != null ? ` --softness ${S.softness.toFixed(2)}` : "") + " --out bg.svg";
+    (S.size != null ? ` --circle ${S.size.toFixed(2)}` : "") + (S.cx != null ? ` --x ${S.cx.toFixed(2)}` : "") + (S.cy != null ? ` --y ${S.cy.toFixed(2)}` : "") + (S.grain != null ? ` --grain ${S.grain}` : "") + (S.angle != null ? ` --angle ${S.angle}` : "") + (S.amp != null ? ` --amp ${S.amp.toFixed(2)}` : "") + (S.wave != null ? ` --wavelength ${S.wave.toFixed(2)}` : "") + (S.softness != null ? ` --softness ${S.softness.toFixed(2)}` : "") + Object.entries(S.opts).map(([k, v]) => ` --${k} ${v}`).join("") + " --out bg.svg";
   const note = S.modified ? " Custom colors are not part of the command." : "";
   if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(cmd).then(() => toast("Command copied." + note), () => toast(cmd));
   else toast(cmd);
@@ -233,4 +250,12 @@ document.addEventListener("keydown", e => {
   else if (e.key === "ArrowLeft") { S.seed = Math.max(0, S.seed - 1); render(); }
 });
 
+(function fromUrl() {
+  const q = new URLSearchParams(location.search), m = q.get("motif");
+  if (!m) return;
+  const vm = Object.entries(VARIANT_MOTIF).find(([, v]) => v === m);
+  if (vm) { S.group = "fangor"; S.variant = vm[0]; } else if (POSTER_MOTIFS.includes(m)) { S.group = "poster"; S.motif = m; } else return;
+  resetPalette(q.get("palette") && PALETTES[q.get("palette")] ? q.get("palette") : undefined);
+  if (q.get("seed")) S.seed = +q.get("seed");
+})();
 fillSelects(); fillSizes(); fillSwatches(); render();
