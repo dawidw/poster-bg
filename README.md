@@ -162,6 +162,10 @@ New palettes are one entry in `PALETTES`; new motifs are one function registered
 
 Candidate motifs from the Polish poster tradition (oscillogram, stripes with a disc, multiply and rotate, cut-outs and more) are collected in [docs/motif-research.md](docs/motif-research.md).
 
+## Portraits
+
+The ASCII portraits on the landing page (`portraits/ascii.js`) are made from photos on Wikimedia Commons. Each card credits the photographer and the license. Photos under CC BY-SA (Wanda Gołkowska by Jan Chwałczyk, Magdalena Abakanowicz by Kontrola, Jan Młodożeniec by Piotr Młodożeniec) give an ASCII version that stays under CC BY-SA too; the rest are public domain on Commons. The code itself is MIT.
+
 ## Credits
 
 Inspired by the Polish School of Posters and by the paintings of Wojciech Fangor. These are styles and techniques, not copies of any particular work.
