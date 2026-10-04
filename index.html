@@ -427,8 +427,8 @@ node poster-bg/scripts/gen.js --ring --colors random \
     </div>
   </footer>
 
-  <script src="poster-bg/scripts/gen.js?v=202610042355"></script>
-  <script src="portraits/ascii.js?v=202610042355"></script>
+  <script src="poster-bg/scripts/gen.js?v=202610042358"></script>
+  <script src="portraits/ascii.js?v=202610042358"></script>
   <script>
     const uri = s => "data:image/svg+xml;charset=utf-8," + encodeURIComponent(s);
 
@@ -503,7 +503,7 @@ node poster-bg/scripts/gen.js --ring --colors random \
         links: [["Fundacja Archeologia Fotografii", "https://faf.org.pl/artists/wojciech-zamecznik/?lang=en"]], motifs: ["scope", "stripedisc", "rotor"] },
       { name: "Julian Stańczak", role: "1928 to 2017, Polish-born painter and printmaker",
         text: ["A central figure of op art. His fields of narrow, vibrating stripes, straight and undulating, and his concentric squares and saturated grids led Donald Judd to write about him when the term was coined in 1964."],
-        links: [["Wikipedia", "https://en.wikipedia.org/wiki/Julian_Stanczak"]], motifs: ["stripewave", "squares", "halftone", "moire"] },
+        links: [["Wikipedia", "https://en.wikipedia.org/wiki/Julian_Stanczak"], ["Diane Rosenstein Gallery", "https://dianerosenstein.com/artists/32-julian-stanczak/biography/"]], motifs: ["stripewave", "squares", "halftone", "moire"] },
       { name: "Jan Lenica", role: "poster artist, animator, architect by training",
         text: ["Named the Polish School of Posters, and in the 1960s made the paper cut-out his signature. His Wozzeck poster of 1964 is one of the icons of the decade."],
         links: [["Wikipedia", "https://en.wikipedia.org/wiki/Jan_Lenica"]], motifs: ["cutout"] },
@@ -526,7 +526,7 @@ node poster-bg/scripts/gen.js --ring --colors random \
     document.getElementById("people").innerHTML = PEOPLE.map(p => {
       const chips = p.motifs.filter(m => MOTIFS[m]).map(m => `<a href="generator/?motif=${m}">${NAMES[m] || m}</a>`).join("");
       const pt = (window.PORTRAITS || {})[p.name];
-      const fig = pt ? `<figure class="portrait"><pre aria-hidden="true">${pt.ascii.replace(/&/g, "&amp;").replace(/</g, "&lt;")}</pre><figcaption>${pt.credit}, <a href="${pt.url}">Wikimedia Commons</a></figcaption></figure>` : "";
+      const fig = pt ? `<figure class="portrait"><pre aria-hidden="true">${pt.ascii.replace(/&/g, "&amp;").replace(/</g, "&lt;")}</pre><figcaption>${pt.credit}, <a href="${pt.url}">${pt.link || "Wikimedia Commons"}</a></figcaption></figure>` : "";
       return `<article class="person reveal${p.lead ? " lead" : ""}"><div style="display:flex;flex-direction:column;gap:16px">${fig}<div><h3>${p.name}</h3><div class="role" style="margin-top:8px">${p.role}</div></div></div>` +
         `<div style="display:flex;flex-direction:column;gap:12px">${p.text.length ? (Array.isArray(p.text) ? p.text : [p.text]).map(t => `<p>${t}</p>`).join("") : ""}` +
         `<p class="more">${p.links.map(([l, u]) => `<a href="${u}">${l}</a>`).join(", ")}</p>${chips ? `<div class="chips"><span class="label">try</span>${chips}</div>` : ""}</div></article>`;
