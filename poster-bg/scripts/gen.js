@@ -556,6 +556,60 @@ MOTIF_OPTS.moire = [
   { key: 'duo', label: 'Second ink', min: 0, max: 1, step: 1, def: 0 },
 ];
 
+// Block letters (after Miller's typography built like architecture): a word set in a 5 by 7 grid of square blocks,
+// stacked or in a row, with constructivist bars behind it. The font is drawn from nothing, no typeface involved.
+const BLOCK_FONT = {
+  A: '01110 10001 10001 11111 10001 10001 10001', C: '01111 10000 10000 10000 10000 10000 01111', D: '11110 10001 10001 10001 10001 10001 11110',
+  E: '11111 10000 10000 11110 10000 10000 11111', F: '11111 10000 10000 11110 10000 10000 10000', I: '11111 00100 00100 00100 00100 00100 11111',
+  K: '10001 10010 10100 11000 10100 10010 10001', L: '10000 10000 10000 10000 10000 10000 11111', M: '10001 11011 10101 10101 10001 10001 10001',
+  N: '10001 11001 10101 10011 10001 10001 10001', O: '01110 10001 10001 10001 10001 10001 01110', P: '11110 10001 10001 11110 10000 10000 10000',
+  R: '11110 10001 10001 11110 10100 10010 10001', S: '01111 10000 10000 01110 00001 00001 11110', T: '11111 00100 00100 00100 00100 00100 00100',
+  U: '10001 10001 10001 10001 10001 10001 01110', Y: '10001 10001 01010 00100 00100 00100 00100', Z: '11111 00001 00010 00100 01000 10000 11111',
+};
+const BLOCK_WORDS = ['PLAKAT', 'FORMA', 'RYTM', 'KOLOR', 'LINIA', 'OKO', 'SZTUKA', 'POLSKA'];
+function letters(r, p, w, h, o = {}) {
+  const c1 = r(), c2 = r(), c3 = r(), c4 = r(), m = Math.min(w, h);
+  const word = BLOCK_WORDS[Math.min(BLOCK_WORDS.length - 1, Math.round(o.word ?? Math.floor(c1 * BLOCK_WORDS.length)))], n = word.length;
+  const layout = Math.round(o.layout ?? (c2 < .2 ? 0 : c2 < .55 ? 1 : 2)), sc = o.scale ?? 1, gap = o.gap ?? .08;
+  const lines = layout === 0 ? [word] : layout === 1 ? [...word] : [word.slice(0, Math.ceil(n / 2)), word.slice(Math.ceil(n / 2))];
+  const cols = Math.max(...lines.map(l => l.length)) * 6 - 1, rows = lines.length * 8 - 1;
+  const u = Math.min(w * .86 / cols, h * .86 / rows) * sc;
+  const cx = w * (o.x ?? (.46 + c3 * .08)), cy = h * (o.y ?? (.46 + c4 * .08)), ang = o.angle ?? 0;
+  const ink = p.dark === p.paper ? p.light : p.dark, alt = p.accent === p.paper ? p.light : p.accent;
+  let bars = '';
+  const nb = Math.round(o.bars ?? 3);
+  for (let k = 0; k < 6; k++) {
+    const t = r(), a = r(), b2 = r(), c = r();
+    if (k >= nb) continue;
+    const col = t < .5 ? alt : ink, th = m * (.02 + a * .09);
+    bars += (b2 < .5)
+      ? `<rect x="${f(w * (c * .6 - .1))}" y="${f(h * (a * .9))}" width="${f(w * (.5 + b2))}" height="${f(th)}" fill="${col}"/>`
+      : `<rect x="${f(w * (a * .9))}" y="${f(h * (c * .6 - .1))}" width="${f(th)}" height="${f(h * (.5 + b2 * .4))}" fill="${col}"/>`;
+  }
+  let body = '';
+  const ox = -cols * u / 2, oy = -rows * u / 2;
+  lines.forEach((line, li) => {
+    const lw = line.length * 6 - 1, shift = (cols - lw) / 2;
+    [...line].forEach((ch, i) => {
+      const col = (li + i) % 2 ? alt : ink;
+      BLOCK_FONT[ch].split(' ').forEach((row, y) => [...row].forEach((v, x) => {
+        if (v === '1') body += `<rect x="${f(ox + (shift + i * 6 + x) * u + u * gap / 2)}" y="${f(oy + (li * 8 + y) * u + u * gap / 2)}" width="${f(u * (1 - gap))}" height="${f(u * (1 - gap))}" fill="${col}"/>`;
+      }));
+    });
+  });
+  return { defs: `<clipPath id="bl"><rect width="${w}" height="${h}"/></clipPath>`, body: `<g clip-path="url(#bl)">${bars}<g transform="translate(${f(cx)} ${f(cy)}) rotate(${f(ang)})">${body}</g></g>`, bg: p.paper };
+}
+MOTIF_OPTS.letters = [
+  { key: 'word', label: 'Word (0 to 7)', min: 0, max: 7, step: 1, def: 0 },
+  { key: 'layout', label: 'Layout (row, stack, 2 lines)', min: 0, max: 2, step: 1, def: 2 },
+  { key: 'scale', label: 'Size', min: .4, max: 1.4, step: .01, def: 1 },
+  { key: 'gap', label: 'Block gap', min: 0, max: .4, step: .01, def: .08 },
+  { key: 'bars', label: 'Bars', min: 0, max: 6, step: 1, def: 3 },
+  { key: 'angle', label: 'Rotate', min: 0, max: 360, step: 1, def: 0 },
+  { key: 'x', label: 'Centre x', min: 0, max: 1, step: .005, def: .5 },
+  { key: 'y', label: 'Centre y', min: 0, max: 1, step: .005, def: .5 },
+];
+
 // random harmonious palettes. kind: 'poster', 'random' (Fangor discs), 'ring' (inks run hole, bands..., halo) or 'dream'
 function hsl(h, s, l) {
   h = ((h % 360) + 360) % 360; s /= 100; l /= 100;
@@ -583,7 +637,7 @@ function randomPalette(kind, rnd = Math.random) {
 }
 
 MOTIF_OPTS.squares=[{key:'round',label:'Corners',min:0,max:.5,step:.01,def:.1},{key:'hole',label:'Centre',min:.04,max:.45,step:.01,def:.15},{key:'soft',label:'Softness',min:.2,max:2.5,step:.01,def:1}];
-const MOTIFS={stripes,rings,mosaic,blob,diagonals,steps,fangor,ring,squares,dream,stripewave,scope,stripedisc,construct,cutout,bars,rotor,sunburst,outline,halftone,moire};
+const MOTIFS={stripes,rings,mosaic,blob,diagonals,steps,fangor,ring,squares,dream,stripewave,scope,stripedisc,construct,cutout,bars,rotor,sunburst,outline,halftone,moire,letters};
 // settings every poster motif accepts
 const GLOBAL_OPTS=[{key:'misreg',label:'Off-register print',min:0,max:6,step:.1,def:0}];
 function generate(motif,palette,seed,w,h,o={}){const r=rng(seed),p=typeof palette==='string'?PALETTES[palette]:palette,m=MOTIFS[motif](r,p,w,h,o);
