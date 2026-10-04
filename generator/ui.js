@@ -30,7 +30,7 @@ const opts = () => ({ size: S.size ?? undefined, x: S.cx ?? undefined, y: S.cy ?
 const svg = () => generate(motifName(), S.work, S.seed, S.w, S.h, opts());
 const minInks = () => (S.group === "fangor" && (S.variant === "ring" || S.variant === "squares") ? 3 : 2);
 
-const motifOpts = () => MOTIF_OPTS[motifName()] || [];
+const motifOpts = () => [...(MOTIF_OPTS[motifName()] || []), ...(S.group === "poster" ? GLOBAL_OPTS : [])];
 function buildOpts() {
   const list = motifOpts();
   $("opts-field").hidden = !list.length;

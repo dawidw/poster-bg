@@ -101,7 +101,7 @@
   </main>
   <footer>Part of <a href="../">poster-bg</a>. MIT licensed. <a href="https://github.com/dawidw/poster-bg-skill/blob/main/docs/motif-research.md">Plain-text version of these notes</a></footer>
 
-  <script src="../poster-bg/scripts/gen.js?v=202610041956"></script>
+  <script src="../poster-bg/scripts/gen.js?v=202610041957"></script>
   <script>
     const uri = s => "data:image/svg+xml;charset=utf-8," + encodeURIComponent(s);
     const sk = {
@@ -132,6 +132,7 @@
       { name: "Outlined stains", src: "Jan Młodożeniec", ctl: "Stains, outline, off-register, wobble", sk: "outline", motif: "outline", pal: "mlodozeniec", seed: 4 },
       { name: "Halftone", src: "Op art in general", ctl: "Dot size, angle, field", sk: "halftone", motif: "halftone", pal: "stanczak", seed: 4 },
       { name: "Moire", src: "Op art in general", ctl: "Line spacing, angle difference, rings", sk: "moire", motif: "moire", pal: "zamecznik", seed: 3 },
+      { name: "Off-register print", src: "Screen printing in general", ctl: "Offset, for every poster motif", sk: "cutout", motif: "construct", pal: "konstruktywizm", seed: 5, opts: { misreg: 3 } },
     ];
     let built = 0;
     document.getElementById("grid").innerHTML = ITEMS.map((it, i) => {
@@ -139,7 +140,7 @@
       if (live) built++;
       const pal = PALETTES[it.pal] ? it.pal : Object.keys(PALETTES).find(k => !/^(fangor|soft_|dream_)/.test(k));
       const shot = live
-        ? `<a class="shot" href="../generator/?motif=${it.motif}&palette=${pal}&seed=${it.seed}"><img loading="lazy" alt="${it.name}" src="${uri(generate(it.motif, pal, it.seed, 600, 800))}"><span class="badge built">Built</span></a>`
+        ? `<a class="shot" href="../generator/?motif=${it.motif}&palette=${pal}&seed=${it.seed}"><img loading="lazy" alt="${it.name}" src="${uri(generate(it.motif, pal, it.seed, 600, 800, it.opts || {}))}"><span class="badge built">Built</span></a>`
         : `<div class="shot"><svg viewBox="0 0 300 400" role="img" aria-label="${it.name} sketch">${sk[it.sk]()}</svg><span class="badge">Planned</span></div>`;
       return `<figure>${shot}<figcaption><b><span class="n">${i + 1}</span>${it.name}</b><div class="src">${it.src}</div><div class="ctl">${it.ctl}</div></figcaption></figure>`;
     }).join("");

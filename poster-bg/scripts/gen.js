@@ -553,8 +553,15 @@ function randomPalette(kind, rnd = Math.random) {
 
 MOTIF_OPTS.squares=[{key:'round',label:'Corners',min:0,max:.5,step:.01,def:.1},{key:'hole',label:'Centre',min:.04,max:.45,step:.01,def:.15},{key:'soft',label:'Softness',min:.2,max:2.5,step:.01,def:1}];
 const MOTIFS={stripes,rings,mosaic,blob,diagonals,steps,fangor,ring,squares,dream,stripewave,scope,stripedisc,construct,cutout,bars,rotor,sunburst,outline,halftone,moire};
+// settings every poster motif accepts
+const GLOBAL_OPTS=[{key:'misreg',label:'Off-register print',min:0,max:6,step:.1,def:0}];
 function generate(motif,palette,seed,w,h,o={}){const r=rng(seed),p=typeof palette==='string'?PALETTES[palette]:palette,m=MOTIFS[motif](r,p,w,h,o);
- return `<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="${w}" height="${h}" viewBox="0 0 ${w} ${h}"><defs>${m.defs||''}</defs><rect width="${w}" height="${h}" fill="${m.bg||p.paper}"/>${m.body}</svg>`;}
+ let body=m.body;
+ if(o.misreg>0){ // a second, dark plate printed slightly off: the same shapes in the dark ink, shifted, under the colors
+  const off=Math.min(w,h)*.0075*o.misreg, ghost=m.body.replace(/(fill|stroke)="#[0-9a-fA-F]{6}"/g,`$1="${p.dark}"`);
+  body=`<g transform="translate(${f(off)} ${f(off*.6)})" opacity=".3">${ghost}</g>`+m.body;
+ }
+ return `<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="${w}" height="${h}" viewBox="0 0 ${w} ${h}"><defs>${m.defs||''}</defs><rect width="${w}" height="${h}" fill="${m.bg||p.paper}"/>${body}</svg>`;}
 
 // ---- CLI (node only) ----
 if (typeof module !== 'undefined' && typeof require !== 'undefined' && require.main === module) {
@@ -574,9 +581,9 @@ if (typeof module !== 'undefined' && typeof require !== 'undefined' && require.m
   const num = k => (get(k) ? +get(k) : undefined);
   const pal = rc ? randomPalette(kindOf(motif), rng(seed * 2 + 1)) : palette;
   const extra = {};
-  for (const o of (MOTIF_OPTS[motif] || [])) if (get(o.key) !== null) extra[o.key] = +get(o.key);   // option keys must not clash with --size, --seed, --out, --motif or --palette
+  for (const o of [...(MOTIF_OPTS[motif] || []), ...GLOBAL_OPTS]) if (get(o.key) !== null) extra[o.key] = +get(o.key);   // option keys must not clash with --size, --seed, --out, --motif or --palette
   const svg = generate(motif, pal, seed, w, h, { size: num('circle'), x: num('x'), y: num('y'), grain: num('grain'), angle: num('angle'), amp: num('amp'), wave: num('wavelength'), softness: num('softness'), ...extra });
   console.error(`motif=${motif} palette=${rc ? 'random(seeded)' : palette} seed=${seed} size=${w}x${h}`);
   if (get('out')) require('fs').writeFileSync(get('out'), svg); else process.stdout.write(svg);
 }
-if (typeof module !== 'undefined') module.exports = { generate, PALETTES, MOTIFS, MOTIF_OPTS, randomPalette };
+if (typeof module !== 'undefined') module.exports = { generate, PALETTES, MOTIFS, MOTIF_OPTS, GLOBAL_OPTS, randomPalette };
