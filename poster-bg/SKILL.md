@@ -6,7 +6,7 @@ argument-hint: "[--poster | --fangor | --ring | --dream] [--colors random] [--ci
 
 # Poster backgrounds
 
-Seeded SVG generator plus a style guide. Same motif + palette + seed always gives the same image, so a result can be reproduced or varied by changing only the seed. `scripts/gen.js` has no dependencies and also runs in the browser; the live Generator page at https://dawidw.github.io/poster-bg-skill/generator/ loads the same file.
+Seeded SVG generator plus a style guide. Same motif + palette + seed always gives the same image, so a result can be reproduced or varied by changing only the seed. `scripts/gen.js` has no dependencies and also runs in the browser; the live Generator page at https://dawidw.github.io/poster-bg/generator/ loads the same file.
 
 ## Invocation
 

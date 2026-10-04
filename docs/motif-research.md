@@ -1,6 +1,6 @@
 # Polish geometric posters: research and what got built
 
-Research notes behind the motifs in poster-bg, with the status of every idea. A friendlier, illustrated version lives on the [research page](https://dawidw.github.io/poster-bg-skill/research/). "Sourced" points come from the pages linked at the end; the motif list is my own reading of them.
+Research notes behind the motifs in poster-bg, with the status of every idea. A friendlier, illustrated version lives on the [research page](https://dawidw.github.io/poster-bg/research/). "Sourced" points come from the pages linked at the end; the motif list is my own reading of them.
 
 ## What the sources say
 
