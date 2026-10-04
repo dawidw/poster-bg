@@ -34,6 +34,15 @@ The same motif, palette and seed always give the same image, so any result can b
 | ![Block letters](examples/letters.svg) | ![Unism](examples/unism.svg) | |
 | `letters` · `jazz` | `unism` · `zamecznik` | |
 
+Women artists:
+
+| | | |
+|---|---|---|
+| ![Organic rhythm](examples/jarema.svg) | ![Election constructivism](examples/blok.svg) | ![Spatial planes](examples/planes.svg) |
+| `jarema` · `jarema` | `blok` · `blok` | `planes` · `kobro` |
+| ![Wooden relief](examples/relief.svg) | ![Woven strips](examples/weave.svg) | |
+| `relief` · `golkowska` | `weave` · `abakan` | |
+
 ### Fangor styles (`--fangor`, `--ring`, `--dream`)
 
 | | | |
