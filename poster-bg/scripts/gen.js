@@ -375,6 +375,37 @@ MOTIF_OPTS.bars = [
   { key: 'mirror', label: 'Mirror', min: 0, max: 1, step: 1, def: 0 },
 ];
 
+// Multiply and rotate (Zamecznik's geometric repetition): one form repeated around a centre, each copy tilted a little
+function rotor(r, p, w, h, o = {}) {
+  const c1 = r(), c2 = r(), c3 = r(), c4 = r(), c5 = r(), m = Math.min(w, h);
+  const n = Math.round(o.copies ?? 12 + c1 * 24), tilt = o.tilt ?? (c2 - .5) * 40, form = Math.round(o.form ?? Math.floor(c3 * 3));
+  const inner = m * (o.inner ?? (.07 + c4 * .13)), len = m * (o.length ?? (.2 + c5 * .22)), cx = w * (o.x ?? .5), cy = h * (o.y ?? .5);
+  const bw = Math.max(m * .012, 2 * Math.PI * (inner + len * .5) / n * .5);
+  let body = '';
+  for (let i = 0; i < n; i++) {
+    const ang = i * 360 / n, col = i % 2 ? p.accent : p.light;
+    let shape;
+    if (form === 0) shape = `<rect x="${f(-bw / 2)}" y="${f(-inner - len)}" width="${f(bw)}" height="${f(len)}" fill="${col}"/>`;
+    else if (form === 1) shape = `<polygon points="${f(-bw)},${f(-inner)} ${f(bw)},${f(-inner)} 0,${f(-inner - len)}" fill="${col}"/>`;
+    else {
+      const a = (360 / n * .7) * Math.PI / 360, r1 = inner, r2 = inner + len, X = (rr, s2) => f(rr * Math.sin(s2 * a)), Y = (rr, s2) => f(-rr * Math.cos(s2 * a));
+      shape = `<path d="M${X(r1, -1)} ${Y(r1, -1)}L${X(r2, -1)} ${Y(r2, -1)}A${f(r2)} ${f(r2)} 0 0 1 ${X(r2, 1)} ${Y(r2, 1)}L${X(r1, 1)} ${Y(r1, 1)}A${f(r1)} ${f(r1)} 0 0 0 ${X(r1, -1)} ${Y(r1, -1)}Z" fill="${col}"/>`;
+    }
+    body += `<g transform="translate(${f(cx)} ${f(cy)}) rotate(${f(ang)})"><g transform="translate(0 ${f(-inner)}) rotate(${f(tilt)}) translate(0 ${f(inner)})">${shape}</g></g>`;
+  }
+  body += `<circle cx="${f(cx)}" cy="${f(cy)}" r="${f(inner * .7)}" fill="${p.light}"/>`;
+  return { defs: '', body, bg: p.dark };
+}
+MOTIF_OPTS.rotor = [
+  { key: 'copies', label: 'Copies', min: 4, max: 64, step: 1, def: 24 },
+  { key: 'tilt', label: 'Tilt', min: -70, max: 70, step: 1, def: 0 },
+  { key: 'form', label: 'Form (bar, triangle, arc)', min: 0, max: 2, step: 1, def: 0 },
+  { key: 'length', label: 'Length', min: .08, max: .5, step: .01, def: .3 },
+  { key: 'inner', label: 'Inner radius', min: .02, max: .3, step: .01, def: .1 },
+  { key: 'x', label: 'Centre x', min: 0, max: 1, step: .005, def: .5 },
+  { key: 'y', label: 'Centre y', min: 0, max: 1, step: .005, def: .5 },
+];
+
 // random harmonious palettes. kind: 'poster', 'random' (Fangor discs), 'ring' (inks run hole, bands..., halo) or 'dream'
 function hsl(h, s, l) {
   h = ((h % 360) + 360) % 360; s /= 100; l /= 100;
@@ -402,7 +433,7 @@ function randomPalette(kind, rnd = Math.random) {
 }
 
 MOTIF_OPTS.squares=[{key:'round',label:'Corners',min:0,max:.5,step:.01,def:.1},{key:'hole',label:'Centre',min:.04,max:.45,step:.01,def:.15},{key:'soft',label:'Softness',min:.2,max:2.5,step:.01,def:1}];
-const MOTIFS={stripes,rings,mosaic,blob,diagonals,steps,fangor,ring,squares,dream,stripewave,scope,stripedisc,construct,cutout,bars};
+const MOTIFS={stripes,rings,mosaic,blob,diagonals,steps,fangor,ring,squares,dream,stripewave,scope,stripedisc,construct,cutout,bars,rotor};
 function generate(motif,palette,seed,w,h,o={}){const r=rng(seed),p=typeof palette==='string'?PALETTES[palette]:palette,m=MOTIFS[motif](r,p,w,h,o);
  return `<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="${w}" height="${h}" viewBox="0 0 ${w} ${h}"><defs>${m.defs||''}</defs><rect width="${w}" height="${h}" fill="${m.bg||p.paper}"/>${m.body}</svg>`;}
 
