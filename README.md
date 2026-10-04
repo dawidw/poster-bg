@@ -86,7 +86,7 @@ Every motif also has its own settings, the same ones the generator page shows as
 | `squares` | `--round` 0 to 0.5, `--hole` 0.04 to 0.45, `--soft` 0.2 to 2.5 |
 | every poster motif | `--misreg` 0 to 6 (off-register print) |
 
-Run the script with an unknown palette name to list all motifs and palettes.
+There are 77 palettes in four groups (poster, `fangor_*`, `soft_*` for ring and squares, `dream_*`). Run the script with an unknown palette name to list all motifs and palettes.
 
 ## Use it as a Claude Code skill
 
