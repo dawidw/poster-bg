@@ -209,6 +209,41 @@ MOTIF_OPTS.stripewave = [
   { key: 'angle', label: 'Rotate', min: 0, max: 360, step: 1, def: 0 },
 ];
 
+// Zamecznik's sound drawings: stacked oscillogram zigzags on a dark ground, or rings spreading from a point
+function scope(r, p, w, h, o = {}) {
+  const c1 = r(), c2 = r(), c3 = r(), c4 = r(), c5 = r(), c6 = r();
+  const n = Math.round(o.lines ?? 6 + c1 * 10), tf = Math.round(o.freq ?? 18 + c5 * 30), ampk = o.amp ?? 1;
+  const sw = Math.min(w, h) * .0042 * (o.weight ?? 1), acc = Math.floor(c2 * n);
+  const g = (x, c, wd) => Math.exp(-((x - c) ** 2) / (2 * wd * wd));
+  let body = '';
+  if ((o.rings ?? 0) >= .5) {
+    const cx = w * (.35 + c3 * .3), cy = h * (.38 + c4 * .24), Rmax = Math.hypot(w, h) * .62, m = n * 2 + 4;
+    for (let k = 1; k <= m; k++) {
+      const t = k / m, hit = k === (acc % m) + 1;
+      body += `<circle cx="${f(cx)}" cy="${f(cy)}" r="${f(Rmax * t)}" fill="none" stroke="${hit ? p.accent : p.light}" stroke-width="${f(sw * (.5 + 2.4 * g(t, c3, .22 + c6 * .15)) * (hit ? 2 : 1))}"/>`;
+    }
+    return { defs: '', body, bg: p.dark };
+  }
+  const gap = h / (n + 1), steps = tf * 2;
+  for (let k = 0; k < n; k++) {
+    const y0 = gap * (k + 1), cA = c3 + k * (c4 - .5) * .08, cB = c6 + k * .02;
+    let d = '';
+    for (let i = 0; i <= steps; i++) {
+      const t = i / steps, env = Math.min(1, .12 + g(t, cA, .12 + c5 * .1) + .6 * g(t, cB, .08));
+      d += (i ? 'L' : 'M') + f(w * (.06 + .88 * t)) + ' ' + f(y0 + (i % 2 ? 1 : -1) * gap * .46 * ampk * env);
+    }
+    body += `<path d="${d}" fill="none" stroke="${k === acc ? p.accent : p.light}" stroke-width="${f(k === acc ? sw * 2.2 : sw)}" stroke-linejoin="miter"/>`;
+  }
+  return { defs: '', body, bg: p.dark };
+}
+MOTIF_OPTS.scope = [
+  { key: 'lines', label: 'Lines', min: 3, max: 30, step: 1, def: 10 },
+  { key: 'freq', label: 'Frequency', min: 6, max: 80, step: 1, def: 30 },
+  { key: 'amp', label: 'Amplitude', min: .2, max: 2.5, step: .01, def: 1 },
+  { key: 'weight', label: 'Line weight', min: .4, max: 3, step: .01, def: 1 },
+  { key: 'rings', label: 'Rings mode', min: 0, max: 1, step: 1, def: 0 },
+];
+
 // random harmonious palettes. kind: 'poster', 'random' (Fangor discs), 'ring' (inks run hole, bands..., halo) or 'dream'
 function hsl(h, s, l) {
   h = ((h % 360) + 360) % 360; s /= 100; l /= 100;
@@ -236,7 +271,7 @@ function randomPalette(kind, rnd = Math.random) {
 }
 
 MOTIF_OPTS.squares=[{key:'round',label:'Corners',min:0,max:.5,step:.01,def:.1},{key:'hole',label:'Centre',min:.04,max:.45,step:.01,def:.15},{key:'soft',label:'Softness',min:.2,max:2.5,step:.01,def:1}];
-const MOTIFS={stripes,rings,mosaic,blob,diagonals,steps,fangor,ring,squares,dream,stripewave};
+const MOTIFS={stripes,rings,mosaic,blob,diagonals,steps,fangor,ring,squares,dream,stripewave,scope};
 function generate(motif,palette,seed,w,h,o={}){const r=rng(seed),p=typeof palette==='string'?PALETTES[palette]:palette,m=MOTIFS[motif](r,p,w,h,o);
  return `<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="${w}" height="${h}" viewBox="0 0 ${w} ${h}"><defs>${m.defs||''}</defs><rect width="${w}" height="${h}" fill="${m.bg||p.paper}"/>${m.body}</svg>`;}
 
