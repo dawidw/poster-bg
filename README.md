@@ -164,7 +164,7 @@ Candidate motifs from the Polish poster tradition (oscillogram, stripes with a d
 
 ## Portraits
 
-The ASCII portraits on the landing page (`portraits/ascii.js`) are made from photos on Wikimedia Commons. Each card credits the photographer and the license. Photos under CC BY-SA (Wanda Gołkowska by Jan Chwałczyk, Magdalena Abakanowicz by Kontrola, Jan Młodożeniec by Piotr Młodożeniec) give an ASCII version that stays under CC BY-SA too; the rest are public domain on Commons. The code itself is MIT.
+The ASCII portraits on the landing page (`portraits/ascii.js`) are made from photos on Wikimedia Commons. Each card credits the photographer and the license. Photos under CC BY-SA (Wanda Gołkowska by Jan Chwałczyk, Magdalena Abakanowicz by Kontrola, Jan Młodożeniec by Piotr Młodożeniec) give an ASCII version that stays under CC BY-SA too; Katarzyna Kobro's portrait is made from a photo of a Warsaw stencil mural (photo by Cybularny, CC0; the mural's artist is unknown). The rest are public domain on Commons. The code itself is MIT.
 
 ## Credits
 
