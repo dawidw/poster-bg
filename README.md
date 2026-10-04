@@ -4,6 +4,8 @@ Seeded SVG backgrounds in the spirit of the Polish School of Posters, 60s/70s ge
 
 **[Open the generator](https://dawidw.github.io/poster-bg-skill/generator/)**
 
+**[Visit the site](https://dawidw.github.io/poster-bg-skill/)**
+
 The same motif, palette and seed always give the same image, so any result can be reproduced or varied by changing only the seed.
 
 ### Polish School motifs (`--poster`)
