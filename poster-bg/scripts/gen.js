@@ -670,12 +670,18 @@ function randomPalette(kind, rnd = Math.random) {
 MOTIF_OPTS.squares=[{key:'round',label:'Corners',min:0,max:.5,step:.01,def:.1},{key:'hole',label:'Centre',min:.04,max:.45,step:.01,def:.15},{key:'soft',label:'Softness',min:.2,max:2.5,step:.01,def:1}];
 const MOTIFS={stripes,rings,mosaic,blob,diagonals,steps,fangor,ring,squares,dream,stripewave,scope,stripedisc,construct,cutout,bars,rotor,sunburst,outline,halftone,moire,letters,unism};
 // settings every poster motif accepts
-const GLOBAL_OPTS=[{key:'misreg',label:'Off-register print',min:0,max:6,step:.1,def:0}];
+const GLOBAL_OPTS=[{key:'misreg',label:'Off-register print',min:0,max:6,step:.1,def:0,poster:true},{key:'speckle',label:'Paper grain',min:0,max:3,step:.05,def:0}];
 function generate(motif,palette,seed,w,h,o={}){const r=rng(seed),p=typeof palette==='string'?PALETTES[palette]:palette,m=MOTIFS[motif](r,p,w,h,o);
  let body=m.body;
  if(o.misreg>0){ // a second, dark plate printed slightly off: the same shapes in the dark ink, shifted, under the colors
   const off=Math.min(w,h)*.0075*o.misreg, ghost=m.body.replace(/(fill|stroke)="#[0-9a-fA-F]{6}"/g,`$1="${p.dark}"`);
   body=`<g transform="translate(${f(off)} ${f(off*.6)})" opacity=".3">${ghost}</g>`+m.body;
+ }
+ if(o.speckle>0){ // paper grain: seeded specks of the dark and light inks, so there is still no filter
+  const g=rng(seed*7+13),k=Math.min(w,h),n=Math.round(2200*o.speckle*(w*h)/(600*800)),b=['','','',''];
+  for(let i=0;i<n;i++){const x=f(g()*w),y=f(g()*h),big=g()<.25?1:0,light=g()<.45?2:0;b[light+big]+=`M${x} ${y}h0`;}
+  const sw=[k*.0026,k*.0046];
+  body+=[0,1,2,3].map(i=>b[i]?`<path d="${b[i]}" stroke="${i<2?p.dark:p.light}" stroke-opacity="${i<2?.2:.24}" stroke-width="${f(sw[i%2])}" stroke-linecap="round" fill="none"/>`:'').join('');
  }
  return `<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="${w}" height="${h}" viewBox="0 0 ${w} ${h}"><defs>${m.defs||''}</defs><rect width="${w}" height="${h}" fill="${m.bg||p.paper}"/>${body}</svg>`;}
 
