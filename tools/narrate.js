@@ -1,6 +1,9 @@
 #!/usr/bin/env node
 // Narration for the Inspirations section: one MP3 per block, voiced with ElevenLabs.
 //   node tools/narrate.js --dry            list blocks, characters and estimated cost
+//   node tools/narrate.js --export         write the text of every block to narration/<id>.txt
+//                                          (existing files are kept, so hand edits stick; add --force to overwrite)
+// The MP3 step voices narration/<id>.txt when it exists, otherwise the text from index.html.
 //   ELEVENLABS_API_KEY=... node tools/narrate.js [--only id,id] [--force]
 // Optional: ELEVENLABS_VOICE_ID, ELEVENLABS_MODEL (default eleven_multilingual_v2).
 // Blocks whose text has not changed since the last run are skipped (see audio/manifest.json).
@@ -22,6 +25,19 @@ for (const m of theory.matchAll(/<h3>([\s\S]*?)<\/h3>([\s\S]*?)<\/div>/g))
 const src = html.match(/const PEOPLE = (\[[\s\S]*?\n    \]);/)[1];
 for (const p of vm.runInNewContext(src)) blocks.push({ id: slug(p.name), text: [p.name, p.role, ...[].concat(p.text).map(plain)] });
 
+const textDir = path.join(root, "narration");
+if (has("--export")) {
+  fs.mkdirSync(textDir, { recursive: true });
+  for (const b of blocks) {
+    const f = path.join(textDir, b.id + ".txt");
+    if (has("--force") || !fs.existsSync(f)) { fs.writeFileSync(f, b.text.join("\n\n") + "\n"); console.log("wrote", path.relative(root, f)); }
+  }
+  process.exit(0);
+}
+for (const b of blocks) {
+  const f = path.join(textDir, b.id + ".txt");
+  if (fs.existsSync(f)) b.text = [fs.readFileSync(f, "utf8").trim()];
+}
 const manifestFile = path.join(outDir, "manifest.json");
 const manifest = JSON.parse(fs.readFileSync(manifestFile, "utf8"));
 const chars = blocks.reduce((n, b) => n + b.text.join("\n").length, 0);

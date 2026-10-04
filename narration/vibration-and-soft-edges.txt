@@ -1,0 +1,5 @@
+Vibration and soft edges
+
+When neighbouring hues are close in brightness, or an edge has no clear line, the eye keeps refocusing and the shape seems to pulse or float. Fangor built whole paintings on this, and Stańczak did it with narrow stripes.
+
+Donald Judd described Stańczak's 1964 show as fields of narrow, vibrating stripes. Fangor's squares pulse because every ring is a gradient with no hard line. The generator builds the same blur from stacked translucent layers instead of filters, so the edges stay smooth at any size.
