@@ -1,0 +1,126 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Poster generator</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div id="stage" class="app">
+    <main class="preview-col">
+      <div class="preview-wrap">
+        <img id="preview" alt="Generated background">
+      </div>
+      <div class="meta">
+        <span id="recipe" class="mono"></span>
+        <div id="hist" class="hist"></div>
+      </div>
+    </main>
+
+    <aside class="controls">
+      <h1>Poster generator</h1>
+
+      <div class="field">
+        <span class="lbl">Family</span>
+        <div class="seg" role="group" aria-label="Family">
+          <button type="button" id="g-poster" aria-pressed="true">Poster</button>
+          <button type="button" id="g-fangor" aria-pressed="false">Fangor</button>
+        </div>
+      </div>
+
+      <div class="field" id="variant-field" hidden>
+        <span class="lbl">Style</span>
+        <div class="seg" role="group" aria-label="Fangor style">
+          <button type="button" id="v-random" aria-pressed="true">Random</button>
+          <button type="button" id="v-ring" aria-pressed="false">Ring</button>
+          <button type="button" id="v-dream" aria-pressed="false">Dream</button>
+        </div>
+      </div>
+
+      <div class="field" id="motif-field">
+        <label class="lbl" for="motif">Motif</label>
+        <select id="motif" class="control"></select>
+      </div>
+
+      <div class="field" id="grain-field" hidden>
+        <label class="lbl" for="grain">Granularity</label>
+        <div class="slider-row">
+          <input type="range" id="grain" min="5" max="30" step="1" value="11">
+          <span id="grainVal" class="mono val">Auto</span>
+          <button type="button" class="btn" id="grainAuto">Auto</button>
+        </div>
+      </div>
+
+      <div class="field">
+        <label class="lbl" for="palette">Palette</label>
+        <select id="palette" class="control"></select>
+        <div class="sw" id="swatches" aria-label="Palette colors"></div>
+        <div class="row between">
+          <span class="hint">Click a swatch to change a color.</span>
+          <button type="button" class="btn" id="resetColors" hidden>Reset</button>
+        </div>
+        <button type="button" class="btn" id="rollColors">Randomize colors</button>
+      </div>
+
+      <div class="field" id="size-field" hidden>
+        <span class="lbl">Circle</span>
+        <div class="grid3">
+          <label for="csize">Size</label>
+          <input type="range" id="csize" min="0.5" max="1.5" step="0.01" value="1">
+          <span id="csizeVal" class="mono val">Auto</span>
+          <label for="cx">X</label>
+          <input type="range" id="cx" min="0" max="1" step="0.005" value="0.5">
+          <span id="cxVal" class="mono val">Auto</span>
+          <label for="cy">Y</label>
+          <input type="range" id="cy" min="0" max="1" step="0.005" value="0.5">
+          <span id="cyVal" class="mono val">Auto</span>
+        </div>
+        <div class="row between">
+          <span class="hint">Or drag the circle on the preview.</span>
+          <button type="button" class="btn" id="csizeAuto">Auto</button>
+        </div>
+      </div>
+
+      <div class="field">
+        <label class="lbl" for="seed">Seed</label>
+        <div class="row">
+          <button type="button" class="btn" id="seedPrev" aria-label="Previous seed">‹</button>
+          <input type="number" id="seed" class="control" min="0" max="999999" step="1" value="7">
+          <button type="button" class="btn" id="seedNext" aria-label="Next seed">›</button>
+          <button type="button" class="btn" id="seedRand">Random</button>
+        </div>
+      </div>
+
+      <div class="field">
+        <span class="lbl">Size</span>
+        <div class="chips" id="sizes" role="group" aria-label="Size"></div>
+        <div class="dims">
+          <input type="number" id="w" class="control" min="200" max="4000" step="10" aria-label="Width">
+          <span>×</span>
+          <input type="number" id="h" class="control" min="200" max="4000" step="10" aria-label="Height">
+        </div>
+      </div>
+
+      <div class="field">
+        <span class="lbl">Randomize</span>
+        <div class="checks">
+          <label class="check"><input type="checkbox" id="lockMotif"> Lock motif</label>
+          <label class="check"><input type="checkbox" id="lockPalette"> Lock palette</label>
+          <label class="check"><input type="checkbox" id="randColors"> Random colors</label>
+        </div>
+        <button type="button" class="btn primary" id="rollAll">Randomize all <span class="kbd">space</span></button>
+        <div class="grid-actions">
+          <button type="button" class="btn" id="dlSvg">SVG</button>
+          <button type="button" class="btn" id="dlPng">PNG</button>
+          <button type="button" class="btn" id="copyCmd">Command</button>
+        </div>
+        <div class="toast" id="toast" role="status"></div>
+      </div>
+    </aside>
+  </div>
+
+  <script src="../poster-bg/scripts/gen.js"></script>
+  <script src="ui.js"></script>
+</body>
+</html>
