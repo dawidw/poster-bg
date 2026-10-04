@@ -93,6 +93,39 @@
     .fact b { display: block; font: 800 clamp(2rem, 4vw, 3.2rem)/1 var(--display); letter-spacing: -.03em; }
     .fact span { color: var(--muted); font-size: 14px; }
 
+
+    /* ---------- history ---------- */
+    .history { border-top: 1px solid var(--line); }
+    .kicker { font: 500 12px/1 var(--mono); letter-spacing: .14em; text-transform: uppercase; color: var(--muted); margin: 0 0 18px; }
+    .intro { display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr); gap: clamp(28px, 5vw, 80px); align-items: start; }
+    .intro p { margin: 0 0 16px; color: rgba(255,255,255,.82); }
+    .pull { font: 800 clamp(1.5rem, 3vw, 2.3rem)/1.1 var(--display); letter-spacing: -.03em; margin: 0; text-wrap: balance; }
+    .pull em { font-style: normal; color: transparent; -webkit-text-stroke: 1px var(--fg); }
+    .theory { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 260px), 1fr)); gap: 0; border-top: 1px solid var(--line); margin-top: clamp(36px, 5vw, 64px); }
+    .theory div { padding: 26px 26px 26px 0; border-bottom: 1px solid var(--line); }
+    .theory h3 { margin: 0 0 8px; font: 800 1.2rem/1.1 var(--display); letter-spacing: -.02em; }
+    .theory p { margin: 0; color: var(--muted); font-size: 15px; }
+    .theory .tie { display: block; margin-top: 10px; font: 400 12px/1.5 var(--mono); color: #cfcfcf; }
+    .timeline { list-style: none; margin: 0; padding: 0; border-left: 1px solid var(--line); }
+    .timeline li { position: relative; padding: 0 0 26px 26px; }
+    .timeline li::before { content: ""; position: absolute; left: -5px; top: 9px; width: 9px; height: 9px; border-radius: 50%; background: var(--fg); }
+    .timeline b { display: block; font: 800 1.35rem/1.1 var(--display); letter-spacing: -.02em; }
+    .timeline span { color: var(--muted); font-size: 15px; }
+    .people { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 300px), 1fr)); gap: 16px; margin-top: 24px; }
+    .person { border: 1px solid var(--line); background: var(--card); padding: 24px; display: flex; flex-direction: column; gap: 10px; min-width: 0; }
+    .person > div + div { min-width: 0; }
+    .person.lead { grid-column: 1 / -1; display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.4fr); gap: clamp(20px, 4vw, 56px); padding: clamp(24px, 4vw, 44px); }
+    .person h3 { margin: 0; font: 800 1.5rem/1.05 var(--display); letter-spacing: -.025em; }
+    .person.lead h3 { font-size: clamp(2rem, 4.4vw, 3.4rem); letter-spacing: -.04em; }
+    .person .role { font: 400 12px/1.4 var(--mono); color: var(--muted); }
+    .person p { margin: 0; color: rgba(255,255,255,.8); font-size: 15px; }
+    .person .more a { color: var(--fg); }
+    .chips { display: flex; flex-wrap: wrap; gap: 8px; margin-top: auto; padding-top: 6px; }
+    .chips a { font: 500 12px/1 var(--mono); padding: 8px 11px; border: 1px solid #333; border-radius: 999px; text-decoration: none; transition: background .2s, color .2s, border-color .2s; }
+    .chips a:hover { background: #fff; color: #000; border-color: #fff; }
+    .chips .label { font: 400 12px/1 var(--mono); color: var(--muted); align-self: center; margin-right: 2px; }
+    @media (max-width: 860px) { .intro, .person.lead { grid-template-columns: minmax(0, 1fr); } }
+
     footer { padding: 40px var(--gutter) 56px; border-top: 1px solid var(--line); color: var(--muted); font-size: 14px; }
     footer .wrap { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 16px 32px; }
     footer a { color: var(--fg); }
@@ -122,6 +155,7 @@
       <a class="logo" href="#top">poster-bg</a>
       <ul>
         <li><a href="#motifs">Motifs</a></li>
+        <li><a href="#history">History</a></li>
         <li><a href="#use">Use it</a></li>
         <li><a href="research/">Research</a></li>
         <li><a href="generator/">Generator</a></li>
@@ -149,6 +183,49 @@
       <h2 class="reveal"><span id="motifCount">Nine</span> motifs.<br>Same seed, same poster.</h2>
       <p class="sub reveal">Every picture below was just drawn in your browser by <span class="mono">gen.js</span>. Open the generator to change the palette, seed, size and the position of the circle.</p>
       <div class="gallery" id="gallery"></div>
+    </div>
+  </section>
+
+  <section id="history" class="history">
+    <div class="wrap">
+      <p class="kicker reveal">History and inspirations</p>
+      <div class="intro">
+        <h2 class="pull reveal">A poster as <em>one idea</em>, drawn with almost nothing.</h2>
+        <div class="reveal">
+          <p>After the Second World War Polish graphic designers were given a great deal of artistic freedom, and cultural posters became a place to experiment. Jan Lenica later gave the movement its name, the Polish School of Posters, in an article for the Swiss magazine Graphis. The posters are known for economy of form, wit, hand-made lettering and color used for feeling rather than description.</p>
+          <p>In the late 1950s and the 1960s a thread of that tradition turned geometric and abstract. Designers borrowed from constructivism, Bauhaus and the new op art, and painters such as Wojciech Fangor moved between the gallery and the street. This project borrows <em>techniques</em>, not compositions: soft edges, rhythm, repetition, flat ink.</p>
+        </div>
+      </div>
+
+      <div class="theory">
+        <div class="reveal"><h3>Economy of form</h3><p>One theme, two or three elements, a single metaphor. Jan Lenica wrote that for Zamecznik a poster was a mathematical operation: reduce complex formulas to the simplest equation, the sum of two or three elements.</p><span class="tie">in the generator: stripes and disc, oscillogram, steps</span></div>
+        <div class="reveal"><h3>Color as emotion</h3><p>Saturated pairs and one hot accent, not realistic color. A restrained black and white page with a single blue or red does more than a rainbow.</p><span class="tie">in the generator: one accent per palette</span></div>
+        <div class="reveal"><h3>Vibration and soft edges</h3><p>When neighbouring hues are close in brightness, or an edge has no clear line, the eye keeps refocusing and the shape seems to pulse or float. Fangor built whole paintings on this, and Stańczak did it with narrow stripes.</p><span class="tie">in the generator: squares, rings, dream, wavy stripes</span></div>
+        <div class="reveal"><h3>Repetition and rhythm</h3><p>Multiply, rotate, double: simple forms repeated until they read as music or machinery. Posters for the Warsaw Autumn festival drew sound itself as zigzags and spreading waves.</p><span class="tie">in the generator: oscillogram, rhythm bars, multiply and rotate</span></div>
+        <div class="reveal"><h3>The hand-made trace</h3><p>Airbrush fades, slightly off-register inks, torn or cut paper. The small imperfection keeps flat geometry warm.</p><span class="tie">in the generator: seeded variation, soft layers, cut-outs</span></div>
+      </div>
+
+      <div class="intro" style="margin-top:clamp(56px,8vw,110px)">
+        <div>
+          <p class="kicker reveal">Timeline</p>
+          <ul class="timeline">
+            <li class="reveal"><b>1921</b><span>Szczuka, Stażewski and Miller show together at the Polski Klub Artystyczny, one of the first displays of constructivism in Polish art. Miller's posters build compositions out of words and letters.</span></li>
+            <li class="reveal"><b>1949 to 1966</b><span>Wojciech Zamecznik's poster years, an ascetic style drawn from constructivism and Bauhaus.</span></li>
+            <li class="reveal"><b>1953 to 1961</b><span>Wojciech Fangor designs over a hundred posters.</span></li>
+            <li class="reveal"><b>1956</b><span>The Warsaw Autumn festival begins, and Józef Mroszczak co-founds the magazine Projekt.</span></li>
+            <li class="reveal"><b>1958</b><span>Fangor and Stanisław Zamecznik present Study of Space, the first spatial installation in Poland.</span></li>
+            <li class="reveal"><b>1961</b><span>Zamecznik's film poster for A Night to Remember: black and white stripes, a large circle, blue bars.</span></li>
+            <li class="reveal"><b>1964</b><span>Lenica's Wozzeck becomes an icon of the decade. In New York Donald Judd reviews Julian Stańczak's optical paintings and the term op art is born.</span></li>
+            <li class="reveal"><b>About 1966</b><span>Mroszczak founds the International Poster Biennale in Warsaw, a decade after Projekt.</span></li>
+          </ul>
+        </div>
+        <div>
+          <p class="kicker reveal">Read more</p>
+          <p class="reveal">The full notes, with sources and the list of motifs still to build, are on the <a href="research/">research page</a>. The names below are the ones this project leans on most.</p>
+        </div>
+      </div>
+
+      <div class="people" id="people"></div>
     </div>
   </section>
 
@@ -199,7 +276,7 @@ node poster-bg/scripts/gen.js --ring --colors random \
     </div>
   </footer>
 
-  <script src="poster-bg/scripts/gen.js?v=202610041949"></script>
+  <script src="poster-bg/scripts/gen.js?v=202610041950"></script>
   <script>
     const uri = s => "data:image/svg+xml;charset=utf-8," + encodeURIComponent(s);
 
@@ -245,6 +322,43 @@ node poster-bg/scripts/gen.js --ring --colors random \
     document.getElementById("motifCount").textContent = WORDS[nm] || nm;
     document.getElementById("factMotifs").textContent = nm;
     document.getElementById("factPalettes").textContent = `motifs, ${Object.keys(PALETTES).length} palettes`;
+
+    /* artists: chips link to the generator for motifs that exist */
+    const PEOPLE = [
+      { lead: true, name: "Wojciech Fangor", role: "1922 to 2015, painter, graphic artist, sculptor",
+        text: ["Associated with op art and color field painting, and a key figure of Polish postwar abstract art. Between 1953 and 1961 he designed over a hundred posters and co-created the Polish School of Posters.", "His mature paintings put pulsating squares and discs of luminous color inside progressively darker rings that softly diffuse into the surrounding field, so the edge seems to breathe. With Stanisław Zamecznik he built Study of Space in 1958, the first spatial installation in Poland."],
+        links: [["Wikipedia", "https://en.wikipedia.org/wiki/Wojciech_Fangor"]], motifs: ["ring", "squares", "dream", "fangor"] },
+      { name: "Wojciech Zamecznik", role: "photographer, architect, poster artist",
+        text: ["An ascetic poster style derived from constructivism and Bauhaus: two or three elements, built from prefabricated parts rather than brush. Repetition, rotation and doubling of a form; sound drawn as an oscillogram zigzag or waves spreading in circles."],
+        links: [["Fundacja Archeologia Fotografii", "https://faf.org.pl/artists/wojciech-zamecznik/?lang=en"]], motifs: ["scope", "stripedisc", "rotor"] },
+      { name: "Julian Stańczak", role: "1928 to 2017, Polish-born painter and printmaker",
+        text: ["A central figure of op art. His fields of narrow, vibrating stripes, straight and undulating, and his concentric squares and saturated grids led Donald Judd to write about him when the term was coined in 1964."],
+        links: [["Wikipedia", "https://en.wikipedia.org/wiki/Julian_Stanczak"]], motifs: ["stripewave", "squares", "halftone", "moire"] },
+      { name: "Jan Lenica", role: "poster artist, animator, architect by training",
+        text: ["Named the Polish School of Posters, and in the 1960s made the paper cut-out his signature. His Wozzeck poster of 1964 is one of the icons of the decade."],
+        links: [["Wikipedia", "https://en.wikipedia.org/wiki/Jan_Lenica"]], motifs: ["cutout"] },
+      { name: "Jan Młodożeniec", role: "poster artist",
+        text: ["Bright, expressive stains held by thick black lines, great care for lettering and a childlike stylisation."],
+        links: [["Polska szkoła plakatu", "https://pl.wikipedia.org/wiki/Polska_szko%C5%82a_plakatu"]], motifs: ["outline"] },
+      { name: "Waldemar Świerzy", role: "poster artist",
+        text: ["Designed Warsaw Autumn posters in 1961, 1967, 1968 and 1969, among them abstract compositions of rhythmic color waves, and also made jazz posters."],
+        links: [["Polish Poster", "https://polishposter.com/3817-the-warsaw-autumn-polish-poster.html"]], motifs: ["bars", "dream"] },
+      { name: "Hubert Hilscher", role: "1924 to 1999, poster artist and art director",
+        text: ["A founder of the Poster Biennale and for 22 years art director of Projekt. His circus posters for Cyrk are trippy and geometric, in the restrained second generation of the school."],
+        links: [["Flashbak", "https://flashbak.com/hubert-hilscher-circus-posters-cyrk-476567/"], ["Circopedia", "https://www.circopedia.org/The_Polish_%22Cyrk%22_Posters"]], motifs: ["sunburst"] },
+      { name: "Józef Mroszczak", role: "1910 to 1975, designer and teacher",
+        text: ["One of the fathers of the school. He built posters from maximum information with minimum means and laid large areas of unrestricted color. He also founded the International Poster Biennale in Warsaw."],
+        links: [["Wikipedia", "https://en.wikipedia.org/wiki/J%C3%B3zef_Mroszczak"]], motifs: ["blob", "steps"] },
+      { name: "Polish constructivists", role: "Szczuka, Żarnower, Strzemiński, Kobro, Stażewski",
+        text: ["Between the wars they built typography like architecture and made political photomontage. Strzemiński's unism asked for unity of color, line and rhythm, even in print."],
+        links: [["Strzemiński", "https://en.wikipedia.org/wiki/W%C5%82adys%C5%82aw_Strzemi%C5%84ski"], ["MoMA", "https://www.moma.org/docs/press_archives/5347/releases/MOMA_1976_0006_6.pdf"]], motifs: ["construct"] },
+    ];
+    document.getElementById("people").innerHTML = PEOPLE.map(p => {
+      const chips = p.motifs.filter(m => MOTIFS[m]).map(m => `<a href="generator/?motif=${m}">${NAMES[m] || m}</a>`).join("");
+      return `<article class="person reveal${p.lead ? " lead" : ""}"><div><h3>${p.name}</h3><div class="role" style="margin-top:8px">${p.role}</div></div>` +
+        `<div style="display:flex;flex-direction:column;gap:12px">${p.text.length ? (Array.isArray(p.text) ? p.text : [p.text]).map(t => `<p>${t}</p>`).join("") : ""}` +
+        `<p class="more">${p.links.map(([l, u]) => `<a href="${u}">${l}</a>`).join(", ")}</p>${chips ? `<div class="chips"><span class="label">try</span>${chips}</div>` : ""}</div></article>`;
+    }).join("");
 
     /* copy buttons */
     document.querySelectorAll(".copy").forEach(b => b.addEventListener("click", () => {
