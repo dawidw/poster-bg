@@ -1,6 +1,6 @@
 ---
 name: poster-bg
-description: Generate poster-style graphics and random backgrounds in the spirit of the Polish School of Posters and 60s/70s geometric modernism, plus Wojciech Fangor's soft op art (vibrating discs, simple rings, flowing dream waves). Use for "plakat", "tło w stylu polskiej szkoły plakatu", geometric or retro backgrounds, Fangor-like imagesOutputs SVG.
+description: Generate poster-style graphics and random backgrounds in the spirit of the Polish School of Posters and 60s/70s geometric modernism, plus Wojciech Fangor's soft op art (vibrating discs, simple rings, flowing dream waves). Use for "plakat", "tło w stylu polskiej szkoły plakatu", geometric or retro backgrounds, Fangor-like images, or random backgrounds. Outputs SVG.
 argument-hint: "[--poster | --fangor | --ring | --dream] [--colors random] [--circle N] [--x N --y N] [--grain N] [--angle N] [--amp N --wavelength N --softness N] [--seed N] [--size WxH] [--palette name] [--motif name]"
 ---
 
