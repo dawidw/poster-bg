@@ -4,9 +4,9 @@ The repo and the Claude Code skill are called `poster-bg`; the site is **Study o
 
 Seeded SVG backgrounds in the spirit of the Polish School of Posters, 60s/70s geometric modernism and Wojciech Fangor's soft op art. One dependency-free generator (`poster-bg/scripts/gen.js`), a [Claude Code](https://claude.com/claude-code) skill that drives it, and a standalone dark generator page.
 
-**[Open the generator](https://dawidw.github.io/poster-bg/generator/)**
+**[Open the generator](https://studyofspace.gallery/generator/)**
 
-**[Visit the site](https://dawidw.github.io/poster-bg/)**
+**[Visit the site](https://studyofspace.gallery/)**
 
 The same motif, palette and seed always give the same image, so any result can be reproduced or varied by changing only the seed.
 
@@ -136,7 +136,7 @@ python3 -m http.server
 # then open http://localhost:8000/generator/
 ```
 
-Live: <https://dawidw.github.io/poster-bg/generator/>. The landing page is at <https://dawidw.github.io/poster-bg/>.
+Live: <https://studyofspace.gallery/generator/>. The landing page is at <https://studyofspace.gallery/>.
 
 ## How it works
 
