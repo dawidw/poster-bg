@@ -126,6 +126,38 @@
     .chips .label { font: 400 12px/1 var(--mono); color: var(--muted); align-self: center; margin-right: 2px; }
     @media (max-width: 860px) { .intro, .person.lead { grid-template-columns: minmax(0, 1fr); } }
 
+
+    /* timeline scroller */
+    .tl-wrap { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: clamp(28px, 5vw, 80px); align-items: start; margin-top: clamp(56px, 8vw, 110px); }
+    .tl-scroll { height: min(72vh, 680px); overflow-y: auto; scroll-snap-type: y proximity; padding: 26vh 0 30vh; margin-right: 8px; overscroll-behavior: contain;
+      -webkit-mask-image: linear-gradient(transparent 0, #000 16%, #000 84%, transparent 100%); mask-image: linear-gradient(transparent 0, #000 16%, #000 84%, transparent 100%);
+      scrollbar-width: none; }
+    .tl-scroll::-webkit-scrollbar { display: none; }
+    .tl-scroll:focus-visible { outline-offset: 6px; }
+    .tl-scroll .timeline li { scroll-snap-align: center; opacity: .32; transition: opacity .5s ease; }
+    .tl-scroll .timeline li::before { background: #555; transition: background .4s, transform .4s; }
+    .tl-scroll .timeline li.active { opacity: 1; }
+    .tl-scroll .timeline li.active::before { background: #fff; transform: scale(1.5); }
+    .tl-scroll .timeline li { padding-bottom: clamp(36px, 9vh, 90px); }
+    .tl-hint { margin: 8px 0 0; font: 400 12px/1.4 var(--mono); color: var(--muted); }
+    .tl-poster { position: sticky; top: 24px; display: flex; flex-direction: column; gap: 14px; }
+    .tl-frame { position: relative; aspect-ratio: 3 / 4; width: min(100%, 440px); max-height: 68vh; background: var(--card); overflow: hidden; box-shadow: 0 30px 60px -20px rgba(0,0,0,.8); }
+    .tl-frame img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; opacity: 0; transition: opacity .7s ease; }
+    .tl-frame img.on { opacity: 1; }
+    .tl-cap { display: flex; flex-direction: column; gap: 4px; max-width: 440px; }
+    .tl-cap .who { font: 800 1.25rem/1.1 var(--display); letter-spacing: -.02em; }
+    .tl-cap .mono { font-size: 12px; color: var(--muted); }
+    .tl-cap a { font-size: 14px; }
+    .tl-more { margin: 0; color: var(--muted); font-size: 14px; max-width: 440px; }
+    .tl-more a { color: var(--fg); }
+    @media (max-width: 860px) {
+      .tl-wrap { grid-template-columns: minmax(0, 1fr); }
+      .tl-poster { position: static; order: -1; }
+      .tl-frame { width: min(100%, 320px); max-height: none; }
+      .tl-scroll { height: min(56vh, 460px); padding: 18vh 0 20vh; }
+    }
+    @media (prefers-reduced-motion: reduce) { .tl-scroll .timeline li, .tl-frame img { transition: none; } }
+
     footer { padding: 40px var(--gutter) 56px; border-top: 1px solid var(--line); color: var(--muted); font-size: 14px; }
     footer .wrap { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 16px 32px; }
     footer a { color: var(--fg); }
@@ -205,23 +237,34 @@
         <div class="reveal"><h3>The hand-made trace</h3><p>Airbrush fades, slightly off-register inks, torn or cut paper. The small imperfection keeps flat geometry warm.</p><span class="tie">in the generator: seeded variation, soft layers, cut-outs</span></div>
       </div>
 
-      <div class="intro" style="margin-top:clamp(56px,8vw,110px)">
-        <div>
+      <div class="tl-wrap">
+        <div class="tl-col">
           <p class="kicker reveal">Timeline</p>
-          <ul class="timeline">
-            <li class="reveal"><b>1921</b><span>Szczuka, Stażewski and Miller show together at the Polski Klub Artystyczny, one of the first displays of constructivism in Polish art. Miller's posters build compositions out of words and letters.</span></li>
-            <li class="reveal"><b>1949 to 1966</b><span>Wojciech Zamecznik's poster years, an ascetic style drawn from constructivism and Bauhaus.</span></li>
-            <li class="reveal"><b>1953 to 1961</b><span>Wojciech Fangor designs over a hundred posters.</span></li>
-            <li class="reveal"><b>1956</b><span>The Warsaw Autumn festival begins, and Józef Mroszczak co-founds the magazine Projekt.</span></li>
-            <li class="reveal"><b>1958</b><span>Fangor and Stanisław Zamecznik present Study of Space, the first spatial installation in Poland.</span></li>
-            <li class="reveal"><b>1961</b><span>Zamecznik's film poster for A Night to Remember: black and white stripes, a large circle, blue bars.</span></li>
-            <li class="reveal"><b>1964</b><span>Lenica's Wozzeck becomes an icon of the decade. In New York Donald Judd reviews Julian Stańczak's optical paintings and the term op art is born.</span></li>
-            <li class="reveal"><b>About 1966</b><span>Mroszczak founds the International Poster Biennale in Warsaw, a decade after Projekt.</span></li>
-          </ul>
+          <div class="tl-scroll" id="tlScroll" tabindex="0" aria-label="Timeline. Scroll to change the poster.">
+            <ul class="timeline" id="timeline">
+            <li data-m="construct" data-p="konstruktywizm" data-s="5" data-who="Polish constructivists"><b>1921</b><span>Szczuka, Stażewski and Miller show together at the Polski Klub Artystyczny, one of the first displays of constructivism in Polish art. Miller's posters build compositions out of words and letters.</span></li>
+            <li data-m="scope" data-p="zamecznik" data-s="7" data-who="Wojciech Zamecznik"><b>1949 to 1966</b><span>Wojciech Zamecznik's poster years, an ascetic style drawn from constructivism and Bauhaus. Sound becomes a zigzag, a poster becomes a mathematical operation.</span></li>
+            <li data-m="ring" data-p="soft_orchid" data-s="7" data-who="Wojciech Fangor"><b>1953 to 1961</b><span>Wojciech Fangor designs over a hundred posters.</span></li>
+            <li data-m="bars" data-p="jazz" data-s="6" data-who="Waldemar Świerzy"><b>1956</b><span>The Warsaw Autumn festival begins, and Józef Mroszczak co-founds the magazine Projekt. Świerzy will later draw the festival as rhythmic waves of color.</span></li>
+            <li data-m="squares" data-p="soft_orchid" data-s="7" data-who="Wojciech Fangor"><b>1958</b><span>Fangor and Stanisław Zamecznik present Study of Space, the first spatial installation in Poland.</span></li>
+            <li data-m="stripedisc" data-p="zamecznik" data-s="2" data-who="Wojciech Zamecznik"><b>1961</b><span>Zamecznik's film poster for A Night to Remember: black and white stripes, a large circle, blue bars.</span></li>
+            <li data-m="cutout" data-p="lenica" data-s="4" data-who="Jan Lenica"><b>1964</b><span>Jan Lenica's Wozzeck becomes an icon of the decade, and the paper cut-out is his signature technique.</span></li>
+            <li data-m="stripewave" data-p="stanczak" data-s="2" data-who="Julian Stańczak"><b>1964, in New York</b><span>Donald Judd reviews Julian Stańczak's optical paintings, fields of narrow vibrating stripes, and the term op art is born.</span></li>
+            <li data-m="dream" data-p="dream_navy" data-s="2" data-who="Wojciech Fangor"><b>1960s and 70s</b><span>Poster artists turn to abstraction and op art: blurred circles, waves of color. Hilscher's circus posters go trippy and geometric.</span></li>
+            <li data-m="sunburst" data-p="cyrk" data-s="3" data-who="Hubert Hilscher"><b>About 1966</b><span>Mroszczak founds the International Poster Biennale in Warsaw, a decade after Projekt. Hilscher is one of its founders.</span></li>
+            <li data-m="halftone" data-p="stanczak" data-s="4" data-who="poster-bg"><b>Today</b><span>The same ideas as seeds: change one number and the poster changes.</span></li>
+            </ul>
+          </div>
+          <p class="tl-hint">Scroll the timeline: the poster follows.</p>
         </div>
-        <div>
-          <p class="kicker reveal">Read more</p>
-          <p class="reveal">The full notes, with sources and the list of motifs still to build, are on the <a href="research/">research page</a>. The names below are the ones this project leans on most.</p>
+        <div class="tl-poster">
+          <div class="tl-frame" id="tlFrame"><img alt=""><img alt=""></div>
+          <div class="tl-cap">
+            <span class="who" id="tlWho"></span>
+            <span class="mono" id="tlRecipe"></span>
+            <a href="generator/" id="tlLink">Open this recipe in the generator</a>
+          </div>
+          <p class="tl-more">The full notes, with sources and the status of every motif, are on the <a href="research/">research page</a>.</p>
         </div>
       </div>
 
@@ -276,7 +319,7 @@ node poster-bg/scripts/gen.js --ring --colors random \
     </div>
   </footer>
 
-  <script src="poster-bg/scripts/gen.js?v=202610041957"></script>
+  <script src="poster-bg/scripts/gen.js?v=202610042004"></script>
   <script>
     const uri = s => "data:image/svg+xml;charset=utf-8," + encodeURIComponent(s);
 
@@ -359,6 +402,37 @@ node poster-bg/scripts/gen.js --ring --colors random \
         `<div style="display:flex;flex-direction:column;gap:12px">${p.text.length ? (Array.isArray(p.text) ? p.text : [p.text]).map(t => `<p>${t}</p>`).join("") : ""}` +
         `<p class="more">${p.links.map(([l, u]) => `<a href="${u}">${l}</a>`).join(", ")}</p>${chips ? `<div class="chips"><span class="label">try</span>${chips}</div>` : ""}</div></article>`;
     }).join("");
+
+    /* timeline scroller: the poster on the right follows the active entry */
+    (function () {
+      const scroller = document.getElementById("tlScroll"), lis = [...document.querySelectorAll("#timeline li")].filter(li => MOTIFS[li.dataset.m]);
+      const frame = [...document.querySelectorAll("#tlFrame img")], cache = {};
+      let front = 0, current = -1;
+      const src = li => cache[li.dataset.m + li.dataset.p + li.dataset.s] ||= uri(generate(li.dataset.m, li.dataset.p, +li.dataset.s, 600, 800));
+      const show = i => {
+        if (i === current) return;
+        current = i;
+        lis.forEach((li, k) => li.classList.toggle("active", k === i));
+        const li = lis[i], next = frame[1 - front];
+        next.src = src(li);
+        const done = () => { frame[front].classList.remove("on"); next.classList.add("on"); front = 1 - front; };
+        next.decode ? next.decode().then(done, done) : (next.onload = done);
+        document.getElementById("tlWho").textContent = "In the style of " + li.dataset.who;
+        document.getElementById("tlRecipe").textContent = `${li.dataset.m} · ${li.dataset.p} · ${li.dataset.s}`;
+        document.getElementById("tlLink").href = `generator/?motif=${li.dataset.m}&palette=${li.dataset.p}&seed=${li.dataset.s}`;
+      };
+      let ticking = false;
+      const pick = () => {
+        ticking = false;
+        const box = scroller.getBoundingClientRect(), mid = box.top + box.height / 2;
+        let best = 0, bestD = Infinity;
+        lis.forEach((li, k) => { const t = li.firstElementChild.getBoundingClientRect(), b = li.lastElementChild.getBoundingClientRect(), d = Math.abs((t.top + b.bottom) / 2 - mid); if (d < bestD) { bestD = d; best = k; } });
+        show(best);
+      };
+      scroller.addEventListener("scroll", () => { if (!ticking) { ticking = true; requestAnimationFrame(pick); } }, { passive: true });
+      lis.forEach((li, k) => li.addEventListener("click", () => li.scrollIntoView({ block: "center", behavior: "smooth" })));
+      pick();
+    })();
 
     /* copy buttons */
     document.querySelectorAll(".copy").forEach(b => b.addEventListener("click", () => {
