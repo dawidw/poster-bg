@@ -209,9 +209,9 @@ node poster-bg/scripts/gen.js --ring --colors random \
 
     /* hero: cross-fade through curated recipes. Circles are pushed to the right so the title stays clear. */
     const HERO = [
-      ["dream", "dream_navy", 5], ["ring", "soft_orchid", 7, { x: .74, y: .5, size: 1.1 }], ["dream", "dream_sun", 11],
-      ["fangor", "fangor_blue", 4, { x: .74, y: .5 }], ["dream", "dream_azure", 8], ["ring", "soft_flame", 3, { x: .72, y: .48, size: 1.05 }],
-      ["dream", "dream_spectrum", 2], ["ring", "soft_redcore", 2, { x: .74, y: .5, size: .95 }],
+      ["dream", "dream_navy", 2], ["ring", "soft_orchid", 7, { x: .74, y: .5, size: 1.1 }], ["dream", "dream_flag", 8],
+      ["fangor", "fangor_blue", 4, { x: .74, y: .5 }], ["dream", "dream_sun", 5], ["ring", "soft_flame", 3, { x: .72, y: .48, size: 1.05 }],
+      ["dream", "dream_spectrum", 5], ["ring", "soft_redcore", 2, { x: .74, y: .5, size: .95 }], ["dream", "dream_azure", 3], ["dream", "dream_rose", 8],
     ];
     const imgs = [...document.querySelectorAll("#bg img")], recipe = document.getElementById("recipe");
     let cur = 0, front = 0;
@@ -236,7 +236,7 @@ node poster-bg/scripts/gen.js --ring --colors random \
     const GALLERY = [
       ["stripes", "baron", 7], ["rings", "brasilia", 3], ["mosaic", "roger", 5],
       ["blob", "marek", 2], ["diagonals", "anima", 4], ["steps", "wesoft", 6],
-      ["fangor", "fangor_blue", 4], ["ring", "soft_orchid", 7], ["dream", "dream_navy", 5],
+      ["fangor", "fangor_blue", 4], ["ring", "soft_orchid", 7], ["dream", "dream_navy", 2],
     ];
     const group = { fangor: "Fangor", ring: "Fangor", dream: "Fangor" };
     document.getElementById("gallery").innerHTML = GALLERY.map(([m, p, s]) =>

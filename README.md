@@ -19,10 +19,12 @@ The same motif, palette and seed always give the same image, so any result can b
 
 | | | |
 |---|---|---|
-| ![Dream, navy](examples/dream-navy.svg) | ![Dream, sun](examples/dream-sun.svg) | ![Fangor, blue](examples/fangor-blue.svg) |
-| `dream` · `dream_navy` | `dream` · `dream_sun` | `fangor` · `fangor_blue` |
-| ![Ring, orchid](examples/ring-orchid.svg) | ![Ring, flame](examples/ring-flame.svg) | ![Dream, azure](examples/dream-azure.svg) |
-| `ring` · `soft_orchid` | `ring` · `soft_flame` | `dream` · `dream_azure` · `--amp 1.5 --wavelength 0.8` |
+| ![Dream, navy](examples/dream-navy.svg) | ![Dream, flag](examples/dream-flag.svg) | ![Dream, spectrum](examples/dream-spectrum.svg) |
+| `dream` · `dream_navy` · seed 2 | `dream` · `dream_flag` · seed 8 | `dream` · `dream_spectrum` · seed 5 |
+| ![Dream, azure](examples/dream-azure.svg) | ![Dream, sun](examples/dream-sun.svg) | ![Dream, candy](examples/dream-candy.svg) |
+| `dream` · `dream_azure` · seed 3 | `dream` · `dream_sun` · seed 5 | `dream` · `dream_candy` · seed 11 |
+| ![Fangor, blue](examples/fangor-blue.svg) | ![Ring, orchid](examples/ring-orchid.svg) | ![Ring, flame](examples/ring-flame.svg) |
+| `fangor` · `fangor_blue` | `ring` · `soft_orchid` | `ring` · `soft_flame` |
 
 ## Use it from the command line
 
