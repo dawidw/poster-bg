@@ -200,11 +200,21 @@
     .person.lead h3 { font-size: clamp(2rem, 4.4vw, 3.4rem); letter-spacing: -.04em; }
     .person .role { font: 400 12px/1.4 var(--mono); color: var(--muted); }
     .person p { margin: 0; color: rgba(255,255,255,.8); font-size: 15px; }
+    .person .lh { display: flex; flex-direction: column; gap: 16px; min-width: 0; }
+    @media (min-width: 861px) {
+      .person.lead { grid-template-columns: minmax(0, 300px) minmax(0, 1fr); grid-template-rows: max-content max-content 1fr; align-items: start; row-gap: 14px; }
+      .person.lead .lh { display: contents; }
+      .person.lead .portrait { grid-column: 1; grid-row: 1 / 4; }
+      .person.lead .head { grid-column: 2; grid-row: 1; }
+      .person.lead > div:not(.lh) { grid-column: 2; grid-row: 2; }
+    }
     .person .portrait { margin: 0; background: #000; border: 1px solid var(--line); color: #cfcfcf; padding: 14px 14px 10px; container-type: inline-size; overflow: hidden; }
     .person .portrait pre { margin: 0; padding: 0; border: 0; border-radius: 0; background: none; color: #e6e6e6; font: 400 calc(100cqw / 54) / 1.2 var(--mono); letter-spacing: 0; white-space: pre; overflow: hidden; }
+    .person .portrait pre i { font-style: normal; }
+    .person .portrait .t0 { color: #3c3c3c; } .person .portrait .t1 { color: #565656; } .person .portrait .t2 { color: #707070; } .person .portrait .t3 { color: #8c8c8c; }
+    .person .portrait .t4 { color: #a8a8a8; } .person .portrait .t5 { color: #c4c4c4; } .person .portrait .t6 { color: #e0e0e0; } .person .portrait .t7 { color: #fff; }
     .person .portrait figcaption { margin-top: 10px; font: 400 10.5px/1.4 var(--mono); color: #8a8a8a; }
     .person .portrait figcaption a { color: inherit; }
-    .person.lead .portrait { grid-row: span 1; }
     .person .more a { color: var(--fg); }
     .chips { display: flex; flex-wrap: wrap; gap: 8px; margin-top: auto; padding-top: 6px; }
     .chips a { font: 500 12px/1 var(--mono); padding: 8px 11px; border: 1px solid #333; border-radius: 999px; text-decoration: none; transition: background .2s, color .2s, border-color .2s; }
@@ -427,8 +437,8 @@ node poster-bg/scripts/gen.js --ring --colors random \
     </div>
   </footer>
 
-  <script src="poster-bg/scripts/gen.js?v=202610042358"></script>
-  <script src="portraits/ascii.js?v=202610042358"></script>
+  <script src="poster-bg/scripts/gen.js?v=202610050003"></script>
+  <script src="portraits/ascii.js?v=202610050003"></script>
   <script>
     const uri = s => "data:image/svg+xml;charset=utf-8," + encodeURIComponent(s);
 
@@ -525,9 +535,12 @@ node poster-bg/scripts/gen.js --ring --colors random \
     ];
     document.getElementById("people").innerHTML = PEOPLE.map(p => {
       const chips = p.motifs.filter(m => MOTIFS[m]).map(m => `<a href="generator/?motif=${m}">${NAMES[m] || m}</a>`).join("");
+      const esc = c => c === "&" ? "&amp;" : c === "<" ? "&lt;" : c;
+      const tonePre = pt => { const T = (pt.tone || "").split("\n"); return pt.ascii.split("\n").map((line, y) => { let out = "", cur = -1, buf = ""; const flush = () => { if (buf) out += cur >= 0 ? `<i class="t${cur}">${buf}</i>` : buf; buf = ""; };
+        for (let x = 0; x < line.length; x++) { const c = line[x]; if (c !== " ") { const k = T[y] ? +T[y][x] : 7; if (k !== cur) { flush(); cur = k; } } buf += esc(c); } flush(); return out; }).join("\n"); };
       const pt = (window.PORTRAITS || {})[p.name];
-      const fig = pt ? `<figure class="portrait"><pre aria-hidden="true">${pt.ascii.replace(/&/g, "&amp;").replace(/</g, "&lt;")}</pre><figcaption>${pt.credit}, <a href="${pt.url}">${pt.link || "Wikimedia Commons"}</a></figcaption></figure>` : "";
-      return `<article class="person reveal${p.lead ? " lead" : ""}"><div style="display:flex;flex-direction:column;gap:16px">${fig}<div><h3>${p.name}</h3><div class="role" style="margin-top:8px">${p.role}</div></div></div>` +
+      const fig = pt ? `<figure class="portrait"><pre aria-hidden="true">${tonePre(pt)}</pre><figcaption>${pt.credit}, <a href="${pt.url}">${pt.link || "Wikimedia Commons"}</a></figcaption></figure>` : "";
+      return `<article class="person reveal${p.lead ? " lead" : ""}"><div class="lh">${fig}<div class="head"><h3>${p.name}</h3><div class="role" style="margin-top:8px">${p.role}</div></div></div>` +
         `<div style="display:flex;flex-direction:column;gap:12px">${p.text.length ? (Array.isArray(p.text) ? p.text : [p.text]).map(t => `<p>${t}</p>`).join("") : ""}` +
         `<p class="more">${p.links.map(([l, u]) => `<a href="${u}">${l}</a>`).join(", ")}</p>${chips ? `<div class="chips"><span class="label">try</span>${chips}</div>` : ""}</div></article>`;
     }).join("");
