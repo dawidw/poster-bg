@@ -103,12 +103,12 @@
     .intro p { margin: 0 0 16px; color: rgba(255,255,255,.82); }
     .pull { font: 800 clamp(1.5rem, 3vw, 2.3rem)/1.1 var(--display); letter-spacing: -.03em; margin: 0; text-wrap: balance; }
     .pull em { font-style: normal; color: transparent; -webkit-text-stroke: 1px var(--fg); }
-    .theory { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 0; border-top: 1px solid var(--line); margin-top: clamp(36px, 5vw, 64px); }
-    .theory div { padding: 26px 26px 26px 0; border-bottom: 1px solid var(--line); }
-    .theory div:nth-child(-n+3) { grid-column: span 2; }
-    .theory div:nth-child(n+4) { grid-column: span 3; }
-    @media (max-width: 860px) { .theory { grid-template-columns: repeat(2, minmax(0, 1fr)); } .theory div:nth-child(n) { grid-column: auto; } }
-    @media (max-width: 560px) { .theory { grid-template-columns: minmax(0, 1fr); } }
+    .theory { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0 clamp(24px, 4vw, 64px); border-top: 1px solid var(--line); margin-top: clamp(36px, 5vw, 64px); }
+    .theory div { padding: 28px 0 30px; border-bottom: 1px solid var(--line); }
+    .theory div:last-child { grid-column: 1 / -1; }
+    .theory div:last-child p { max-width: 820px; }
+    .theory p + p { margin-top: 12px; }
+    @media (max-width: 700px) { .theory { grid-template-columns: minmax(0, 1fr); } }
     .theory h3 { margin: 0 0 8px; font: 800 1.2rem/1.1 var(--display); letter-spacing: -.02em; }
     .theory p { margin: 0; color: var(--muted); font-size: 15px; }
     .theory .tie { display: block; margin-top: 10px; font: 400 12px/1.5 var(--mono); color: #cfcfcf; }
@@ -254,11 +254,11 @@
       </div>
 
       <div class="theory">
-        <div class="reveal"><h3>Economy of form</h3><p>One theme, two or three elements, a single metaphor. Jan Lenica wrote that for Zamecznik a poster was a mathematical operation: reduce complex formulas to the simplest equation, the sum of two or three elements.</p><span class="tie">in the generator: stripes and disc, oscillogram, steps</span></div>
-        <div class="reveal"><h3>Color as emotion</h3><p>Saturated pairs and one hot accent, not realistic color. A restrained black and white page with a single blue or red does more than a rainbow.</p><span class="tie">in the generator: one accent per palette</span></div>
-        <div class="reveal"><h3>Vibration and soft edges</h3><p>When neighbouring hues are close in brightness, or an edge has no clear line, the eye keeps refocusing and the shape seems to pulse or float. Fangor built whole paintings on this, and Stańczak did it with narrow stripes.</p><span class="tie">in the generator: squares, rings, dream, wavy stripes</span></div>
-        <div class="reveal"><h3>Repetition and rhythm</h3><p>Multiply, rotate, double: simple forms repeated until they read as music or machinery. Posters for the Warsaw Autumn festival drew sound itself as zigzags and spreading waves.</p><span class="tie">in the generator: oscillogram, rhythm bars, multiply and rotate</span></div>
-        <div class="reveal"><h3>The hand-made trace</h3><p>Airbrush fades, slightly off-register inks, torn or cut paper. The small imperfection keeps flat geometry warm.</p><span class="tie">in the generator: seeded variation, soft layers, cut-outs</span></div>
+        <div class="reveal"><h3>Economy of form</h3><p>One theme, two or three elements, a single metaphor. Jan Lenica wrote that for Zamecznik a poster was a mathematical operation: reduce complex formulas to the simplest equation, the sum of two or three elements.</p><p>In practice that meant no decoration that did not carry the idea. Józef Mroszczak is remembered for conveying maximum information with minimum means, and the Cyrk circus posters kept to one theme and a metaphor the viewer had to read for themselves.</p><span class="tie">in the generator: stripes and disc, oscillogram, steps</span></div>
+        <div class="reveal"><h3>Color as emotion</h3><p>Saturated pairs and one hot accent, not realistic color. A restrained black and white page with a single blue or red does more than a rainbow.</p><p>Color in these posters was used emotionally rather than descriptively, from muted tones to stark contrasts. Zamecznik sometimes reduced a poster to lettering on black; the jazz posters set silhouettes against yellow, blue, red and white. Every palette here has a ground, a dark ink, a light ink and one accent, so a picture can stay quiet until the accent speaks.</p><span class="tie">in the generator: one accent per palette, 77 presets</span></div>
+        <div class="reveal"><h3>Vibration and soft edges</h3><p>When neighbouring hues are close in brightness, or an edge has no clear line, the eye keeps refocusing and the shape seems to pulse or float. Fangor built whole paintings on this, and Stańczak did it with narrow stripes.</p><p>Donald Judd described Stańczak's 1964 show as fields of narrow, vibrating stripes. Fangor's squares pulse because every ring is a gradient with no hard line. The generator builds the same blur from stacked translucent layers instead of filters, so the edges stay smooth at any size.</p><span class="tie">in the generator: squares, rings, dream, wavy stripes</span></div>
+        <div class="reveal"><h3>Repetition and rhythm</h3><p>Multiply, rotate, double: simple forms repeated until they read as music or machinery. Posters for the Warsaw Autumn festival drew sound itself as zigzags and spreading waves.</p><p>Zamecznik multiplied, rotated and doubled a form; Świerzy drew rhythmic waves of color for the same festival. Here repetition is a parameter: how many copies, what tilt, how tight the spacing, so one form can read as a flower, a fan or an engine.</p><span class="tie">in the generator: oscillogram, rhythm bars, multiply and rotate, unism</span></div>
+        <div class="reveal"><h3>The hand-made trace</h3><p>Airbrush fades, slightly off-register inks, torn or cut paper. The small imperfection keeps flat geometry warm.</p><p>Hand-printed posters were rarely perfectly aligned, Lenica built his from cut paper, and Młodożeniec held bright stains in thick black lines that sat a little off their color. The generator fakes none of it with filters: off-register print, paper grain and ragged cut-outs are all seeded geometry, so a seed still reproduces the exact picture.</p><span class="tie">in the generator: off-register print, paper grain, cut-outs, outlined stains</span></div>
       </div>
 
       <div class="tl-wrap">
@@ -343,7 +343,7 @@ node poster-bg/scripts/gen.js --ring --colors random \
     </div>
   </footer>
 
-  <script src="poster-bg/scripts/gen.js?v=202610042130"></script>
+  <script src="poster-bg/scripts/gen.js?v=202610042138"></script>
   <script>
     const uri = s => "data:image/svg+xml;charset=utf-8," + encodeURIComponent(s);
 
