@@ -81,14 +81,23 @@ It prints `motif=… palette=… seed=… size=…` to stderr, which is the reci
 | `--amp N`, `--wavelength N`, `--softness N` | `dream` only: wave height, length and edge softness (about 0.2 to 2.5) |
 | `--grain N` | mosaic tiles across the width (5 to 30) |
 
-Every motif also has its own settings, the same ones the generator page shows as sliders. Pass them as `--key value` (for `dream` the wave flags are `--amp`, `--wavelength` and `--softness` above).
+Every motif has its own settings, the same ones the generator page shows as sliders. Pass them as `--key value` (for `dream` the wave flags are `--amp`, `--wavelength` and `--softness` above).
 
 | Motif | Settings (flag, range) |
 |---|---|
+| `stripes` | `--height` 0.4 to 2.5, `--solid` 0 to 1, `--jitter` 0 to 4, `--angle` 0 to 180 |
+| `rings` | `--disc` 0.5 to 1.6, `--towers` 0.3 to 1.6, `--x` 0 to 1, `--y` 0 to 1, `--bowl` 0 to 1 |
+| `mosaic` | `--skip` 0 to 0.85, `--accents` 0 to 0.5, `--tile` 0.5 to 1.6, `--tilt` 0 to 4 |
+| `blob` | `--scale` 0.5 to 1.8, `--count` 1 to 8, `--edge` 0 to 2, `--halo` 0.3 to 2.2, `--x` 0 to 1, `--y` 0 to 1 |
+| `diagonals` | `--cols` 2 to 10, `--fill` 0.3 to 1, `--accents` 0 to 0.6, `--square` 0.3 to 0.95 |
+| `steps` | `--count` 3 to 14, `--width` 0.3 to 0.98, `--base` 0.5 to 0.97, `--height` 0.4 to 1.7, `--mix` 0 to 1 |
+| `fangor` | `--rings` 3 to 14, `--squash` 0.4 to 1.2, `--centre` 0.02 to 0.4, `--spread` 0.3 to 0.8, `--echo` 0 to 0.6 |
+| `ring` | `--hole` 0.02 to 0.6, `--blend` 0.005 to 0.16, `--spread` 0.45 to 0.9, `--halo` 0.03 to 0.3 |
+| `dream` | `--ripple` 0 to 0.7, `--variety` 0 to 2.2, `--shift` 0 to 6.28 |
 | `stripewave` | `--width` 0.5 to 2.5, `--amp` 0.2 to 3, `--wave` 0.5 to 2, `--drift` 0 to 0.8, `--angle` 0 to 360 |
 | `scope` | `--lines` 3 to 30, `--freq` 6 to 80, `--amp` 0.2 to 2.5, `--weight` 0.4 to 3, `--rings` 0 to 1 |
 | `stripedisc` | `--width` 0.5 to 2.5, `--disc` 0.4 to 1.8, `--bars` 0 to 12, `--x` 0 to 1, `--y` 0 to 1 |
-| `construct` | `--grid` 3 to 14, `--count` 2 to 20 |
+| `construct` | `--grid` 3 to 14, `--count` 2 to 20, `--thick` 0.4 to 2.5, `--disc` 0.4 to 2, `--accent` 0 to 0.5 |
 | `cutout` | `--count` 2 to 14, `--jag` 0 to 1.5, `--scale` 0.5 to 1.6 |
 | `bars` | `--count` 4 to 48, `--rhythm` 0.1 to 1.6, `--gap` 0 to 1.2, `--mirror` 0 to 1 |
 | `rotor` | `--copies` 4 to 64, `--tilt` -70 to 70, `--form` 0 to 2, `--length` 0.08 to 0.5, `--inner` 0.02 to 0.3, `--x` 0 to 1, `--y` 0 to 1 |
@@ -116,7 +125,7 @@ Then in Claude Code: `/poster-bg --dream`, or just ask for "three blue Fangor ri
 
 ## Generator page
 
-`generator/index.html` is a standalone dark UI: family and style switches, palette with editable and removable colors, random colors, seed, size presets, circle size and position (sliders or drag on the preview), mosaic granularity, history, SVG and PNG export, and a button that copies the matching CLI command.
+`generator/index.html` is a standalone dark UI: one motif list grouped by the artist who inspired it, sliders for every motif, a palette with editable and removable colors, random colors, seed, size presets, mosaic granularity, history, SVG and PNG export, a button that copies the matching CLI command, and a floating bar at the bottom with Random motif, colors and seed buttons plus Randomize all.
 
 It loads `gen.js` with a relative path, so serve the repository root, for example:
 

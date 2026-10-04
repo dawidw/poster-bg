@@ -87,73 +87,84 @@ const PALETTES={
 const MOTIF_OPTS={};
 const f=n=>+n.toFixed(1);
 function seq(r,list,n){const out=[];for(let i=0;i<n;i++){let c;do{c=list[Math.floor(r()*list.length)];}while(c===out[i-1]&&list.length>1);out.push(c);}return out;}
-function stripes(r,p,w,h){let defs='',body='',y=-r()*20,i=0,prev='';
- while(y<h){const bh=h*(0.055+r()*0.07);let c1;do{c1=p.inks[Math.floor(r()*p.inks.length)];}while(c1===prev&&p.inks.length>1);
-  const c2=r()<.45?c1:r()<.6?p.light:p.paper;prev=c1;
+function stripes(r,p,w,h,o={}){let defs='',body='',y=-r()*20,i=0,prev='';
+ const hk=o.height??1,solid=o.solid??.45,jit=o.jitter??1,ang=o.angle??0,D=Math.hypot(w,h),padY=ang?(D-h)/2:0,padX=ang?(D-w)/2:0;
+ y-=padY;
+ while(y<h+padY){const bh=h*(0.055+r()*0.07)*hk;let c1;do{c1=p.inks[Math.floor(r()*p.inks.length)];}while(c1===prev&&p.inks.length>1);
+  const c2=r()<solid?c1:r()<.6?p.light:p.paper;prev=c1;
   const a=0.05+r()*0.4,b=0.55+r()*0.4,id='g'+i++;
   defs+=`<linearGradient id="${id}" x1="0" x2="1"><stop offset="${f(a)}" stop-color="${c1}"/><stop offset="${f(b)}" stop-color="${c2}"/></linearGradient>`;
-  body+=`<rect x="${f(-20+(r()-.5)*14)}" y="${f(y+(r()-.5)*5)}" width="${f(w+40)}" height="${f(bh-6)}" fill="url(#${id})"/>`;y+=bh;}
+  body+=`<rect x="${f(-20-padX+(r()-.5)*14*jit)}" y="${f(y+(r()-.5)*5*jit)}" width="${f(w+40+2*padX)}" height="${f(Math.max(2,bh-6))}" fill="url(#${id})"/>`;y+=bh;}
+ if(ang){defs+=`<clipPath id="stc"><rect width="${w}" height="${h}"/></clipPath>`;body=`<g clip-path="url(#stc)"><g transform="rotate(${ang} ${f(w/2)} ${f(h/2)})">${body}</g></g>`;}
  return{defs,body};}
-function rings(r,p,w,h){const cx=w*(0.5+(r()-.5)*.1),cy=h*.5,R=Math.min(w*.36,h*.3),radii=[1,.7,.45,.25];
+MOTIF_OPTS.stripes=[{key:'height',label:'Band height',min:.4,max:2.5,step:.01,def:1},{key:'solid',label:'Flat bands',min:0,max:1,step:.01,def:.45},{key:'jitter',label:'Off-register',min:0,max:4,step:.01,def:1},{key:'angle',label:'Rotate',min:0,max:180,step:1,def:0}];
+function rings(r,p,w,h,o={}){const jx=r(),cx=w*(o.x??(0.5+(jx-.5)*.1)),cy=h*(o.y??.5),R=Math.min(w*.36,h*.3)*(o.disc??1),radii=[1,.7,.45,.25],tw=o.towers??1;
  const L=seq(r,p.inks,4),Rr=seq(r,p.inks,4),bars=seq(r,p.inks,2);
  const defs=`<clipPath id="L"><rect width="${f(cx)}" height="${h}"/></clipPath><clipPath id="R"><rect x="${f(cx)}" width="${f(w-cx)}" height="${h}"/></clipPath>`;
- let body=`<rect x="${f(w*.14)}" y="${f(h*.17)}" width="${f(w*.1)}" height="${f(h*.6)}" fill="${bars[0]}"/><rect x="${f(w*.24)}" y="${f(h*.21)}" width="${f(w*.28)}" height="${f(h*.56)}" fill="${bars[1]}"/>`;
+ let body=`<rect x="${f(w*.14)}" y="${f(h*.17)}" width="${f(w*.1*tw)}" height="${f(h*.6)}" fill="${bars[0]}"/><rect x="${f(w*.14+w*.1*tw)}" y="${f(h*.21)}" width="${f(w*.28*tw)}" height="${f(h*.56)}" fill="${bars[1]}"/>`;
  radii.forEach((k,i)=>{body+=`<circle cx="${f(cx)}" cy="${f(cy)}" r="${f(R*k)}" fill="${L[i]}" clip-path="url(#L)"/><circle cx="${f(cx)}" cy="${f(cy)}" r="${f(R*k)}" fill="${Rr[i]}" clip-path="url(#R)"/>`;});
- body+=`<path d="M${f(w*.2)} ${f(h*.76)}H${f(w*.8)}Q${f(w*.7)} ${f(h*.85)} ${f(w*.5)} ${f(h*.87)}Q${f(w*.3)} ${f(h*.85)} ${f(w*.2)} ${f(h*.76)}Z" fill="#f7f6f2"/>`;
+ if((o.bowl??1)>=.5)body+=`<path d="M${f(w*.2)} ${f(h*.76)}H${f(w*.8)}Q${f(w*.7)} ${f(h*.85)} ${f(w*.5)} ${f(h*.87)}Q${f(w*.3)} ${f(h*.85)} ${f(w*.2)} ${f(h*.76)}Z" fill="#f7f6f2"/>`;
  return{defs,body};}
-function mosaic(r,p,w,h,o={}){const cols=o.grain||11,rows=o.grain?Math.round(o.grain*h/w):15,cw=w/cols,ch=h/rows;let body='';
- for(let j=0;j<rows;j++)for(let i=0;i<=(cols-1)/2;i++){if(r()<.38)continue;const acc=r()<.07;
-  for(const ii of(i===cols-1-i?[i]:[i,cols-1-i])){const s=Math.min(cw,ch)*(.55+r()*.3),cx=(ii+.5)*cw+(r()-.5)*cw*.14,cy=(j+.5)*ch+(r()-.5)*ch*.14;
-   body+=`<rect x="${f(-s/2)}" y="${f(-s/2)}" width="${f(s)}" height="${f(s*(.85+r()*.2))}" rx="${f(s*.08)}" fill="${acc?p.accent:p.light}" opacity="${f(.78+r()*.22)}" transform="translate(${f(cx)} ${f(cy)}) rotate(${f((r()-.5)*10)})"/>`;}}
+MOTIF_OPTS.rings=[{key:'disc',label:'Disc size',min:.5,max:1.6,step:.01,def:1},{key:'towers',label:'Tower width',min:.3,max:1.6,step:.01,def:1},{key:'x',label:'Disc x',min:0,max:1,step:.005,def:.5},{key:'y',label:'Disc y',min:0,max:1,step:.005,def:.5},{key:'bowl',label:'Bowl',min:0,max:1,step:1,def:1}];
+function mosaic(r,p,w,h,o={}){const cols=o.grain||11,rows=o.grain?Math.round(o.grain*h/w):15,cw=w/cols,ch=h/rows,skip=o.skip??.38,accs=o.accents??.07,tile=o.tile??1,tilt=o.tilt??1;let body='';
+ for(let j=0;j<rows;j++)for(let i=0;i<=(cols-1)/2;i++){if(r()<skip)continue;const acc=r()<accs;
+  for(const ii of(i===cols-1-i?[i]:[i,cols-1-i])){const s=Math.min(cw,ch)*(.55+r()*.3)*tile,cx=(ii+.5)*cw+(r()-.5)*cw*.14,cy=(j+.5)*ch+(r()-.5)*ch*.14;
+   body+=`<rect x="${f(-s/2)}" y="${f(-s/2)}" width="${f(s)}" height="${f(s*(.85+r()*.2))}" rx="${f(s*.08)}" fill="${acc?p.accent:p.light}" opacity="${f(.78+r()*.22)}" transform="translate(${f(cx)} ${f(cy)}) rotate(${f((r()-.5)*10*tilt)})"/>`;}}
  return{defs:'',body,bg:p.dark};}
-function blob(r,p,w,h){const m=Math.min(w,h),cx=w*(.4+r()*.2),cy=h*(.5+r()*.1),R=m*.3*(w>h?1.2:1);
+MOTIF_OPTS.mosaic=[{key:'skip',label:'Empty cells',min:0,max:.85,step:.01,def:.38},{key:'accents',label:'Accent tiles',min:0,max:.5,step:.01,def:.07},{key:'tile',label:'Tile size',min:.5,max:1.6,step:.01,def:1},{key:'tilt',label:'Tilt',min:0,max:4,step:.01,def:1}];
+function blob(r,p,w,h,o={}){const m=Math.min(w,h),jx=r(),jy=r(),cx=w*(o.x??(.4+jx*.2)),cy=h*(o.y??(.5+jy*.1)),R=m*.3*(w>h?1.2:1)*(o.scale??1),edge=o.edge??1,cnt=Math.round(o.count??3);
  const defs=`<radialGradient id="halo"><stop offset=".55" stop-color="${p.accent}"/><stop offset="1" stop-color="${p.accent}" stop-opacity="0"/></radialGradient>`;
- let body=`<circle cx="${f(cx-R*.15)}" cy="${f(cy-R*.2)}" r="${f(R*1.1)}" fill="url(#halo)"/>`;
- for(let k=0;k<3;k++){const n=11+Math.floor(r()*5),ox=cx+(r()-.5)*R*1.1,oy=cy+(r()-.4)*R*1.2,rr=R*(k?.35+r()*.3:.85),pts=[];
-  for(let i=0;i<n;i++){const a=i/n*Math.PI*2,d=rr*(.7+r()*.45);pts.push(`${f(ox+Math.cos(a)*d)},${f(oy+Math.sin(a)*d*1.2)}`);}
+ let body=`<circle cx="${f(cx-R*.15)}" cy="${f(cy-R*.2)}" r="${f(R*1.1*(o.halo??1))}" fill="url(#halo)"/>`;
+ for(let k=0;k<cnt;k++){const n=11+Math.floor(r()*5),ox=cx+(r()-.5)*R*1.1,oy=cy+(r()-.4)*R*1.2,rr=R*(k?.35+r()*.3:.85),pts=[];
+  for(let i=0;i<n;i++){const a=i/n*Math.PI*2,d=rr*(.7+r()*.45*edge);pts.push(`${f(ox+Math.cos(a)*d)},${f(oy+Math.sin(a)*d*1.2)}`);}
   body+=`<polygon points="${pts.join(' ')}" fill="${p.dark}" stroke="${p.dark}" stroke-width="${f(rr*.04)}" stroke-linejoin="round"/>`;}
  return{defs,body};}
-function diagonals(r,p,w,h){const cols=4,rows=5,cs=Math.min(w/(cols+.6),h/(rows+.6)),ox=(w-cols*cs)/2,oy=(h-rows*cs)/2;
+MOTIF_OPTS.blob=[{key:'scale',label:'Size',min:.5,max:1.8,step:.01,def:1},{key:'count',label:'Shapes',min:1,max:8,step:1,def:3},{key:'edge',label:'Ragged edge',min:0,max:2,step:.01,def:1},{key:'halo',label:'Halo size',min:.3,max:2.2,step:.01,def:1},{key:'x',label:'Centre x',min:0,max:1,step:.005,def:.5},{key:'y',label:'Centre y',min:0,max:1,step:.005,def:.5}];
+function diagonals(r,p,w,h,o={}){const cols=Math.round(o.cols??4),rows=o.cols?Math.max(2,Math.round(cols*h/w)):5,cs=Math.min(w/(cols+.6),h/(rows+.6)),ox=(w-cols*cs)/2,oy=(h-rows*cs)/2,fill=o.fill??.8,acc=o.accents??.25,sq=o.square??.62;
  const tri=[[[0,0],[1,0],[0,1]],[[0,0],[1,0],[1,1]],[[1,0],[1,1],[0,1]],[[0,0],[1,1],[0,1]]];let body='';
  for(let j=0;j<rows;j++)for(let i=0;i<cols;i++){const t=r(),x=ox+i*cs,y=oy+j*cs;
-  if(t<.25)body+=`<rect x="${f(x+cs*.1)}" y="${f(y+cs*.1)}" width="${f(cs*.62)}" height="${f(cs*.62)}" fill="${p.accent}"/>`;
-  else if(t<.8)body+=`<polygon points="${tri[Math.floor(r()*4)].map(([a,b])=>`${f(x+a*cs)},${f(y+b*cs)}`).join(' ')}" fill="${p.dark}"/>`;}
+  if(t<acc)body+=`<rect x="${f(x+cs*(1-sq)/2*(.1/.19))}" y="${f(y+cs*(1-sq)/2*(.1/.19))}" width="${f(cs*sq)}" height="${f(cs*sq)}" fill="${p.accent}"/>`;
+  else if(t<fill)body+=`<polygon points="${tri[Math.floor(r()*4)].map(([a,b])=>`${f(x+a*cs)},${f(y+b*cs)}`).join(' ')}" fill="${p.dark}"/>`;}
  return{defs:'',body};}
-function steps(r,p,w,h){const n=4+Math.floor(r()*3),bw=w*.7/n,x0=w*.15,base=h*.85;let defs='',body='';
- for(let i=0;i<n;i++){const hh=h*(.14+(i+1)/n*.5+r()*.05),flip=r()<.35,id='s'+i;
+MOTIF_OPTS.diagonals=[{key:'cols',label:'Columns',min:2,max:10,step:1,def:4},{key:'fill',label:'Filled cells',min:.3,max:1,step:.01,def:.8},{key:'accents',label:'Accent squares',min:0,max:.6,step:.01,def:.25},{key:'square',label:'Square size',min:.3,max:.95,step:.01,def:.62}];
+function steps(r,p,w,h,o={}){const c0=r(),n=Math.round(o.count??(4+Math.floor(c0*3))),sp=o.width??.7,bw=w*sp/n,x0=w*(1-sp)/2,base=h*(o.base??.85),hk=o.height??1,flipP=o.mix??.35;let defs='',body='';
+ for(let i=0;i<n;i++){const hh=h*(.14+(i+1)/n*.5+r()*.05)*hk,flip=r()<flipP,id='s'+i;
   const stops=flip?[p.light,p.accent,'#000']:['#000',p.accent,p.light];
   defs+=`<linearGradient id="${id}" x1="0" y1="0" x2="0" y2="1">${stops.map((c,k)=>`<stop offset="${k/2}" stop-color="${c}"/>`).join('')}</linearGradient>`;
   body+=`<rect x="${f(x0+i*bw)}" y="${f(base-hh)}" width="${f(bw)}" height="${f(hh)}" fill="url(#${id})"/>`;}
  return{defs,body,bg:p.dark};}
+MOTIF_OPTS.steps=[{key:'count',label:'Bars',min:3,max:14,step:1,def:5},{key:'width',label:'Total width',min:.3,max:.98,step:.01,def:.7},{key:'base',label:'Baseline',min:.5,max:.97,step:.01,def:.85},{key:'height',label:'Height',min:.4,max:1.7,step:.01,def:1},{key:'mix',label:'Flipped gradients',min:0,max:1,step:.01,def:.35}];
 function fangor(r, p, w, h, o = {}) {
-  const m = Math.min(w, h), n = 6 + Math.floor(r() * 4), jx = r(), jy = r();
+  const m = Math.min(w, h), c0 = r(), n = Math.round(o.rings ?? (6 + Math.floor(c0 * 4))), jx = r(), jy = r();
   const cx = w * (o.x ?? (.4 + jx * .2)), cy = h * (o.y ?? (.4 + jy * .2));
-  const rx = m * (.3 + r() * .12) * (w > h ? 1.15 : 1) * (o.size ?? 1), ry = rx * (r() < .5 ? 1 : .62 + r() * .3);
+  const rx = m * (.3 + r() * .12) * (w > h ? 1.15 : 1) * (o.size ?? 1), q1 = r(), q2 = q1 < .5 ? 0 : r(), ry = rx * (o.squash ?? (q1 < .5 ? 1 : .62 + q2 * .3));
   const cyc = [0, 1, 0, 2, 1, 3].map(i => p.inks[i % p.inks.length]), last = cyc[(n - 1) % 6];
-  const stops = [[0, p.light, 1], [.07, p.light, 1]];
-  for (let i = 0; i < n; i++) stops.push([.14 + i * (.66 / (n - 1)), cyc[i % 6], 1]);
+  const hole = o.centre ?? .07, spread = o.spread ?? .66, stops = [[0, p.light, 1], [hole, p.light, 1]];
+  for (let i = 0; i < n; i++) stops.push([hole + .07 + i * (spread / (n - 1)), cyc[i % 6], 1]);
   stops.push([.9, last, .95], [1, last, 0]);
   const g = stops.map(([off, c, a]) => `<stop offset="${f(off)}" stop-color="${c}" stop-opacity="${a}"/>`).join('');
   const dx = rx * .07 * (r() < .5 ? -1 : 1), dy = ry * .05 * (r() < .5 ? -1 : 1);
   // a faint, slightly larger echo behind the main disc makes the edge vibrate
-  const body = `<ellipse transform="rotate(${o.angle ?? 0} ${f(cx)} ${f(cy)})" cx="${f(cx + dx)}" cy="${f(cy + dy)}" rx="${f(rx * 1.08)}" ry="${f(ry * 1.08)}" fill="url(#fr)" opacity=".22"/>` +
+  const body = `<ellipse transform="rotate(${o.angle ?? 0} ${f(cx)} ${f(cy)})" cx="${f(cx + dx)}" cy="${f(cy + dy)}" rx="${f(rx * 1.08)}" ry="${f(ry * 1.08)}" fill="url(#fr)" opacity="${o.echo ?? '.22'}"/>` +
     `<ellipse transform="rotate(${o.angle ?? 0} ${f(cx)} ${f(cy)})" cx="${f(cx)}" cy="${f(cy)}" rx="${f(rx)}" ry="${f(ry)}" fill="url(#fr)"/>`;
   return { defs: `<radialGradient id="fr">${g}</radialGradient>`, body };
 }
+MOTIF_OPTS.fangor = [{ key: 'rings', label: 'Rings', min: 3, max: 14, step: 1, def: 7 }, { key: 'squash', label: 'Squash', min: .4, max: 1.2, step: .01, def: 1 }, { key: 'centre', label: 'Centre', min: .02, max: .4, step: .01, def: .07 }, { key: 'spread', label: 'Ring spread', min: .3, max: .8, step: .01, def: .66 }, { key: 'echo', label: 'Echo', min: 0, max: .6, step: .01, def: .22 }];
 // one soft-edged ring on a flat ground. inks run from the centre out: [hole, band, band, ..., halo];
 // neighbouring inks blend, the halo fades into the paper
 function ring(r, p, w, h, o = {}) {
   const n = p.inks.length, m = Math.min(w, h), bands = n - 2;
   const jx = r(), jy = r(), cx = w * (o.x ?? (.5 + (jx - .5) * .08)), cy = h * (o.y ?? (.5 + (jy - .5) * .08)), rs = r(), R = m * .41 * (o.size ?? (.7 + rs * .7));
-  const hs = p.core || (.1 + r() * .12), lo = hs + .12, hi = p.core ? .84 : .78, stops = [[0, p.inks[0], 1], [hs, p.inks[0], 1]];
+  const hv = p.core ? 0 : r(), hs = o.hole ?? (p.core || (.1 + hv * .12)), lo = hs + .12, hi = o.spread ?? (p.core ? .84 : .78), bl = o.blend ?? .03, stops = [[0, p.inks[0], 1], [hs, p.inks[0], 1]];
   for (let i = 0; i < bands; i++) {
     const c = lo + (i + .5) * (hi - lo) / bands;
-    stops.push([c - .03, p.inks[1 + i], 1], [c + .03, p.inks[1 + i], 1]);
+    stops.push([c - bl, p.inks[1 + i], 1], [c + bl, p.inks[1 + i], 1]);
   }
-  stops.push([hi + .1, p.inks[n - 1], .95], [1, p.inks[n - 1], 0]);
+  stops.push([Math.min(.98, hi + (o.halo ?? .1)), p.inks[n - 1], .95], [1, p.inks[n - 1], 0]);
   const g = stops.map(([o, c, a]) => `<stop offset="${f(o)}" stop-color="${c}" stop-opacity="${a}"/>`).join('');
   return { defs: `<radialGradient id="ring">${g}</radialGradient>`, body: `<circle cx="${f(cx)}" cy="${f(cy)}" r="${f(R * 1.15)}" fill="url(#ring)"/>` };
 }
+MOTIF_OPTS.ring = [{ key: 'hole', label: 'Hole', min: .02, max: .6, step: .01, def: .15 }, { key: 'blend', label: 'Edge softness', min: .005, max: .16, step: .005, def: .03 }, { key: 'spread', label: 'Band reach', min: .45, max: .9, step: .01, def: .78 }, { key: 'halo', label: 'Halo width', min: .03, max: .3, step: .01, def: .1 }];
 
 // flowing wavy bands with soft edges (Fangor's wave paintings). The picture is painted as stacked half-planes:
 // ink 0 fills the canvas, then each next ink covers everything beyond its boundary. Every boundary is the same
@@ -162,10 +173,10 @@ function ring(r, p, w, h, o = {}) {
 function dream(r, p, w, h, o = {}) {
   const k = o.size ?? 1, D = Math.hypot(w, h), m = Math.min(w, h), n = p.inks.length;
   const dpick = [-38, -22, 0, 90, 28, -62][Math.floor(r() * 6)], deg = o.angle ?? dpick;
-  const lam = m * (.75 + r() * .7) * k * (o.wave ?? 1), A = m * (.06 + r() * .09) * k * (o.amp ?? 1), ph = r() * 6.28, ph2 = r() * 6.28;
-  const cx = w * (o.x ?? .5), cy = h * (o.y ?? .5), widths = p.inks.map(() => .7 + r() * .8);
+  const lam = m * (.75 + r() * .7) * k * (o.wave ?? 1), A = m * (.06 + r() * .09) * k * (o.amp ?? 1), phr = r() * 6.28, ph = o.shift ?? phr, ph2 = r() * 6.28;
+  const cx = w * (o.x ?? .5), cy = h * (o.y ?? .5), widths = p.inks.map(() => .7 + r() * .8 * (o.variety ?? 1));
   const sum = widths.reduce((a, b) => a + b, 0), span = D * .9 * k, R = D / 2 + 100, FAR = D * 1.5, N = 28, K = 40, ALPHA = .1;
-  const wave = u => A * Math.sin(2 * Math.PI * u / lam + ph) + A * .12 * Math.sin(2 * Math.PI * u / (lam * .6) + ph2);
+  const wave = u => A * Math.sin(2 * Math.PI * u / lam + ph) + A * (o.ripple ?? .12) * Math.sin(2 * Math.PI * u / (lam * .6) + ph2);
   const q = [];
   for (let i = 0; i <= N; i++) { const u = -R + 2 * R * i / N; q.push([u, wave(u)]); }
   let d = `M${f(q[0][0])} ${f(q[0][1])}`;   // Catmull-Rom through the points, written as cubic beziers
@@ -193,6 +204,7 @@ function dream(r, p, w, h, o = {}) {
   }
   return { defs: `<clipPath id="dc"><rect width="${w}" height="${h}"/></clipPath><path id="hp" d="${d}"/>`, body: `<g clip-path="url(#dc)">${body}</g>`, bg: p.inks[0] };
 }
+MOTIF_OPTS.dream = [{ key: 'ripple', label: 'Ripple', min: 0, max: .7, step: .01, def: .12 }, { key: 'variety', label: 'Band width variety', min: 0, max: 2.2, step: .01, def: 1 }, { key: 'shift', label: 'Wave phase', min: 0, max: 6.28, step: .01, def: 0 }];
 
 // nested soft-edged squares (Fangor's pulsating squares, Stanczak). inks run from the centre out: [hole, bands..., halo]
 function squares(r, p, w, h, o = {}) {
@@ -307,10 +319,10 @@ MOTIF_OPTS.stripedisc = [
 function construct(r, p, w, h, o = {}) {
   const gx = Math.round(o.grid ?? 6 + Math.floor(r() * 4)), n = Math.round(o.count ?? 9 + Math.floor(r() * 8));
   const cell = w / gx, gy = Math.round(h / cell), H = gy * cell;
-  const pick = () => { const t = r(); return t < .5 ? p.dark : t < .9 ? p.accent : p.light; };
+  const pick = () => { const t = r(); return t < .5 ? p.dark : t < .5 + (o.accent ?? .4) ? p.accent : p.light; };
   const gxy = () => [Math.floor(r() * (gx + 1)) * cell, Math.floor(r() * (gy + 1)) * cell];
   let body = '';
-  const dR = (1.2 + r() * 1.8) * cell, dx = (1 + Math.floor(r() * (gx - 1))) * cell, dy = (1 + Math.floor(r() * (gy - 1))) * cell;
+  const dR = (1.2 + r() * 1.8) * cell * (o.disc ?? 1), dx = (1 + Math.floor(r() * (gx - 1))) * cell, dy = (1 + Math.floor(r() * (gy - 1))) * cell;
   body += `<circle cx="${f(dx)}" cy="${f(dy)}" r="${f(dR)}" fill="${p.accent}"/>`;
   {
     const ax = Math.floor(r() * gx) * cell, ay = Math.floor(r() * gy * .5) * cell, L = (3 + Math.floor(r() * 4)) * cell, tw = cell * .55, sl = r() < .5 ? 1 : -1;
@@ -320,10 +332,10 @@ function construct(r, p, w, h, o = {}) {
   for (let k = 0; k < n; k++) {
     const t = r(), c = pick();
     if (t < .25) {                                   // horizontal bar
-      const [x, y] = gxy(), len = (3 + Math.floor(r() * (gx - 2))) * cell, th = cell * [.12, .45, .9, 1.4][Math.floor(r() * 4)];
+      const [x, y] = gxy(), len = (3 + Math.floor(r() * (gx - 2))) * cell, th = cell * [.12, .45, .9, 1.4][Math.floor(r() * 4)] * (o.thick ?? 1);
       body += `<rect x="${f(x)}" y="${f(y)}" width="${f(len)}" height="${f(th)}" fill="${c}"/>`;
     } else if (t < .5) {                             // vertical bar
-      const [x, y] = gxy(), len = (3 + Math.floor(r() * (gy - 2))) * cell, th = cell * [.12, .45, .9, 1.4][Math.floor(r() * 4)];
+      const [x, y] = gxy(), len = (3 + Math.floor(r() * (gy - 2))) * cell, th = cell * [.12, .45, .9, 1.4][Math.floor(r() * 4)] * (o.thick ?? 1);
       body += `<rect x="${f(x)}" y="${f(y)}" width="${f(th)}" height="${f(len)}" fill="${c}"/>`;
     } else if (t < .65) {                            // diagonal bar
       const [x, y] = gxy(), L = (2 + Math.floor(r() * 4)) * cell, sl = r() < .5 ? 1 : -1, tw = cell * (.2 + r() * .4);
@@ -348,6 +360,9 @@ function construct(r, p, w, h, o = {}) {
 MOTIF_OPTS.construct = [
   { key: 'grid', label: 'Grid', min: 3, max: 14, step: 1, def: 7 },
   { key: 'count', label: 'Elements', min: 2, max: 20, step: 1, def: 8 },
+  { key: 'thick', label: 'Bar thickness', min: .4, max: 2.5, step: .01, def: 1 },
+  { key: 'disc', label: 'Disc size', min: .4, max: 2, step: .01, def: 1 },
+  { key: 'accent', label: 'Red share', min: 0, max: .5, step: .01, def: .4 },
 ];
 
 // Lenica's paper cut-outs: a few big flat shapes with straight, slightly torn edges, layered with a soft paper shadow
@@ -551,7 +566,7 @@ MOTIF_OPTS.moire = [
   { key: 'spacing', label: 'Line spacing', min: .004, max: .03, step: .0005, def: .011 },
   { key: 'diff', label: 'Offset', min: .3, max: 20, step: .1, def: 5 },
   { key: 'mode', label: 'Mode (lines, rings, mixed)', min: 0, max: 2, step: 1, def: 0 },
-  { key: 'angle', label: 'Angle', min: 0, max: 180, step: 1, def: 0 },
+  { key: 'angle', label: 'Angle (lines)', min: 0, max: 180, step: 1, def: 0 },
   { key: 'weight', label: 'Line weight', min: .4, max: 2, step: .01, def: 1 },
   { key: 'duo', label: 'Second ink', min: 0, max: 1, step: 1, def: 0 },
 ];
