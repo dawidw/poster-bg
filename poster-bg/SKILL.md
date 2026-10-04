@@ -1,7 +1,7 @@
 ---
 name: poster-bg
-description: Generate poster-style graphics and random backgrounds in the spirit of the Polish School of Posters and 60s/70s geometric modernism, plus Wojciech Fangor's soft op art (vibrating discs, simple rings, flowing dream waves). Use for "plakat", "tło w stylu polskiej szkoły plakatu", geometric or retro backgrounds, Fangor-like images, or random backgrounds for the Figma Playground. Outputs SVG, optionally placed into Figma.
-argument-hint: "[--poster | --fangor | --ring | --dream] [--colors random] [--circle N] [--x N --y N] [--grain N] [--angle N] [--amp N --wavelength N --softness N] [--seed N] [--size WxH] [--palette name] [--motif name] [--figma]"
+description: Generate poster-style graphics and random backgrounds in the spirit of the Polish School of Posters and 60s/70s geometric modernism, plus Wojciech Fangor's soft op art (vibrating discs, simple rings, flowing dream waves). Use for "plakat", "tło w stylu polskiej szkoły plakatu", geometric or retro backgrounds, Fangor-like imagesOutputs SVG.
+argument-hint: "[--poster | --fangor | --ring | --dream] [--colors random] [--circle N] [--x N --y N] [--grain N] [--angle N] [--amp N --wavelength N --softness N] [--seed N] [--size WxH] [--palette name] [--motif name]"
 ---
 
 # Poster backgrounds
@@ -27,7 +27,6 @@ Arguments arrive as `$ARGUMENTS`. Read them as flags:
 | `--grain N` | mosaic only: tiles across the width (5 to 30, default 11) |
 | `--seed N`, `--size WxH` | fix the seed; size defaults to 1200x1600, e.g. `1440x900` or `1280x800` (the 16:10 card on the playground index) |
 | `--motif m`, `--palette p` | pin one or both instead of random |
-| `--figma` | also place the result in Figma (see below) |
 | `--n 3` | make several variants with different seeds |
 
 Plain-language requests ("zrób 3 fangory, niebieskie") map to the same flags.
@@ -55,22 +54,6 @@ Palette shape: `paper`, `dark`, `light`, `accent`, `inks`. For `soft_*` the inks
 - One hot accent per composition. If a palette has many inks (`brasilia`), use them as flat fields, not as gradients.
 - Keep type out of the generated image. If the user wants a title, add it afterwards as live text, large, overlapping the shapes.
 - Do not recreate a specific existing poster. The motifs borrow ideas (flat ink, soft rings, waves), not compositions or lettering.
-
-## Putting it into Figma (`--figma`)
-
-Ask the user which Figma file and page to use. Load the figma-use and figma-generate-design guidance first.
-
-`gen.js` has no dependencies: paste everything above its CLI block into `use_figma` and call it:
-
-```js
-const frame = figma.createNodeFromSvg(generate('dream', 'dream_navy', 5, 1200, 1600));  // editable vector layers
-frame.name = 'dream · dream_navy · 5';
-```
-
-- Switch to the page with `await figma.setCurrentPageAsync(page)`; fetch it by id, never loop pages.
-- Place new frames in clear space: below the lowest existing frame, gap of about 200px. Name each frame `motif · palette · seed`.
-- Gradients and clip paths import fine. `dream` is built from many translucent strokes (no filters), so it imports as plain vectors (checked: `use` references import fine). SVG filters (grain, noise) are not used and would not import.
-- Take one screenshot after placing and check for clipping and muddy colour.
 
 ## Extending
 

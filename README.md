@@ -65,7 +65,7 @@ Copy the skill folder into your skills directory:
 cp -R poster-bg ~/.claude/skills/
 ```
 
-Then in Claude Code: `/poster-bg --dream`, or just ask for "three blue Fangor rings". The skill reports the recipe line so you can reproduce a result, and can place the SVG into a Figma file (it pastes `gen.js` into `use_figma` and calls `figma.createNodeFromSvg`).
+Then in Claude Code: `/poster-bg --dream`, or just ask for "three blue Fangor rings". The skill reports the recipe line so you can reproduce a result.
 
 ## Generator page
 

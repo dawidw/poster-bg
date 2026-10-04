@@ -1,9 +1,8 @@
 // poster-bg generator: seeded SVG backgrounds in the spirit of the Polish School of Posters,
 // 60s/70s geometric modernism and Wojciech Fangor's soft op art. Plain JS, no dependencies.
-// It runs in node (CLI below), in the browser (experiments/generator) and inside Figma's use_figma.
+// It runs in node (CLI below) and in the browser (the generator and landing pages).
 //   node gen.js --motif stripes --palette baron --seed 7 --size 1200x1600 --out bg.svg
 //   node gen.js --poster | --fangor | --ring | --dream [--colors random] [--circle 1.2] [--x 0.4 --y 0.6] [--grain 16 (mosaic tiles across)] [--angle 30] [--amp 1.4 --wavelength 1.2 --softness 1.5 (dream)] --out bg.svg
-// In use_figma: paste everything above the CLI block, then figma.createNodeFromSvg(generate(...)).
 
 function rng(seed){let a=seed>>>0;return()=>{a=(a+0x6D2B79F5)|0;let t=Math.imul(a^(a>>>15),1|a);t=(t+Math.imul(t^(t>>>7),61|t))^t;return((t^(t>>>14))>>>0)/4294967296;};}
 const PALETTES={
