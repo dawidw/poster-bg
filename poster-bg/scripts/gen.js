@@ -44,9 +44,13 @@ const PALETTES={
  dream_candy:{paper:'#f3efe6',dark:'#1d7a4f',light:'#f3efe6',accent:'#e04fb3',inks:['#f3efe6','#1d7a4f','#e04fb3','#f2b705','#f3efe6']},
  dream_lagoon:{paper:'#f08a1e',dark:'#6a3a8a',light:'#f08a1e',accent:'#1d5fc0',inks:['#f08a1e','#6a3a8a','#1d5fc0','#f08a1e','#6a3a8a']},
  dream_rose:{paper:'#f2d6d6',dark:'#2a1b3d',light:'#f2d6d6',accent:'#2a8fbd',glow:'#2a8fbd',inks:['#f2d6d6','#b0264f','#2a1b3d','#f2d6d6','#b0264f']},
+ zamecznik:{paper:'#f2f2f2',dark:'#0d0d0d',light:'#f2f2f2',accent:'#2a6fb0',inks:['#0d0d0d','#f2f2f2','#0d0d0d','#f2f2f2','#2a6fb0']},
+ stanczak:{paper:'#f1ece0',dark:'#1a2347',light:'#f1ece0',accent:'#e0382e',inks:['#1a2347','#e0382e','#f1ece0','#2a8fd0']},
  fangor:{paper:'#e9e1d6',dark:'#10121a',light:'#f3ede4',accent:'#e23a2e',inks:['#e23a2e','#1b3f9e','#f3ede4','#10121a','#e98aa2']},
  fangor_blue:{paper:'#dde3ea',dark:'#0b1230',light:'#eef1f6',accent:'#ff5a36',inks:['#0b1230','#2a5bd7','#9db8f0','#eef1f6','#ff5a36']},
  fangor_green:{paper:'#e6e8d8',dark:'#0f3d2e',light:'#f2efe4',accent:'#e8503a',inks:['#0f3d2e','#2f9a62','#d9e8c4','#f2efe4','#e8503a']}};
+// per-motif settings: the generator page builds its sliders from this, the CLI accepts them as --key value
+const MOTIF_OPTS={};
 const f=n=>+n.toFixed(1);
 function seq(r,list,n){const out=[];for(let i=0;i<n;i++){let c;do{c=list[Math.floor(r()*list.length)];}while(c===out[i-1]&&list.length>1);out.push(c);}return out;}
 function stripes(r,p,w,h){let defs='',body='',y=-r()*20,i=0,prev='';
@@ -174,6 +178,37 @@ function squares(r, p, w, h, o = {}) {
   return { defs: '', body: `<g transform="rotate(${o.angle ?? 0} ${f(cx)} ${f(cy)})">${body}</g>` };
 }
 
+// Stanczak style op art: hard-edged stripes that follow a wave. Every boundary is a half-plane with its own phase,
+// painted in order, so the stripes breathe wider and narrower across the picture.
+function stripewave(r, p, w, h, o = {}) {
+  const m = Math.min(w, h), D = Math.hypot(w, h), n = p.inks.length;
+  const dpick = [-30, 0, 90, 20, -60, 45][Math.floor(r() * 6)], deg = o.angle ?? dpick;
+  const sw = m * (.04 + r() * .04) * (o.width ?? 1);
+  const lam = m * (.7 + r() * .6) * (o.wave ?? 1), A = m * (.04 + r() * .06) * (o.amp ?? 1), ph = r() * 6.28, dr = o.drift ?? (.1 + r() * .25);
+  const R = D / 2 + 100, FAR = D * 1.5, N = 24, count = Math.ceil(D / sw) + 3;
+  let defs = '', body = '', v = -D / 2 - sw;
+  for (let j = 0; j < count; j++) {
+    const a = A * (1 + .5 * Math.sin(j * .35)), q = [];
+    for (let i = 0; i <= N; i++) { const u = -R + 2 * R * i / N; q.push([u, a * Math.sin(2 * Math.PI * u / lam + ph + j * dr)]); }
+    let d = `M${f(q[0][0])} ${f(q[0][1])}`;
+    for (let i = 0; i < N; i++) {
+      const p0 = q[i - 1] || q[i], p1 = q[i], p2 = q[i + 1], p3 = q[i + 2] || p2;
+      d += `C${f(p1[0] + (p2[0] - p0[0]) / 6)} ${f(p1[1] + (p2[1] - p0[1]) / 6)} ${f(p2[0] - (p3[0] - p1[0]) / 6)} ${f(p2[1] - (p3[1] - p1[1]) / 6)} ${f(p2[0])} ${f(p2[1])}`;
+    }
+    defs += `<path id="s${j}" d="${d}L${f(R)} ${f(FAR)}L${f(-R)} ${f(FAR)}Z"/>`;
+    body += `<use xlink:href="#s${j}" transform="translate(${f(w / 2)} ${f(h / 2)}) rotate(${deg}) translate(0 ${f(v)})" fill="${p.inks[j % n]}"/>`;
+    v += sw;
+  }
+  return { defs: `<clipPath id="sc"><rect width="${w}" height="${h}"/></clipPath>` + defs, body: `<g clip-path="url(#sc)">${body}</g>`, bg: p.inks[0] };
+}
+MOTIF_OPTS.stripewave = [
+  { key: 'width', label: 'Stripe width', min: .5, max: 2.5, step: .01, def: 1 },
+  { key: 'amp', label: 'Wave height', min: .2, max: 3, step: .01, def: 1 },
+  { key: 'wave', label: 'Wave length', min: .5, max: 2, step: .01, def: 1 },
+  { key: 'drift', label: 'Drift', min: 0, max: .8, step: .01, def: .2 },
+  { key: 'angle', label: 'Rotate', min: 0, max: 360, step: 1, def: 0 },
+];
+
 // random harmonious palettes. kind: 'poster', 'random' (Fangor discs), 'ring' (inks run hole, bands..., halo) or 'dream'
 function hsl(h, s, l) {
   h = ((h % 360) + 360) % 360; s /= 100; l /= 100;
@@ -200,10 +235,8 @@ function randomPalette(kind, rnd = Math.random) {
   return { paper: hsl(h0, R(10, 30), R(84, 93)), dark: hsl(h0 + 180, R(25, 45), R(8, 16)), light: hsl(h0, R(30, 60), R(86, 94)), accent: hsl(h0 + R(150, 210), R(70, 90), R(50, 58)), inks };
 }
 
-// per-motif settings: the generator page builds its sliders from this, the CLI accepts them as --key value
-const MOTIF_OPTS={};
 MOTIF_OPTS.squares=[{key:'round',label:'Corners',min:0,max:.5,step:.01,def:.1},{key:'hole',label:'Centre',min:.04,max:.45,step:.01,def:.15},{key:'soft',label:'Softness',min:.2,max:2.5,step:.01,def:1}];
-const MOTIFS={stripes,rings,mosaic,blob,diagonals,steps,fangor,ring,squares,dream};
+const MOTIFS={stripes,rings,mosaic,blob,diagonals,steps,fangor,ring,squares,dream,stripewave};
 function generate(motif,palette,seed,w,h,o={}){const r=rng(seed),p=typeof palette==='string'?PALETTES[palette]:palette,m=MOTIFS[motif](r,p,w,h,o);
  return `<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="${w}" height="${h}" viewBox="0 0 ${w} ${h}"><defs>${m.defs||''}</defs><rect width="${w}" height="${h}" fill="${m.bg||p.paper}"/>${m.body}</svg>`;}
 
