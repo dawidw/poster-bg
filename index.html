@@ -24,14 +24,14 @@
   <meta property="og:image:type" content="image/png">
   <meta property="og:image:width" content="1200">
   <meta property="og:image:height" content="630">
-  <meta property="og:image:alt" content="Soft flowing waves of navy, blue and crimson with the title Study of Space">
+  <meta property="og:image:alt" content="A soft red disc ringed in black and blue on a pale ground, with the title Study of Space">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:site" content="@dawidwu">
   <meta name="twitter:creator" content="@dawidwu">
   <meta name="twitter:title" content="Study of Space | Polish poster style generative backgrounds">
   <meta name="twitter:description" content="Free generator of seeded SVG backgrounds inspired by the Polish School of Posters, Wojciech Fangor and op art. 23 motifs, 77 palettes, open source.">
   <meta name="twitter:image" content="https://studyofspace.gallery/og-image.png">
-  <meta name="twitter:image:alt" content="Soft flowing waves of navy, blue and crimson with the title Study of Space">
+  <meta name="twitter:image:alt" content="A soft red disc ringed in black and blue on a pale ground, with the title Study of Space">
   <script type="application/ld+json">
 {
   "@context": "https://schema.org",
@@ -419,15 +419,15 @@ node poster-bg/scripts/gen.js --ring --colors random \
     </div>
   </footer>
 
-  <script src="poster-bg/scripts/gen.js?v=202610042146"></script>
+  <script src="poster-bg/scripts/gen.js?v=202610042148"></script>
   <script>
     const uri = s => "data:image/svg+xml;charset=utf-8," + encodeURIComponent(s);
 
     /* hero: cross-fade through curated recipes. Circles are pushed to the right so the title stays clear. */
     const HERO = [
-      ["dream", "dream_navy", 2], ["dream", "dream_ocean", 4], ["ring", "soft_orchid", 7, { x: .74, y: .5, size: 1.1 }], ["dream", "dream_flag", 8],
+      ["ring", "soft_redcore", 2, { x: .74, y: .5, size: .95 }], ["dream", "dream_navy", 2], ["dream", "dream_ocean", 4], ["ring", "soft_orchid", 7, { x: .74, y: .5, size: 1.1 }], ["dream", "dream_flag", 8],
       ["dream", "dream_sunset", 3], ["fangor", "fangor_blue", 4, { x: .74, y: .5 }], ["dream", "dream_sun", 5], ["dream", "dream_pop", 5],
-      ["ring", "soft_flame", 3, { x: .72, y: .48, size: 1.05 }], ["dream", "dream_spectrum", 5], ["dream", "dream_ember", 6], ["ring", "soft_redcore", 2, { x: .74, y: .5, size: .95 }], ["dream", "dream_azure", 3], ["dream", "dream_rose", 8],
+      ["ring", "soft_flame", 3, { x: .72, y: .48, size: 1.05 }], ["dream", "dream_spectrum", 5], ["dream", "dream_ember", 6], ["dream", "dream_azure", 3], ["dream", "dream_rose", 8],
     ];
     const imgs = [...document.querySelectorAll("#bg img")], recipe = document.getElementById("recipe");
     let cur = 0, front = 0;
