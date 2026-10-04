@@ -461,6 +461,39 @@ MOTIF_OPTS.outline = [
   { key: 'wobble', label: 'Wobble', min: 0, max: 1.5, step: .01, def: .6 },
 ];
 
+// Halftone: a dot grid whose dot size follows a soft field, the print-room face of op art. Dots are zero-length round-capped
+// strokes grouped into size levels, so a page of thousands of dots stays a few kilobytes.
+function halftone(r, p, w, h, o = {}) {
+  const c1 = r(), c2 = r(), c3 = r(), c4 = r(), m = Math.min(w, h);
+  const sp = m * (o.spacing ?? (.026 + c1 * .02)), ang0 = o.angle ?? 45, field = Math.round(o.field ?? Math.floor(c2 * 3)), gain = o.gain ?? 1, duo = (o.duo ?? 0) >= .5;
+  const cx = w * (.3 + c3 * .4), cy = h * (.3 + c4 * .4), L = 10;
+  const fv = (x, y, inv) => {
+    let t = field === 0 ? 1 - Math.min(1, Math.hypot(x - cx, y - cy) / (m * .75)) : field === 1 ? y / h : .5 + .5 * Math.sin(x / (m * .16) + Math.sin(y / (m * .22)) * 2);
+    return inv ? 1 - t : t;
+  };
+  const layer = (angDeg, inv, color) => {
+    const a = angDeg * Math.PI / 180, ca = Math.cos(a), sa = Math.sin(a), R = Math.hypot(w, h) / 2 / sp + 2, buckets = Array.from({ length: L }, () => '');
+    for (let i = -R; i <= R; i++) for (let j = -R; j <= R; j++) {
+      const u = i * sp, v = j * sp, x = w / 2 + u * ca - v * sa, y = h / 2 + u * sa + v * ca;
+      if (x < -sp || x > w + sp || y < -sp || y > h + sp) continue;
+      const d = Math.min(1, Math.max(0, fv(x, y, inv) * gain));
+      if (d < .06) continue;
+      buckets[Math.round(d * (L - 1))] += `M${f(x)} ${f(y)}h0`;
+    }
+    return buckets.map((b, k) => b ? `<path d="${b}" stroke="${color}" stroke-width="${f(sp * .95 * k / (L - 1))}" stroke-linecap="round" fill="none"/>` : '').join('');
+  };
+  let body = layer(ang0, false, p.dark);
+  if (duo) body += layer(ang0 + 30, true, p.accent);
+  return { defs: '', body, bg: p.paper };
+}
+MOTIF_OPTS.halftone = [
+  { key: 'spacing', label: 'Dot spacing', min: .012, max: .08, step: .001, def: .035 },
+  { key: 'angle', label: 'Grid angle', min: 0, max: 90, step: 1, def: 45 },
+  { key: 'field', label: 'Field (radial, linear, wave)', min: 0, max: 2, step: 1, def: 0 },
+  { key: 'gain', label: 'Contrast', min: .4, max: 1.8, step: .01, def: 1 },
+  { key: 'duo', label: 'Second ink', min: 0, max: 1, step: 1, def: 0 },
+];
+
 // random harmonious palettes. kind: 'poster', 'random' (Fangor discs), 'ring' (inks run hole, bands..., halo) or 'dream'
 function hsl(h, s, l) {
   h = ((h % 360) + 360) % 360; s /= 100; l /= 100;
@@ -488,7 +521,7 @@ function randomPalette(kind, rnd = Math.random) {
 }
 
 MOTIF_OPTS.squares=[{key:'round',label:'Corners',min:0,max:.5,step:.01,def:.1},{key:'hole',label:'Centre',min:.04,max:.45,step:.01,def:.15},{key:'soft',label:'Softness',min:.2,max:2.5,step:.01,def:1}];
-const MOTIFS={stripes,rings,mosaic,blob,diagonals,steps,fangor,ring,squares,dream,stripewave,scope,stripedisc,construct,cutout,bars,rotor,sunburst,outline};
+const MOTIFS={stripes,rings,mosaic,blob,diagonals,steps,fangor,ring,squares,dream,stripewave,scope,stripedisc,construct,cutout,bars,rotor,sunburst,outline,halftone};
 function generate(motif,palette,seed,w,h,o={}){const r=rng(seed),p=typeof palette==='string'?PALETTES[palette]:palette,m=MOTIFS[motif](r,p,w,h,o);
  return `<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="${w}" height="${h}" viewBox="0 0 ${w} ${h}"><defs>${m.defs||''}</defs><rect width="${w}" height="${h}" fill="${m.bg||p.paper}"/>${m.body}</svg>`;}
 

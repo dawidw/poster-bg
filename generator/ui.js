@@ -2,7 +2,7 @@
 const stage = document.getElementById("stage");
 
 const $ = id => document.getElementById(id);
-const MOTIF_LABEL = { stripes: "Stripes", rings: "Rings and towers", mosaic: "Mosaic", blob: "Halo blob", diagonals: "Triangles", steps: "Steps", stripewave: "Wavy stripes", scope: "Oscillogram", stripedisc: "Stripes and disc", construct: "Constructivist", cutout: "Cut-out", bars: "Rhythm bars", rotor: "Multiply and rotate", sunburst: "Sunburst and rings", outline: "Outlined stains" };
+const MOTIF_LABEL = { stripes: "Stripes", rings: "Rings and towers", mosaic: "Mosaic", blob: "Halo blob", diagonals: "Triangles", steps: "Steps", stripewave: "Wavy stripes", scope: "Oscillogram", stripedisc: "Stripes and disc", construct: "Constructivist", cutout: "Cut-out", bars: "Rhythm bars", rotor: "Multiply and rotate", sunburst: "Sunburst and rings", outline: "Outlined stains", halftone: "Halftone" };
 const PALETTE_LABEL = {
   baron: "Baron", zamecznik: "Zamecznik", lenica: "Lenica", mlodozeniec: "Mlodozeniec", jazz: "Jazz", konstruktywizm: "Constructivist", stanczak: "Stanczak", zloto: "Gold", roger: "King Roger", marek: "Father Marek", brasilia: "Brasília", anima: "Anima", wesoft: "Wesoft",
   mazur: "Mazur", jesien: "Autumn", moda: "Moda", cyrk: "Circus",
