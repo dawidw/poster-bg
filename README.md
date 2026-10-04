@@ -2,7 +2,7 @@
 
 The repo and the Claude Code skill are called `poster-bg`; the site is **Study of Space**, named after the 1958 installation by Wojciech Fangor and Stanisław Zamecznik.
 
-Seeded SVG backgrounds in the spirit of the Polish School of Posters, 60s/70s geometric modernism and Wojciech Fangor's soft op art. One dependency-free generator (`poster-bg/scripts/gen.js`), a [Claude Code](https://claude.com/claude-code) skill that drives it, and a standalone dark generator page.
+Seeded SVG posters and backgrounds in the spirit of the Polish School of Posters, from Wojciech Fangor's soft op art to the geometry of Teresa Żarnower, Katarzyna Kobro and Maria Jarema. One dependency-free generator (`poster-bg/scripts/gen.js`), a [Claude Code](https://claude.com/claude-code) skill that drives it, and a standalone dark generator page.
 
 **[Open the generator](https://studyofspace.gallery/generator/)**
 
