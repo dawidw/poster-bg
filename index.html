@@ -178,6 +178,11 @@
     .intro p { margin: 0 0 16px; color: rgba(255,255,255,.82); }
     .pull { font: 800 clamp(1.5rem, 3vw, 2.3rem)/1.1 var(--display); letter-spacing: -.03em; margin: 0; text-wrap: balance; }
     .pull em { font-style: normal; color: transparent; -webkit-text-stroke: 1px var(--fg); }
+    .say { display: inline-flex; align-items: center; justify-content: center; width: 30px; height: 30px; margin-left: 12px; vertical-align: middle; padding: 0; border: 1px solid #333; border-radius: 50%; background: none; color: var(--fg); cursor: pointer; transition: background .2s, color .2s, border-color .2s; }
+    .say:hover, .say.on { background: #fff; color: #000; border-color: #fff; }
+    .say svg { width: 15px; height: 15px; fill: currentColor; }
+    .say .stop, .say.on .play { display: none; }
+    .say.on .stop { display: block; }
     .theory { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0 clamp(24px, 4vw, 64px); border-top: 1px solid var(--line); margin-top: clamp(36px, 5vw, 64px); }
     .theory div { padding: 28px 0 30px; border-bottom: 1px solid var(--line); }
     .theory div:last-child { grid-column: 1 / -1; }
@@ -551,6 +556,33 @@ node poster-bg/scripts/gen.js --ring --colors random \
         `<div style="display:flex;flex-direction:column;gap:12px">${p.text.length ? (Array.isArray(p.text) ? p.text : [p.text]).map(t => `<p>${t}</p>`).join("") : ""}` +
         `<p class="more">${p.links.map(([l, u]) => `<a href="${u}">${l}</a>`).join(", ")}</p>${chips ? `<div class="chips"><span class="label">try</span>${chips}</div>` : ""}</div></article>`;
     }).join("");
+
+    /* narration: a speaker next to each block; plays audio/<id> (see tools/narrate.js), falls back to the browser voice */
+    (function () {
+      const slug = t => t.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/ł/g, "l").replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
+      const ICON = '<svg viewBox="0 0 24 24" aria-hidden="true"><path class="play" d="M3 9v6h4l5 4V5L7 9H3zm13.5 3A4.5 4.5 0 0 0 14 8v8a4.5 4.5 0 0 0 2.5-4zM14 3.2v2.1a7 7 0 0 1 0 13.4v2.1a9 9 0 0 0 0-17.6z"/><path class="stop" d="M6 6h12v12H6z"/></svg>';
+      let manifest = {}, audio = null, active = null;
+      fetch("audio/manifest.json").then(r => r.json()).then(m => { manifest = m; }).catch(() => {});
+      const stop = () => { if (audio) { audio.pause(); audio = null; } if (window.speechSynthesis) speechSynthesis.cancel(); if (active) active.classList.remove("on"); active = null; };
+      const spoken = box => { const c = box.cloneNode(true); c.querySelectorAll(".say, .tie, .more, .chips, .portrait").forEach(n => n.remove()); return c.innerText.replace(/\s+/g, " ").trim(); };
+      const add = (box, head, id) => {
+        const b = document.createElement("button");
+        b.type = "button"; b.className = "say"; b.innerHTML = ICON; b.setAttribute("aria-label", "Listen to this section");
+        head.appendChild(b);
+        b.onclick = () => {
+          const was = active === b; stop(); if (was) return;
+          active = b; b.classList.add("on");
+          const done = () => { if (active === b) stop(); }, m = manifest[id];
+          if (m) { audio = new Audio("audio/" + m.file); audio.onended = done; audio.onerror = done; audio.play().catch(done); }
+          else if (window.speechSynthesis) { const u = new SpeechSynthesisUtterance(spoken(box)); u.lang = "en"; u.onend = done; u.onerror = done; speechSynthesis.speak(u); }
+          else done();
+        };
+      };
+      add(document.querySelector("#history .intro"), document.querySelector("#history .pull"), "intro");
+      document.querySelectorAll("#history .theory > div").forEach(d => add(d, d.querySelector("h3"), slug(d.querySelector("h3").textContent)));
+      document.querySelectorAll("#people .person").forEach(p => add(p, p.querySelector("h3"), slug(p.querySelector("h3").textContent)));
+      addEventListener("pagehide", stop);
+    })();
 
     /* timeline scroller: the poster on the right follows the active entry */
     (function () {
