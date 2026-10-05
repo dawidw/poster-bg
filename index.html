@@ -122,8 +122,8 @@
     .hero-copy { padding: 0 var(--gutter) clamp(28px, 6vh, 64px); max-width: 1200px; }
     .eyebrow { font: 500 12px/1 var(--mono); letter-spacing: .14em; text-transform: uppercase; color: rgba(255,255,255,.7); display: flex; align-items: center; gap: 10px; margin-bottom: 22px; }
     .eyebrow i { width: 28px; height: 1px; background: currentColor; }
-    h1 { margin: 0; font: 800 clamp(2.4rem, 7.4vw, 8rem)/.92 var(--display); letter-spacing: -.045em; text-wrap: balance; }
-    h1 span { display: block; }
+    h1 { margin: 0; font: 800 clamp(1.4rem, 6.6vw, 5.2rem)/.95 var(--display); letter-spacing: -.045em; }
+    h1 > span { display: block; white-space: nowrap; }
     h1 .outline { color: transparent; -webkit-text-stroke: 1.5px var(--fg); }
     .lede { max-width: 560px; margin: 28px 0 0; font-size: clamp(1rem, 1.5vw, 1.2rem); color: rgba(255,255,255,.82); }
     .cta { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 32px; }
@@ -288,7 +288,6 @@
       nav.open ul { display: flex; position: fixed; inset: 0; z-index: 60; flex-direction: column; justify-content: center; align-items: flex-start; gap: 6px; padding: 80px var(--gutter) 40px; background: rgba(0, 0, 0, .94); -webkit-backdrop-filter: blur(14px); backdrop-filter: blur(14px); }
       nav.open ul a { display: block; padding: 6px 0; font: 800 clamp(2rem, 11vw, 3rem)/1.1 var(--display); letter-spacing: -.03em; opacity: 1; }
       nav.open ul li:last-child a, nav.open ul li:nth-last-child(2) a { opacity: .6; }
-      h1 { font-size: clamp(1.7rem, 8.2vw, 3rem); }
       .eyebrow { margin-bottom: 14px; }
       .lede { margin-top: 20px; }
       .cta { margin-top: 24px; }
@@ -325,7 +324,7 @@
 
     <div class="hero-copy" id="top">
       <div class="eyebrow"><i></i> Seeded SVG posters and paintings</div>
-      <h1><span>Posters</span><span class="outline">drawn</span><span>in code.</span></h1>
+      <h1><span>Posters</span><span class="l2"><span class="outline">drawn</span> in code.</span></h1>
       <p class="lede">Inspiration from Fangor's soft rings and Stańczak's vibrating stripes to the geometry of Żarnower and Kobro, the wooden reliefs of Gołkowska and the forms Jarema drew from music.</p>
       <div class="cta">
         <a class="btn solid" href="generator/">Open the generator
@@ -453,8 +452,8 @@ node poster-bg/scripts/gen.js --ring --colors random \
     </div>
   </footer>
 
-  <script src="poster-bg/scripts/gen.js?v=202610051007"></script>
-  <script src="portraits/ascii.js?v=202610051007"></script>
+  <script src="poster-bg/scripts/gen.js?v=202610051012"></script>
+  <script src="portraits/ascii.js?v=202610051012"></script>
   <script>
     const uri = s => "data:image/svg+xml;charset=utf-8," + encodeURIComponent(s);
 
