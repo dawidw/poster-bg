@@ -7,10 +7,15 @@
 //   ELEVENLABS_API_KEY=... node tools/narrate.js [--only id,id] [--force]
 // Optional: ELEVENLABS_VOICE_ID, ELEVENLABS_MODEL (default eleven_multilingual_v2).
 // Blocks whose text has not changed since the last run are skipped (see audio/manifest.json).
+// Polish names are sent with their real spelling (the model then reads them in Polish). --respell swaps in the English
+// respellings from narration/pronunciations.json instead; --no-breaks drops the pauses; --model id; --scratch name writes to audio/_scratch/name/.
 // Optional local settings: a .env file in the repo root (git-ignored) with ELEVENLABS_API_KEY=..., ELEVENLABS_VOICE_ID=...
 try { for (const line of require("fs").readFileSync(require("path").join(__dirname, "..", ".env"), "utf8").split("\n")) { const m = line.match(/^\s*([A-Z_]+)\s*=\s*(.*?)\s*$/); if (m && !(m[1] in process.env)) process.env[m[1]] = m[2].replace(/^["']|["']$/g, ""); } } catch (e) {}
 const fs = require("fs"), path = require("path"), vm = require("vm"), crypto = require("crypto");
-const root = path.join(__dirname, ".."), outDir = path.join(root, "audio");
+const root = path.join(__dirname, ".."), args0 = process.argv.slice(2);
+const scratch = args0.includes("--scratch") ? args0[args0.indexOf("--scratch") + 1] : null;
+const outDir = scratch ? path.join(root, "audio", "_scratch", scratch) : path.join(root, "audio");
+if (scratch) { fs.mkdirSync(outDir, { recursive: true }); if (!fs.existsSync(path.join(outDir, "manifest.json"))) fs.writeFileSync(path.join(outDir, "manifest.json"), "{}\n"); }
 const html = fs.readFileSync(path.join(root, "index.html"), "utf8");
 const args = process.argv.slice(2), has = f => args.includes(f);
 const only = (args[args.indexOf("--only") + 1] || "").split(",").filter(Boolean);
@@ -43,7 +48,7 @@ for (const b of blocks) {
 // Pauses (seconds) added when voicing: after the name or heading, after the role line of a person, between paragraphs.
 // ElevenLabs reads <break time="1.0s" /> as silence. Tune here.
 const PAUSE_NAME = 1.0, PAUSE_ROLE = 0.8, PAUSE_PARA = 0.5;
-const brk = s => `<break time="${s.toFixed(1)}s" />`;
+const brk = s => has("--no-breaks") ? "" : `<break time="${s.toFixed(1)}s" />`;
 const withPauses = b => {
   const parts = b.text.join("\n\n").split(/\n\s*\n/).map(x => x.trim()).filter(Boolean);
   if (!parts.length) return "";
@@ -54,7 +59,7 @@ const withPauses = b => {
 };
 let pron = {};
 try { pron = JSON.parse(fs.readFileSync(path.join(textDir, "pronunciations.json"), "utf8")); delete pron._note; } catch (e) {}
-const respell = t => Object.keys(pron).sort((a, b) => b.length - a.length).reduce((r, k) => r.replace(new RegExp("(?<![\\p{L}])" + k.replace(/[.*+?^${}()|[\]\\]/g, "\\$&") + "(?![\\p{L}])", "gu"), pron[k]), t);
+const respell = t => !has("--respell") ? t : Object.keys(pron).sort((a, b) => b.length - a.length).reduce((r, k) => r.replace(new RegExp("(?<![\\p{L}])" + k.replace(/[.*+?^${}()|[\]\\]/g, "\\$&") + "(?![\\p{L}])", "gu"), pron[k]), t);
 if (has("--show")) { const b = blocks.find(b => b.id === args[args.indexOf("--show") + 1]); console.log(b ? respell(withPauses(b)) : "unknown block id"); process.exit(0); }
 const manifestFile = path.join(outDir, "manifest.json");
 const manifest = JSON.parse(fs.readFileSync(manifestFile, "utf8"));
@@ -65,7 +70,7 @@ if (has("--dry")) process.exit(0);
 
 const key = process.env.ELEVENLABS_API_KEY;
 if (!key) { console.error("Set ELEVENLABS_API_KEY (or use --dry)."); process.exit(1); }
-const voice = process.env.ELEVENLABS_VOICE_ID || "21m00Tcm4TlvDq8ikWAM", model = process.env.ELEVENLABS_MODEL || "eleven_multilingual_v2";
+const voice = process.env.ELEVENLABS_VOICE_ID || "21m00Tcm4TlvDq8ikWAM", model = args[args.indexOf("--model") + 1] && has("--model") ? args[args.indexOf("--model") + 1] : (process.env.ELEVENLABS_MODEL || "eleven_multilingual_v2");
 
 (async () => {
   for (const b of blocks) {
