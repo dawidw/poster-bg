@@ -13,7 +13,7 @@ const PALETTE_LABEL = {
   soft_ochre: "Ochre", soft_orchid: "Orchid", soft_redcore: "Red core", soft_lagoon: "Lagoon", soft_ember: "Ember", soft_mono: "Mono", soft_blush: "Blush", soft_lilac: "Lilac",
   dream_navy: "Navy and crimson", dream_sun: "Sun", dream_flag: "Flag", dream_azure: "Azure", dream_spectrum: "Spectrum", dream_candy: "Candy", dream_lagoon: "Lagoon", dream_rose: "Rose",
 };
-const SIZES = [["Portrait", 1200, 1600], ["Square", 1200, 1200], ["Landscape", 1440, 900], ["Card 16:10", 1280, 800], ["Banner", 1600, 500], ["X header", 1500, 500], ["Facebook cover", 851, 315], ["Instagram post", 1080, 1350], ["Instagram story", 1080, 1920]];
+const SIZES = [["Portrait", 1200, 1600], ["Square", 1200, 1200], ["Landscape", 1440, 900], ["Card 16:10", 1280, 800], ["Banner", 1600, 500], ["X header", 1500, 500], ["Facebook cover", 851, 315], ["Instagram post", 1080, 1350], ["Instagram story", 1080, 1920], ["A4", 1240, 1754], ["A3", 1754, 2480], ["A2", 2480, 3508], ["50×70 cm", 1500, 2100], ["70×100 cm", 1400, 2000]];
 const ALL_MOTIFS = Object.keys(MOTIF_LABEL).filter(m => MOTIFS[m]);
 const VARIANT_MOTIF = { random: "fangor", ring: "ring", squares: "squares", dream: "dream" };
 // the motif list, grouped by whose work inspired it
