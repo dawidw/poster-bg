@@ -1,6 +1,6 @@
 # Study of Space
 
-The repo and the Claude Code skill are called `poster-bg`; the site is **Study of Space**, named after the 1958 installation by Wojciech Fangor and Stanisław Zamecznik.
+**Study of Space** is named after the 1958 installation by Wojciech Fangor and Stanisław Zamecznik, the first spatial installation in Poland. The site lives at <https://studyofspace.gallery/>; the generator and the Claude Code skill inside it are called `poster-bg`.
 
 Seeded SVG posters and paintings after op art and geometric abstraction, from Wojciech Fangor's soft rings to the geometry of Teresa Żarnower, Katarzyna Kobro and Maria Jarema. One dependency-free generator (`poster-bg/scripts/gen.js`), a [Claude Code](https://claude.com/claude-code) skill that drives it, and a standalone dark generator page.
 
@@ -10,7 +10,7 @@ Seeded SVG posters and paintings after op art and geometric abstraction, from Wo
 
 The same motif, palette and seed always give the same image, so any result can be reproduced or varied by changing only the seed.
 
-### Polish School motifs (`--poster`)
+### Poster-family motifs (`--poster`)
 
 | | | |
 |---|---|---|
@@ -141,7 +141,7 @@ Then in Claude Code: `/poster-bg --dream`, or just ask for "three blue Fangor ri
 
 ## Generator page
 
-`generator/index.html` is a standalone dark UI: one motif list grouped by the artist who inspired it, sliders for every motif, a palette with editable and removable colors, random colors, seed, size presets, mosaic granularity, history, SVG and PNG export, a button that copies the matching CLI command, and a floating bar at the bottom with Random motif, colors and seed buttons plus Randomize all.
+`generator/index.html` is a standalone dark UI: one motif list grouped by the artist who inspired it, sliders for every motif, a palette with editable and removable colors, random colors, seed, size presets (portrait, square, landscape, card, banner, X header, Facebook cover, Instagram post and story), mosaic granularity, history, SVG and PNG export, a button that copies the matching CLI command, and a floating bar at the bottom with Random motif, colors and seed buttons plus Randomize all.
 
 It loads `gen.js` with a relative path, so serve the repository root, for example:
 
@@ -160,9 +160,22 @@ Every motif is a function `(r, palette, w, h, options) → { defs, body }` built
 
 New palettes are one entry in `PALETTES`; new motifs are one function registered in `MOTIFS` (see the skill's "Extending" section).
 
+## Narration
+
+Every block of the Inspirations section (the intro, the five technique cards and the artist cards) has a speaker button. It plays the MP3 listed in `audio/manifest.json`, or the browser voice if a block has no file. The MP3s are voiced with ElevenLabs by `tools/narrate.js` from the texts in `narration/`:
+
+```bash
+cp .env.example .env            # add ELEVENLABS_API_KEY and ELEVENLABS_VOICE_ID; .env is git-ignored
+node tools/narrate.js --dry     # list every block and the estimated cost, no API call
+node tools/narrate.js --only intro,jan-lenica   # voice some blocks
+node tools/narrate.js           # voice every block whose text or voice changed
+```
+
+The text is sent with its real spelling, so Polish names are read in Polish, with a pause after each name and role line (see `PAUSE_*` at the top of the script). `--show <id>` prints exactly what would be sent. `narration/pronunciations.json` holds optional English respellings (`--respell`). After changing the page text, update the matching `narration/*.txt` and regenerate only that block. Library voices need a paid ElevenLabs plan to be used through the API.
+
 ## Roadmap
 
-Candidate motifs from the Polish poster tradition (oscillogram, stripes with a disc, multiply and rotate, cut-outs and more) are collected in [docs/motif-research.md](docs/motif-research.md).
+[docs/motif-research.md](docs/motif-research.md) lists every motif idea with its status and the sources behind it. Not built yet: motifs for the women poster artists who are named in the literature (Maria Ihnatowicz, Anna Huskowska, Olga Binder-Siemaszko, Wanda Telakowska) because I found no description of their style.
 
 ## Portraits
 
@@ -170,6 +183,6 @@ The ASCII portraits on the landing page (`portraits/ascii.js`) are made from pho
 
 ## Credits
 
-Inspired by the Polish School of Posters and by the paintings of Wojciech Fangor. These are styles and techniques, not copies of any particular work.
+Inspired by the work of Wojciech Fangor, Julian Stańczak, Wojciech Zamecznik, Jan Lenica, Teresa Żarnower, Katarzyna Kobro, Maria Jarema, Wanda Gołkowska, Magdalena Abakanowicz, Zofia Stryjeńska and the Polish School of Posters. These are styles and techniques, not copies of any particular work.
 
-MIT licensed.
+Code: MIT licensed. Portraits: see above. Narration voiced with ElevenLabs. Visits are counted with GoatCounter, which sets no cookies.
