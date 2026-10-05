@@ -152,6 +152,8 @@ python3 -m http.server
 
 Live: <https://studyofspace.gallery/generator/>. The landing page is at <https://studyofspace.gallery/>.
 
+Every image has a link. The address of the generator always holds the whole state (motif, palette, seed, size, sliders and custom colors, only what differs from the defaults), and **Copy link to this image** copies it, for example `/generator/?m=relief&p=golkowska&s=3&z=1280x800&n=o.grid:12,o.amp:1.5`. Opening the link restores the exact same picture; unknown or out of range values are ignored or clamped. Older `?motif=&palette=&seed=` links still work.
+
 ## How it works
 
 Every motif is a function `(r, palette, w, h, options) → { defs, body }` built from plain SVG shapes and gradients, driven by a seeded random generator. There are no filters: even the soft edges of `dream` come from stacks of translucent strokes, so the output imports into design tools as ordinary vectors.

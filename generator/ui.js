@@ -95,6 +95,8 @@ function fillSwatches() {
 }
 function toast(t) { $("toast").textContent = t; clearTimeout(toastT); toastT = setTimeout(() => ($("toast").textContent = ""), 2400); }
 
+let urlT;
+const syncUrl = () => { clearTimeout(urlT); urlT = setTimeout(() => { try { history.replaceState(null, "", shareUrl()); } catch (e) {} }, 250); };
 function render(push = true) {
   $("preview").src = uri(svg());
   $("preview").width = S.w;
@@ -122,6 +124,7 @@ function render(push = true) {
     hist = hist.slice(0, 10);
     drawHist();
   }
+  syncUrl();
 }
 function drawHist() {
   $("hist").innerHTML = hist.map((h, i) => `<button type="button" data-i="${i}" ${h.sig === lastSig ? 'aria-current="true"' : ""} aria-label="Back to version ${i + 1}"><img alt="" src="${h.thumb}"></button>`).join("");
@@ -252,6 +255,16 @@ $("dlPng").onclick = () => {
   };
   img.src = uri(svg());
 };
+$("copyLink").onclick = () => {
+  const url = shareUrl();
+  try { history.replaceState(null, "", url); } catch (e) {}
+  if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(url).then(() => toast("Link copied. It reopens exactly this image."), () => toast(url));
+  else toast(url);
+};
+if (navigator.share) {
+  $("shareLink").hidden = false;
+  $("shareLink").onclick = () => navigator.share({ title: "Study of Space", text: `${motifName()} · ${S.palette} · ${S.seed}`, url: shareUrl() }).catch(() => {});
+}
 $("copyCmd").onclick = () => {
   const cmd = `node scripts/gen.js --motif ${motifName()} --palette ${S.palette} --seed ${S.seed} --size ${S.w}x${S.h}` +
     (S.size != null ? ` --circle ${S.size.toFixed(2)}` : "") + (S.cx != null ? ` --x ${S.cx.toFixed(2)}` : "") + (S.cy != null ? ` --y ${S.cy.toFixed(2)}` : "") + (S.grain != null ? ` --grain ${S.grain}` : "") + (S.angle != null ? ` --angle ${S.angle}` : "") + (S.amp != null ? ` --amp ${S.amp.toFixed(2)}` : "") + (S.wave != null ? ` --wavelength ${S.wave.toFixed(2)}` : "") + (S.softness != null ? ` --softness ${S.softness.toFixed(2)}` : "") + Object.entries(S.opts).map(([k, v]) => ` --${k} ${v}`).join("") + " --out bg.svg";
@@ -269,12 +282,58 @@ document.addEventListener("keydown", e => {
   else if (e.key === "ArrowLeft") { S.seed = Math.max(0, S.seed - 1); render(); }
 });
 
-(function fromUrl() {
-  const q = new URLSearchParams(location.search), m = q.get("motif");
-  if (!m) return;
-  if (!ALL_MOTIFS.includes(m)) return;
+// ---- share link: the whole state lives in the address, and only values that differ from the defaults are written
+const NUM_KEYS = { size: "sz", cx: "x", cy: "y", grain: "g", angle: "a", amp: "am", wave: "w", softness: "so" };
+const NUM_EL = { sz: "csize", x: "cx", y: "cy", g: "grain", a: "rot", am: "amp", w: "wave", so: "soft" };
+const fmt = n => String(+(+n).toFixed(3));
+const hex6 = /^[0-9a-f]{6}$/i;
+const clamp = (v, lo, hi) => Math.min(hi, Math.max(lo, v));
+function shareUrl() {
+  const q = new URLSearchParams();
+  q.set("m", S.motif); q.set("p", S.palette); q.set("s", S.seed);
+  if (S.w !== 1200 || S.h !== 1600) q.set("z", S.w + "x" + S.h);
+  const n = [];
+  for (const [k, short] of Object.entries(NUM_KEYS)) if (S[k] != null) n.push(short + ":" + fmt(S[k]));
+  for (const [k, v] of Object.entries(S.opts)) n.push("o." + k + ":" + fmt(v));
+  if (n.length) q.set("n", n.join(","));
+  if (S.modified) {
+    q.set("c", [S.work.paper, S.work.dark, S.work.light, S.work.accent, ...S.work.inks].map(c => c.replace("#", "").toLowerCase()).join("-"));
+    const ex = ["core", "glow", "soft"].filter(k => S.work[k] != null).map(k => k + ":" + (k === "glow" ? S.work[k].replace("#", "").toLowerCase() : fmt(S.work[k])));
+    if (ex.length) q.set("e", ex.join(","));
+  }
+  return location.origin + location.pathname + "?" + q.toString().replace(/%2C/g, ",").replace(/%3A/g, ":");
+}
+// read a link back into the state; anything unknown or out of range is ignored or clamped (old ?motif=&palette=&seed= links still work)
+function fromQuery(q) {
+  const m = q.get("m") || q.get("motif");
+  if (!m || !ALL_MOTIFS.includes(m)) return false;
   applyMotif(m);
-  resetPalette(q.get("palette") && PALETTES[q.get("palette")] ? q.get("palette") : undefined);
-  if (q.get("seed")) S.seed = +q.get("seed");
-})();
+  const p = q.get("p") || q.get("palette");
+  resetPalette(p && PALETTES[p] && palettesOf(kind()).includes(p) ? p : undefined);
+  const seed = parseInt(q.get("s") ?? q.get("seed"), 10);
+  if (Number.isFinite(seed)) S.seed = clamp(seed, 0, 999999);
+  const z = (q.get("z") || "").match(/^(\d{3,4})x(\d{3,4})$/);
+  if (z) { S.w = clamp(+z[1], 200, 4000); S.h = clamp(+z[2], 200, 4000); }
+  const rev = Object.fromEntries(Object.entries(NUM_KEYS).map(([k, s]) => [s, k]));
+  for (const part of (q.get("n") || "").split(",")) {
+    const [key, raw] = part.split(":"), v = parseFloat(raw);
+    if (!key || !Number.isFinite(v)) continue;
+    if (key.startsWith("o.")) { const o = motifOpts().find(o => o.key === key.slice(2)); if (o) S.opts[o.key] = clamp(v, o.min, o.max); }
+    else if (rev[key]) { const el = $(NUM_EL[key]); S[rev[key]] = clamp(v, +el.min, +el.max); }
+  }
+  const c = (q.get("c") || "").split("-");
+  if (c.length >= 4 + minInks() && c.length <= 16 && c.every(x => hex6.test(x))) {
+    const h = c.map(x => "#" + x.toLowerCase());
+    [S.work.paper, S.work.dark, S.work.light, S.work.accent] = h;
+    S.work.inks = h.slice(4);
+    S.modified = true;
+    for (const part of (q.get("e") || "").split(",")) {
+      const [k, raw] = part.split(":");
+      if (k === "glow" && hex6.test(raw || "")) S.work.glow = "#" + raw.toLowerCase();
+      else if ((k === "core" || k === "soft") && Number.isFinite(parseFloat(raw))) S.work[k] = clamp(parseFloat(raw), 0, 3);
+    }
+  }
+  return true;
+}
+fromQuery(new URLSearchParams(location.search));
 fillSelects(); fillSizes(); fillSwatches(); render();

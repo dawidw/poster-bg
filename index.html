@@ -254,10 +254,17 @@
     .tl-more { margin: 0; color: var(--muted); font-size: 14px; max-width: 440px; }
     .tl-more a { color: var(--fg); }
     @media (max-width: 860px) {
-      .tl-wrap { grid-template-columns: minmax(0, 1fr); }
-      .tl-poster { position: static; order: -1; }
-      .tl-frame { width: min(100%, 320px); max-height: none; }
-      .tl-scroll { height: min(56vh, 460px); padding: 18vh 0 20vh; }
+      .tl-wrap { grid-template-columns: minmax(0, 1fr); gap: 16px; margin-top: 36px; }
+      .tl-poster { position: static; order: -1; gap: 8px; }
+      .tl-frame { width: min(46vw, 190px); max-height: none; }
+      .tl-cap { gap: 2px; }
+      .tl-cap .who { font-size: 1.05rem; }
+      .tl-more { font-size: 13px; }
+      .tl-scroll { height: min(42vh, 330px); padding: 4vh 0 14vh; }
+      .tl-scroll .timeline li { padding-bottom: 20px; }
+      .tl-scroll .timeline li:not(.active) { opacity: .26; }
+      .tl-scroll .timeline li:not(.active) b { font-size: 1rem; }
+      .tl-scroll .timeline li:not(.active) span { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; font-size: 12.5px; line-height: 1.45; }
     }
     @media (prefers-reduced-motion: reduce) { .tl-scroll .timeline li, .tl-frame img { transition: none; } }
 
@@ -446,8 +453,8 @@ node poster-bg/scripts/gen.js --ring --colors random \
     </div>
   </footer>
 
-  <script src="poster-bg/scripts/gen.js?v=202610050953"></script>
-  <script src="portraits/ascii.js?v=202610050953"></script>
+  <script src="poster-bg/scripts/gen.js?v=202610051007"></script>
+  <script src="portraits/ascii.js?v=202610051007"></script>
   <script>
     const uri = s => "data:image/svg+xml;charset=utf-8," + encodeURIComponent(s);
 
