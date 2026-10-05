@@ -203,6 +203,8 @@
     .person.lead { grid-column: 1 / -1; display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.4fr); gap: clamp(20px, 4vw, 56px); padding: clamp(24px, 4vw, 44px); }
     .person h3 { margin: 0; font: 800 1.5rem/1.05 var(--display); letter-spacing: -.025em; }
     .person.lead h3 { font-size: clamp(2rem, 4.4vw, 3.4rem); letter-spacing: -.04em; }
+    .person h3 .nm { display: block; }
+    @media (max-width: 520px) { .person:not(.lead) h3 { font-size: clamp(1rem, 5.2vw, 1.5rem); } .person h3 .say { margin-left: 8px; width: 28px; height: 28px; } }
     .person .role { font: 400 12px/1.4 var(--mono); color: var(--muted); }
     .person p { margin: 0; color: rgba(255,255,255,.8); font-size: 15px; }
     .person .lh { display: flex; flex-direction: column; gap: 16px; min-width: 0; }
@@ -444,8 +446,8 @@ node poster-bg/scripts/gen.js --ring --colors random \
     </div>
   </footer>
 
-  <script src="poster-bg/scripts/gen.js?v=202610050040"></script>
-  <script src="portraits/ascii.js?v=202610050040"></script>
+  <script src="poster-bg/scripts/gen.js?v=202610050953"></script>
+  <script src="portraits/ascii.js?v=202610050953"></script>
   <script>
     const uri = s => "data:image/svg+xml;charset=utf-8," + encodeURIComponent(s);
 
@@ -552,7 +554,7 @@ node poster-bg/scripts/gen.js --ring --colors random \
         for (let x = 0; x < line.length; x++) { const c = line[x]; if (c !== " ") { const k = T[y] ? +T[y][x] : 7; if (k !== cur) { flush(); cur = k; } } buf += esc(c); } flush(); return out; }).join("\n"); };
       const pt = (window.PORTRAITS || {})[p.name];
       const fig = pt ? `<figure class="portrait"><pre aria-hidden="true">${tonePre(pt)}</pre><figcaption>${pt.credit}, <a href="${pt.url}">${pt.link || "Wikimedia Commons"}</a></figcaption></figure>` : "";
-      return `<article class="person reveal${p.lead ? " lead" : ""}"><div class="lh">${fig}<div class="head"><h3>${p.name}</h3><div class="role" style="margin-top:8px">${p.role}</div></div></div>` +
+      return `<article class="person reveal${p.lead ? " lead" : ""}"><div class="lh">${fig}<div class="head"><h3>${p.name.replace(/^(.*) (\S+)$/, '<span class="nm">$1</span> $2')}</h3><div class="role" style="margin-top:8px">${p.role}</div></div></div>` +
         `<div style="display:flex;flex-direction:column;gap:12px">${p.text.length ? (Array.isArray(p.text) ? p.text : [p.text]).map(t => `<p>${t}</p>`).join("") : ""}` +
         `<p class="more">${p.links.map(([l, u]) => `<a href="${u}">${l}</a>`).join(", ")}</p>${chips ? `<div class="chips"><span class="label">try</span>${chips}</div>` : ""}</div></article>`;
     }).join("");
