@@ -141,7 +141,7 @@ Then in Claude Code: `/poster-bg --dream`, or just ask for "three blue Fangor ri
 
 ## Generator page
 
-`generator/index.html` is a standalone dark UI: one motif list grouped by the artist who inspired it, sliders for every motif, a palette with editable and removable colors, random colors, seed, size presets (portrait, square, landscape, card, banner, X header, Facebook cover, Instagram post and story, and poster formats A4, A3, A2, 50×70 cm and 70×100 cm, the classic Polish poster size), mosaic granularity, history, SVG and PNG export, a button that copies the matching CLI command, and a floating bar at the bottom with Random motif, colors and seed buttons plus Randomize all.
+`generator/index.html` is a standalone dark UI: one motif list grouped by the artist who inspired it, sliders for every motif, a palette with editable and removable colors, random colors, seed, size presets (portrait, square, landscape, card, desktop wallpapers (HD, 16:10 and 4K), banner, X header, Facebook cover, Instagram post and story, and poster formats A4, A3, A2, 50×70 cm and 70×100 cm, the classic Polish poster size), mosaic granularity, history, SVG and PNG export, a button that copies the matching CLI command, and a floating bar at the bottom with Random motif, colors and seed buttons plus Randomize all.
 
 It loads `gen.js` with a relative path, so serve the repository root, for example:
 
