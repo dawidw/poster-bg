@@ -7,6 +7,8 @@
 //   ELEVENLABS_API_KEY=... node tools/narrate.js [--only id,id] [--force]
 // Optional: ELEVENLABS_VOICE_ID, ELEVENLABS_MODEL (default eleven_multilingual_v2).
 // Blocks whose text has not changed since the last run are skipped (see audio/manifest.json).
+// Optional local settings: a .env file in the repo root (git-ignored) with ELEVENLABS_API_KEY=..., ELEVENLABS_VOICE_ID=...
+try { for (const line of require("fs").readFileSync(require("path").join(__dirname, "..", ".env"), "utf8").split("\n")) { const m = line.match(/^\s*([A-Z_]+)\s*=\s*(.*?)\s*$/); if (m && !(m[1] in process.env)) process.env[m[1]] = m[2].replace(/^["']|["']$/g, ""); } } catch (e) {}
 const fs = require("fs"), path = require("path"), vm = require("vm"), crypto = require("crypto");
 const root = path.join(__dirname, ".."), outDir = path.join(root, "audio");
 const html = fs.readFileSync(path.join(root, "index.html"), "utf8");
