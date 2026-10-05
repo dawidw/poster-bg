@@ -40,6 +40,10 @@ for (const b of blocks) {
   const f = path.join(textDir, b.id + ".txt");
   if (fs.existsSync(f)) b.text = [fs.readFileSync(f, "utf8").trim()];
 }
+let pron = {};
+try { pron = JSON.parse(fs.readFileSync(path.join(textDir, "pronunciations.json"), "utf8")); delete pron._note; } catch (e) {}
+const respell = t => Object.keys(pron).sort((a, b) => b.length - a.length).reduce((r, k) => r.replace(new RegExp("(?<![\\p{L}])" + k.replace(/[.*+?^${}()|[\]\\]/g, "\\$&") + "(?![\\p{L}])", "gu"), pron[k]), t);
+if (has("--show")) { const b = blocks.find(b => b.id === args[args.indexOf("--show") + 1]); console.log(b ? respell(b.text.join("\n")) : "unknown block id"); process.exit(0); }
 const manifestFile = path.join(outDir, "manifest.json");
 const manifest = JSON.parse(fs.readFileSync(manifestFile, "utf8"));
 const chars = blocks.reduce((n, b) => n + b.text.join("\n").length, 0);
@@ -54,7 +58,7 @@ const voice = process.env.ELEVENLABS_VOICE_ID || "21m00Tcm4TlvDq8ikWAM", model =
 (async () => {
   for (const b of blocks) {
     if (only.length && !only.includes(b.id)) continue;
-    const text = b.text.join("\n"), hash = crypto.createHash("sha1").update(text + voice + model).digest("hex").slice(0, 10);
+    const text = respell(b.text.join("\n")), hash = crypto.createHash("sha1").update(text + voice + model).digest("hex").slice(0, 10);
     if (!has("--force") && manifest[b.id] && manifest[b.id].hash === hash) { console.log("skip", b.id); continue; }
     const res = await fetch(`https://api.elevenlabs.io/v1/text-to-speech/${voice}?output_format=mp3_44100_64`, {
       method: "POST", headers: { "xi-api-key": key, "content-type": "application/json" }, body: JSON.stringify({ text, model_id: model }),
