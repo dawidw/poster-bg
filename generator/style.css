@@ -95,3 +95,7 @@ select.control { text-overflow: ellipsis; }
 .controls h1 a.home:hover { text-decoration: underline; text-underline-offset: 4px; }
 .controls .hint a.back { color: inherit; text-decoration: underline; text-underline-offset: 3px; }
 .controls .hint a.back:hover { color: var(--fg, #fff); }
+
+.share-row { display: flex; gap: 8px; }
+.share-row .btn.wide { flex: 1; }
+.share-row .btn[hidden] { display: none; }
