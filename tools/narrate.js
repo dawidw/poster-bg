@@ -20,12 +20,12 @@ const plain = s => s.replace(/<[^>]+>/g, "").replace(/&amp;/g, "&").replace(/&lt
 
 const blocks = [];
 const intro = html.match(/<h2 class="pull[^"]*">([\s\S]*?)<\/h2>\s*<div class="reveal">([\s\S]*?)<\/div>\s*<\/div>/);
-blocks.push({ id: "intro", text: [plain(intro[1]), ...[...intro[2].matchAll(/<p>([\s\S]*?)<\/p>/g)].map(m => plain(m[1]))] });
+blocks.push({ id: "intro", kind: "intro", text: [plain(intro[1]), ...[...intro[2].matchAll(/<p>([\s\S]*?)<\/p>/g)].map(m => plain(m[1]))] });
 const theory = html.match(/<div class="theory">([\s\S]*?)\n      <\/div>/)[1];
 for (const m of theory.matchAll(/<h3>([\s\S]*?)<\/h3>([\s\S]*?)<\/div>/g))
-  blocks.push({ id: slug(plain(m[1])), text: [plain(m[1]), ...[...m[2].matchAll(/<p>([\s\S]*?)<\/p>/g)].map(p => plain(p[1]))] });
+  blocks.push({ id: slug(plain(m[1])), kind: "theory", text: [plain(m[1]), ...[...m[2].matchAll(/<p>([\s\S]*?)<\/p>/g)].map(p => plain(p[1]))] });
 const src = html.match(/const PEOPLE = (\[[\s\S]*?\n    \]);/)[1];
-for (const p of vm.runInNewContext(src)) blocks.push({ id: slug(p.name), text: [p.name, p.role, ...[].concat(p.text).map(plain)] });
+for (const p of vm.runInNewContext(src)) blocks.push({ id: slug(p.name), kind: "person", text: [p.name, p.role, ...[].concat(p.text).map(plain)] });
 
 const textDir = path.join(root, "narration");
 if (has("--export")) {
@@ -40,10 +40,22 @@ for (const b of blocks) {
   const f = path.join(textDir, b.id + ".txt");
   if (fs.existsSync(f)) b.text = [fs.readFileSync(f, "utf8").trim()];
 }
+// Pauses (seconds) added when voicing: after the name or heading, after the role line of a person, between paragraphs.
+// ElevenLabs reads <break time="1.0s" /> as silence. Tune here.
+const PAUSE_NAME = 1.0, PAUSE_ROLE = 0.8, PAUSE_PARA = 0.5;
+const brk = s => `<break time="${s.toFixed(1)}s" />`;
+const withPauses = b => {
+  const parts = b.text.join("\n\n").split(/\n\s*\n/).map(x => x.trim()).filter(Boolean);
+  if (!parts.length) return "";
+  let out = parts[0] + " " + brk(PAUSE_NAME) + "\n";
+  let rest = parts.slice(1);
+  if (b.kind === "person" && rest.length) { out += rest[0] + " " + brk(PAUSE_ROLE) + "\n"; rest = rest.slice(1); }
+  return out + rest.join(" " + brk(PAUSE_PARA) + "\n");
+};
 let pron = {};
 try { pron = JSON.parse(fs.readFileSync(path.join(textDir, "pronunciations.json"), "utf8")); delete pron._note; } catch (e) {}
 const respell = t => Object.keys(pron).sort((a, b) => b.length - a.length).reduce((r, k) => r.replace(new RegExp("(?<![\\p{L}])" + k.replace(/[.*+?^${}()|[\]\\]/g, "\\$&") + "(?![\\p{L}])", "gu"), pron[k]), t);
-if (has("--show")) { const b = blocks.find(b => b.id === args[args.indexOf("--show") + 1]); console.log(b ? respell(b.text.join("\n")) : "unknown block id"); process.exit(0); }
+if (has("--show")) { const b = blocks.find(b => b.id === args[args.indexOf("--show") + 1]); console.log(b ? respell(withPauses(b)) : "unknown block id"); process.exit(0); }
 const manifestFile = path.join(outDir, "manifest.json");
 const manifest = JSON.parse(fs.readFileSync(manifestFile, "utf8"));
 const chars = blocks.reduce((n, b) => n + b.text.join("\n").length, 0);
@@ -58,7 +70,7 @@ const voice = process.env.ELEVENLABS_VOICE_ID || "21m00Tcm4TlvDq8ikWAM", model =
 (async () => {
   for (const b of blocks) {
     if (only.length && !only.includes(b.id)) continue;
-    const text = respell(b.text.join("\n")), hash = crypto.createHash("sha1").update(text + voice + model).digest("hex").slice(0, 10);
+    const text = respell(withPauses(b)), hash = crypto.createHash("sha1").update(text + voice + model).digest("hex").slice(0, 10);
     if (!has("--force") && manifest[b.id] && manifest[b.id].hash === hash) { console.log("skip", b.id); continue; }
     const res = await fetch(`https://api.elevenlabs.io/v1/text-to-speech/${voice}?output_format=mp3_44100_64`, {
       method: "POST", headers: { "xi-api-key": key, "content-type": "application/json" }, body: JSON.stringify({ text, model_id: model }),
