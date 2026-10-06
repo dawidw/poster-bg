@@ -171,6 +171,28 @@
     .fact span { color: var(--muted); font-size: 14px; }
 
 
+    /* ---------- mac app ---------- */
+    .btn.soon { cursor: default; }
+    .btn.soon:hover { transform: none; border-color: rgba(255,255,255,.4); }
+    .btn.solid.soon:hover { background: #fff; border-color: #fff; }
+    .note { font: 400 12px/1.4 var(--mono); color: var(--muted); }
+    .hero-note { margin: 18px 0 0; font: 400 12px/1.4 var(--mono); color: rgba(255,255,255,.6); letter-spacing: .02em; }
+    .mac .cta { margin: 0 0 clamp(40px, 6vw, 72px); align-items: center; gap: 12px 16px; }
+    .mac .sub { max-width: 640px; }
+    .mac-shot { margin: 0; }
+    .mac-shot img { display: block; width: 100%; height: auto; filter: drop-shadow(0 30px 60px rgba(0,0,0,.55)); }
+    .devices { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 260px), 1fr)); gap: clamp(14px, 2vw, 16px); margin-top: clamp(32px, 5vw, 64px); }
+    .devices figure { margin: 0; }
+    .devices img { display: block; width: 100%; aspect-ratio: 416 / 470; object-fit: cover; object-position: top; background: var(--card); border-radius: 12px; }
+    .devices h3 { margin: 14px 0 4px; font: 800 1.15rem/1.15 var(--display); letter-spacing: -.02em; }
+    .devices p { margin: 0; color: var(--muted); font-size: 15px; }
+    .features { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 300px), 1fr)); gap: 16px; margin-top: clamp(24px, 4vw, 48px); }
+    .feature { border: 1px solid var(--line); background: var(--card); border-radius: 8px; padding: 28px; display: flex; flex-direction: column; gap: 10px; min-width: 0; }
+    .feature h3 { margin: 0; font: 800 1.2rem/1.15 var(--display); letter-spacing: -.02em; }
+    .feature p { margin: 0; color: var(--muted); font-size: 15px; }
+    .mac .mac-end { margin: clamp(32px, 5vw, 56px) 0 0; flex-direction: column; align-items: flex-start; gap: 14px; }
+    @media (min-width: 861px) { .steps { grid-template-columns: repeat(2, minmax(0, 1fr)); } .features { grid-template-columns: repeat(3, minmax(0, 1fr)); } .devices { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+
     /* ---------- history ---------- */
     .history { border-top: 1px solid var(--line); }
     .kicker { font: 500 12px/1 var(--mono); letter-spacing: .14em; text-transform: uppercase; color: var(--muted); margin: 0 0 18px; }
@@ -318,6 +340,7 @@
       <button class="menu-btn" id="menuBtn" type="button" aria-expanded="false" aria-controls="menu"><span class="bars" aria-hidden="true"></span><span class="sr">Menu</span></button>
       <ul id="menu">
         <li><a href="#motifs">Motifs</a></li>
+        <li><a href="#mac">Mac app</a></li>
         <li><a href="#history">Story</a></li>
         <li><a href="#use">Use it</a></li>
         <li><a href="research/">Research</a></li>
@@ -327,15 +350,16 @@
     </nav>
 
     <div class="hero-copy" id="top">
-      <div class="eyebrow"><i></i> Seeded SVG posters and paintings</div>
+      <div class="eyebrow"><i></i> Seeded SVG posters, now a Mac app</div>
       <h1><span>Posters</span><span class="l2"><span class="outline">drawn</span> in code.</span></h1>
       <p class="lede">Inspiration from Fangor's soft rings and Stańczak's vibrating stripes to the geometry of Żarnower and Kobro, the wooden reliefs of Gołkowska and the forms Jarema drew from music.</p>
       <div class="cta">
-        <a class="btn solid" href="generator/">Open the generator
+        <a class="btn solid" href="generator/">Online generator
           <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 8h10M9 4l4 4-4 4"/></svg></a>
+        <a class="btn" href="#mac">Mac app available soon</a>
         <a class="btn" href="#history">Read the story</a>
-        <a class="btn" href="https://github.com/dawidw/studyofspace">View on GitHub</a>
       </div>
+      <p class="hero-note">macOS 14 or later &nbsp;·&nbsp; works offline &nbsp;·&nbsp; no account</p>
     </div>
     <div class="recipe" aria-hidden="true">now showing<b id="recipe">·</b></div>
   </header>
@@ -347,6 +371,38 @@
       <h2 class="reveal"><span id="motifCount">Nine</span> motifs.<br>Same seed, same poster.</h2>
       <p class="sub reveal">Every picture below was just drawn in your browser by <span class="mono">gen.js</span>. Open the generator to change the palette, seed, size and the position of the circle.</p>
       <div class="gallery" id="gallery"></div>
+    </div>
+  </section>
+
+  <section id="mac" class="mac">
+    <div class="wrap">
+      <p class="kicker reveal">Mac app</p>
+      <h2 class="reveal">Wallpapers for your Mac,<br>drawn in code.</h2>
+      <p class="sub reveal">Study of Space is now a native app. Pick a motif, press space, and set the picture as your desktop. It runs the same generator as this site, offline.</p>
+      <div class="cta reveal">
+        <a class="btn solid" href="generator/">Online generator
+          <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 8h10M9 4l4 4-4 4"/></svg></a>
+        <span class="btn soon" aria-disabled="true">Mac app available soon</span>
+        <span class="note">macOS 14 or later</span>
+      </div>
+      <figure class="mac-shot reveal"><img src="app/mac-app.webp" width="2000" height="1303" loading="lazy" alt="The Study of Space Mac app: a panel of Polish artists on the left, a wallpaper preview in the middle, motif and palette controls on the right."></figure>
+      <div class="devices">
+        <figure class="reveal"><img src="app/mac-app-iphone.webp" width="880" height="981" loading="lazy" alt="Preview of a wallpaper on an iPhone in the Mac app."><h3>Make one for your iPhone</h3><p>Preview the picture on a phone and save it at the exact screen size.</p></figure>
+        <figure class="reveal"><img src="app/mac-app-watch.webp" width="880" height="981" loading="lazy" alt="Preview of a watch face wallpaper on an Apple Watch in the Mac app."><h3>Even for your Watch</h3><p>Every seed is a different picture, from wrist to wall.</p></figure>
+        <figure class="reveal"><img src="app/mac-app-artists.webp" width="700" height="930" loading="lazy" alt="Cards of Wojciech Fangor and Maria Jarema with ASCII portraits and links to their motifs."><h3>The artists, one click away</h3><p>Fangor, Jarema, Kobro and more. Click a motif under try and the picture changes.</p></figure>
+      </div>
+      <div class="features">
+        <div class="feature reveal"><h3>28 motifs, 83 palettes</h3><p>Soft rings, waves, stripes, steps and spatial planes, from Fangor to Kobro.</p></div>
+        <div class="feature reveal"><h3>Sliders for every motif</h3><p>Size, position, wave height, rotation, paper grain and more. Auto follows the seed.</p></div>
+        <div class="feature reveal"><h3>Preview before you set it</h3><p>See the picture on a Mac, iPhone or Apple Watch, and step through every variant you made.</p></div>
+        <div class="feature reveal"><h3>One click to your desktop</h3><p>Renders at your screen's exact size, on one display or all of them. Or save a PNG in any size.</p></div>
+        <div class="feature reveal"><h3>Randomize, then keep the best</h3><p>Randomize everything or just the colors, lock what you like, and flip through the history with the arrow keys.</p></div>
+        <div class="feature reveal"><h3>Offline, no account</h3><p>The generator runs inside the app. Nothing is sent anywhere.</p></div>
+      </div>
+      <div class="cta mac-end reveal">
+        <span class="btn solid soon" aria-disabled="true">Mac app available soon</span>
+        <span class="note">macOS 14 or later &nbsp;·&nbsp; works offline &nbsp;·&nbsp; no account</span>
+      </div>
     </div>
   </section>
 
@@ -411,9 +467,14 @@
 
   <section id="use" style="padding-top:0">
     <div class="wrap">
-      <h2 class="reveal">Three ways in.</h2>
-      <p class="sub reveal">Node is the only requirement. The skill and the page use the same file.</p>
+      <h2 class="reveal">Four ways in.</h2>
+      <p class="sub reveal">The Mac app needs macOS 14, the command line and the skill need Node. All of them use the same generator.</p>
       <div class="steps">
+        <div class="panel reveal">
+          <h3>Mac app</h3>
+          <p>A native app for macOS 14 or later. Pick a motif and set it as your wallpaper. Works offline, no account.</p>
+          <span class="btn solid soon" aria-disabled="true" style="align-self:flex-start">Mac app available soon</span>
+        </div>
         <div class="panel reveal">
           <h3>Command line</h3>
           <p>Prints the recipe to stderr, so any result can be reproduced.</p>
