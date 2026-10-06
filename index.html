@@ -557,6 +557,8 @@ node poster-bg/scripts/gen.js --ring --colors random \
         text: ["Between the wars they built typography like architecture and made political photomontage. Strzemiński's unism asked for unity of color, line and rhythm, even in print."],
         links: [["Strzemiński", "https://en.wikipedia.org/wiki/W%C5%82adys%C5%82aw_Strzemi%C5%84ski"], ["MoMA", "https://www.moma.org/docs/press_archives/5347/releases/MOMA_1976_0006_6.pdf"]], motifs: ["construct"] },
     ];
+    /* anchor per artist, e.g. #teresa-zarnower: the Mac app links here */
+    const slug = n => n.normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/ł/gi, "l").toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
     document.getElementById("people").innerHTML = PEOPLE.map(p => {
       const chips = p.motifs.filter(m => MOTIFS[m]).map(m => `<a href="generator/?motif=${m}">${NAMES[m] || m}</a>`).join("");
       const esc = c => c === "&" ? "&amp;" : c === "<" ? "&lt;" : c;
@@ -564,10 +566,12 @@ node poster-bg/scripts/gen.js --ring --colors random \
         for (let x = 0; x < line.length; x++) { const c = line[x]; if (c !== " ") { const k = T[y] ? +T[y][x] : 7; if (k !== cur) { flush(); cur = k; } } buf += esc(c); } flush(); return out; }).join("\n"); };
       const pt = (window.PORTRAITS || {})[p.name];
       const fig = pt ? `<figure class="portrait"><pre aria-hidden="true">${tonePre(pt)}</pre><figcaption>${pt.credit}, <a href="${pt.url}">${pt.link || "Wikimedia Commons"}</a></figcaption></figure>` : "";
-      return `<article class="person reveal${p.lead ? " lead" : ""}"><div class="lh">${fig}<div class="head"><h3>${p.name.replace(/^(.*) (\S+)$/, '<span class="nm">$1</span> $2')}</h3><div class="role" style="margin-top:8px">${p.role}</div></div></div>` +
+      return `<article class="person reveal${p.lead ? " lead" : ""}" id="${slug(p.name)}"><div class="lh">${fig}<div class="head"><h3>${p.name.replace(/^(.*) (\S+)$/, '<span class="nm">$1</span> $2')}</h3><div class="role" style="margin-top:8px">${p.role}</div></div></div>` +
         `<div style="display:flex;flex-direction:column;gap:12px">${p.text.length ? (Array.isArray(p.text) ? p.text : [p.text]).map(t => `<p>${t}</p>`).join("") : ""}` +
         `<p class="more">${p.links.map(([l, u]) => `<a href="${u}">${l}</a>`).join(", ")}</p>${chips ? `<div class="chips"><span class="label">try</span>${chips}</div>` : ""}</div></article>`;
     }).join("");
+    /* arriving with #artist-name (from the Mac app): scroll to that card once it exists */
+    if (location.hash.length > 1) { const el = document.getElementById(decodeURIComponent(location.hash.slice(1))); if (el) setTimeout(() => el.scrollIntoView({ block: "start" }), 50); }
 
     /* narration: a speaker next to each block; plays audio/<id> (see tools/narrate.js), falls back to the browser voice */
     (function () {
